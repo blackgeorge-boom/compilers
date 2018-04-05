@@ -1,6 +1,8 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include "ast.h"
+#include "symbol.h"
 
 void yyerror (const char *msg);
 void debug (const char *msg);
@@ -8,6 +10,7 @@ void debug (const char *msg);
 extern int line_number;
 extern int command_line_flag;
 extern int boom;
+ast t;
 
 struct stack_t {      
   int top, flag;      
@@ -18,6 +21,14 @@ typedef struct stack_t *stack;
 extern stack l;
 extern int indent_level;
 %}
+
+%union{
+	ast a;
+	char c;
+	char *s;
+	int n;
+	Type t;
+}
 
 %token T_and "and"
 %token T_as "as"
@@ -43,10 +54,10 @@ extern int indent_level;
 %token T_skip "skip"
 %token T_true "true"
 %token T_var "var"
-%token T_id
-%token T_const 
-%token T_char 
-%token T_str 
+%token<s> T_id
+%token<n> T_const 
+%token<c> T_char 
+%token<s> T_str 
 %token T_neq "<>"
 %token T_leq "<="
 %token T_geq ">="
@@ -60,6 +71,31 @@ extern int indent_level;
 %left '*' '/' '%' '&'
 %right UMINUS UPLUS BYTE_NOT
 
+%type<a> program
+%type<a> func_def
+%type<a> local_def_list
+%type<a> header
+%type<a> fpar_def_list
+%type<a> fpar_def
+%type<a> id_list
+%type<t> data_type
+%type<a> type
+%type<a> fpar_type
+%type<a> int_const_list
+%type<a> local_def
+%type<a> func_decl
+%type<a> var_def
+%type<a> stmt
+%type<a> elif_list
+%type<a> block
+%type<a> stmt_list
+%type<a> proc_call
+%type<a> expr_list
+%type<a> func_call
+%type<a> l_value
+%type<a> expr
+%type<a> cond
+%type<a> x_cond
 
 %%
 
@@ -73,17 +109,17 @@ program:
 ;
 
 func_def:
-"def" header local_def_list block                   
+"def" header local_def_list block { t = $$ = ast_func_def($2, $3, $4); }                 
 ;
 
 
 local_def_list:
-  /* nothing */
-| local_def local_def_list 
+  /* nothing */ { $$ = NULL; }
+| local_def local_def_list { $$ = ast_seq($1, $2); }
 ;
 
 header:
-  T_id 
+  T_id { $$ = ast_id($1); }
 | T_id "is" data_type
 | T_id ':' fpar_def fpar_def_list
 | T_id "is" data_type ':' fpar_def fpar_def_list
@@ -99,17 +135,17 @@ fpar_def:
 ;
 
 id_list:
-  /* nothing */
-| T_id id_list
+  /* nothing */ { $$ = NULL; }
+| T_id id_list { $$ = ast_id_list($1, $2); }
 ;
 
 data_type:
-  "int" 
-| "byte"
+  "int" { $$ = typeInteger; }
+| "byte" { $$ = typeInteger; }
 ;
 
 type:
-  data_type int_const_list
+  data_type int_const_list { $$ = $1; }
 ;
 
 
@@ -120,14 +156,14 @@ fpar_type:
 ;   
 
 int_const_list:
-  /* nothing */
-| '[' T_const ']' int_const_list
+  /* nothing */ { $$ = NULL; }
+| '[' T_const ']' int_const_list { /*TODO*/ }
 ;
 
 local_def:
   func_def 
 | func_decl
-| var_def
+| var_def { $$ = $1; }
 ;
 
 func_decl:
@@ -135,12 +171,12 @@ func_decl:
 ;
 
 var_def:
-  "var" T_id id_list "is" type
+  "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }
 ;     
 
 stmt:
-  "skip" 
-| l_value ":=" expr 
+  "skip" { $$ = NULL; }
+| l_value ":=" expr { $$ = ast_let($1, $3); }
 | proc_call 
 | "exit"
 | "return" ':' expr 
@@ -160,12 +196,12 @@ elif_list:
 ;
 
 block:
-  "begin" stmt stmt_list "end"  
+  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3); }
 ;
 
 stmt_list:
-  /* nothing */
-| stmt stmt_list
+  /* nothing */ { $$ = NULL; }
+| stmt stmt_list { $$ = ast_seq($1, $2); }
 ;
 
 proc_call:
@@ -184,24 +220,24 @@ func_call:
 ; 
 
 l_value:
-  T_id
+  T_id { $$ = ast_id($1); }
 | T_str 
 | l_value '[' expr ']' 
 ;
 
 expr:
   T_char
-| T_const
-| l_value
-| '(' expr ')'
+| T_const { $$ = ast_const($1); }
+| l_value { $$ = $1; }
+| '(' expr ')' { $$ = $2; }
 | func_call
-| '+' expr 			%prec UPLUS
-| '-' expr 			%prec UMINUS
-| expr '+' expr  
-| expr '-' expr
-| expr '*' expr
-| expr '/' expr
-| expr '%' expr
+| '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); }	%prec UPLUS
+| '-' expr { $$ = ast_op(ast_const(0), MINUS, $2); } %prec UMINUS
+| expr '+' expr { $$ = ast_op($1, PLUS, $3); } 
+| expr '-' expr { $$ = ast_op($1, MINUS, $3); }  
+| expr '*' expr { $$ = ast_op($1, TIMES, $3); } 
+| expr '/' expr { $$ = ast_op($1, DIV, $3); } 
+| expr '%' expr { $$ = ast_op($1, MOD, $3); } 
 | "true" 
 | "false"
 | '!' expr 			%prec BYTE_NOT
@@ -263,5 +299,9 @@ int main(int argc, char **argv) {
 
   if (yyparse()) return 1;
   printf("Compilation was successful.\n");
+
+  initSymbolTable(997);
+  ast_sem(t);
+  destroySymbolTable();
   return 0;
 }

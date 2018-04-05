@@ -1,4 +1,5 @@
 %{
+#include "ast.h"
 #include "parser.h"
 #define T_eof 0
 
