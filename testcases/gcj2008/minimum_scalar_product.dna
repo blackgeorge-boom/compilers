@@ -1,0 +1,88 @@
+def Program
+    def work is int: v1 as int[], v2 as int[], n as int
+        def ArraySort: x as int[], n as int
+            def swap: x y as ref int
+            var t is int
+            begin
+                t := x
+                x := y
+                y := t
+            end
+
+        var changed is byte
+        var i is int
+        begin
+            loop:
+            begin
+                changed := false
+                i := 0
+                loop:
+                begin
+                    if i < n-1:
+                    begin
+                        if x[i] > x[i+1]:
+                        begin
+                            swap: x[i], x[i+1]
+                            changed := true
+                        end
+                        i := i+1
+                    end
+                    else: begin break end
+                end
+                if not changed: begin break end
+            end
+        end
+    var ret i is int
+    begin
+        ArraySort: v1, n
+        ArraySort: v2, n
+
+        ret := 0
+        i := 0
+        loop:
+        begin
+            if i = n: begin break end
+            ret := ret + v1[i] * v2[n - i - 1]
+            i := i + 1
+        end
+        return: ret
+    end
+
+    def main
+    var T i n j Y is int
+    var v1 v2 is int[8]
+    begin
+        T := readInteger()
+        i := 0
+        loop:
+        begin
+            if i = T: begin break end
+            n := readInteger()
+            j := 0
+            loop:
+            begin
+                if j = n: begin break end
+                v1[j] := readInteger()
+                j := j + 1
+            end
+            j := 0
+            loop:
+            begin
+                if j = n: begin break end
+                v2[j] := readInteger()
+                j := j + 1
+            end
+            Y := work(v1, v2, n)
+
+            writeString: "Case #"
+            writeInteger: i+1
+            writeString: ": "
+            writeInteger: Y
+            writeString: "\n"
+
+            i := i + 1
+        end
+    end
+begin
+    main
+end

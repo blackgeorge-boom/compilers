@@ -1,0 +1,147 @@
+def program
+(* XXX: assignment of constant into byte fails *)
+var node_gate node_changable is int[100]
+var node_value is byte[100]
+var changes minchanges is int
+var V is byte
+
+    def work: node_length as int, Vp as byte, ret as byte[32]
+        def toString: n as int, ret as byte[32]
+        var i j is int
+        var tmp is byte
+        begin
+            i := 0
+            loop:
+            begin
+                ret[i] := '0'+shrink(n%10)
+                i := i + 1
+                n := n/10
+                if n=0: begin break end
+            end
+            (* XXX: '\0' doesn't map to ASCII code 0 but to ASCII char 0 *)
+            ret[i] := shrink(0)
+            j := 0
+            i := i - 1
+            loop:
+            begin
+                if j >= i: begin break end
+                tmp := ret[j]
+                ret[j] := ret[i]
+                ret[i] := tmp
+                i := i - 1
+                j := j + 1
+            end
+        end
+
+        def go: x as int
+            def MathMin is int: x as int, y as int
+            begin
+                if x<y:
+                begin
+                    return: x
+                end
+                else:
+                begin
+                    return: y
+                end
+            end
+            
+            decl eval is byte: p as int
+
+            def eval is byte: p as int
+            begin
+                if p >= (node_length - 1) / 2:
+                begin
+                    return: node_value[p]
+                end
+
+                if node_gate[p] = 1:
+                begin
+                    return: eval(p * 2 + 1) & eval(p * 2 + 2)
+                end
+                else:
+                begin
+                    return: eval(p * 2 + 1) | eval(p * 2 + 2)
+                end
+            end
+
+        var prv is int
+        begin
+            if x = node_length:
+            begin
+                if eval(0) = V:
+                begin
+                    minchanges := MathMin(minchanges, changes)
+                end
+                exit
+            end
+    
+            if node_changable[x] = 1:
+            begin
+                prv := node_gate[x]
+                node_gate[x] := 1-node_gate[x]
+                changes := changes+1
+                go: x + 1
+                node_gate[x] := prv
+                changes := changes-1
+            end
+            go: x + 1
+        end
+
+
+    begin
+        (* XXX: ocaml's max int is 2^30-1  *)
+        minchanges := 1073741823
+
+        V := Vp
+        go: 0
+
+        if minchanges <> 1073741823:
+        begin
+            toString: minchanges, ret
+        end
+        else:
+        begin
+            (* XXX: string assignment doesn't work *)
+            strcpy: ret, "IMPOSSIBLE"
+        end
+    end
+
+    def main
+    var N i M V j is int
+    var ans is byte[32]
+    begin
+        N := readInteger()
+        i := 0
+        loop:
+        begin
+            if i = N: begin break end
+            M := readInteger()
+            V := readInteger()
+            j := 0
+            loop:
+            begin
+                if j = (M-1)/2: begin break end
+                node_gate[j] := readInteger()
+                node_changable[j] := readInteger()
+                j := j+1
+            end
+            j := 0
+            loop:
+            begin
+                if j = (M+1)/2: begin break end
+                node_value[j + (M - 1) / 2] := shrink(readInteger())
+                j := j+1
+            end
+            work: M,V,ans
+            writeString: "Case #"
+            writeInteger: i+1
+            writeString: ": "
+            writeString: ans
+            writeString: "\n"
+            i := i+1
+        end
+    end
+begin
+    main
+end

@@ -1,0 +1,10 @@
+var x : int
+var x : int
+let x = 0
+for 42 do   ' count up to 42
+  begin
+	var x : int
+    let x = x + 1
+    print x
+  end
+
