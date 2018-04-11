@@ -13,7 +13,7 @@ typedef struct node {
   kind k;
   char id;
   int num;
-  struct node *first, *second, *third, *fourth;
+  struct node *left, *right;
   Type type;
   int nesting_diff;  // ID and LET nodes
   int offset;        // ID and LET nodes

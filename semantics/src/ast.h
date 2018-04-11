@@ -23,7 +23,7 @@ typedef struct node {
 ast ast_id (char *s);
 ast ast_const (int n);
 ast ast_op (ast f, kind op, ast s);
-ast ast_let (char *s, ast f);
+ast ast_let (ast f, ast s);
 //ast ast_for (ast l, ast r);
 //ast ast_if (ast l, ast r);
 ast ast_seq (ast f, ast s);

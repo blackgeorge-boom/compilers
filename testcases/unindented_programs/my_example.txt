@@ -1,0 +1,6 @@
+def my_example
+var x is int
+begin
+x := 1
+skip
+end

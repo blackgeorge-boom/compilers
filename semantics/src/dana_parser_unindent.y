@@ -79,7 +79,7 @@ extern int indent_level;
 %type<a> fpar_def
 %type<a> id_list
 %type<t> data_type
-%type<a> type
+%type<t> type
 %type<a> fpar_type
 %type<a> int_const_list
 %type<a> local_def
@@ -109,17 +109,17 @@ program:
 ;
 
 func_def:
-"def" header local_def_list block { t = $$ = ast_func_def($2, $3, $4); }                 
+"def" header local_def_list block { t = $$ = ast_func_def($2, $3, $4); printf("func_def %s\n", $2->id);}                 
 ;
 
 
 local_def_list:
   /* nothing */ { $$ = NULL; }
-| local_def local_def_list { $$ = ast_seq($1, $2); }
+| local_def local_def_list { $$ = ast_seq($1, $2); printf("local_def_list\n");}
 ;
 
 header:
-  T_id { $$ = ast_id($1); }
+  T_id { $$ = ast_id($1); if ($1 == NULL) printf("fuuuck\n"); printf("header %s\n", $1);}
 | T_id "is" data_type
 | T_id ':' fpar_def fpar_def_list
 | T_id "is" data_type ':' fpar_def fpar_def_list
@@ -136,16 +136,16 @@ fpar_def:
 
 id_list:
   /* nothing */ { $$ = NULL; }
-| T_id id_list { $$ = ast_id_list($1, $2); }
+| T_id id_list { $$ = ast_id_list($1, $2); printf("id_list\n");}
 ;
 
 data_type:
-  "int" { $$ = typeInteger; }
+  "int" { $$ = typeInteger; printf("data_type int\n");}
 | "byte" { $$ = typeInteger; }
-;
+
 
 type:
-  data_type int_const_list { $$ = $1; }
+  data_type int_const_list { $$ = $1; printf("type\n");}
 ;
 
 
@@ -156,14 +156,14 @@ fpar_type:
 ;   
 
 int_const_list:
-  /* nothing */ { $$ = NULL; }
+  /* nothing */ { $$ = NULL; printf("int_const_list\n");}
 | '[' T_const ']' int_const_list { /*TODO*/ }
 ;
 
 local_def:
   func_def 
 | func_decl
-| var_def { $$ = $1; }
+| var_def { $$ = $1; printf("local_def\n");}
 ;
 
 func_decl:
@@ -171,12 +171,12 @@ func_decl:
 ;
 
 var_def:
-  "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }
+  "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); printf("var_def %c %d\n", $2, ($5)->kind);}
 ;     
 
 stmt:
-  "skip" { $$ = NULL; }
-| l_value ":=" expr { $$ = ast_let($1, $3); }
+  "skip" { $$ = NULL; printf("stmt_skip\n");}
+| l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_lvalue\n");}
 | proc_call 
 | "exit"
 | "return" ':' expr 
@@ -196,12 +196,12 @@ elif_list:
 ;
 
 block:
-  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3); }
+  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3); printf("block\n");}
 ;
 
 stmt_list:
   /* nothing */ { $$ = NULL; }
-| stmt stmt_list { $$ = ast_seq($1, $2); }
+| stmt stmt_list { $$ = ast_seq($1, $2); printf("stmt_list\n");}
 ;
 
 proc_call:
@@ -220,15 +220,15 @@ func_call:
 ; 
 
 l_value:
-  T_id { $$ = ast_id($1); }
+  T_id { $$ = ast_id($1); printf("l_value\n");}
 | T_str 
 | l_value '[' expr ']' 
 ;
 
 expr:
   T_char
-| T_const { $$ = ast_const($1); }
-| l_value { $$ = $1; }
+| T_const { $$ = ast_const($1); printf("const\n");}
+| l_value { $$ = $1; printf("expr_lvalue\n");}
 | '(' expr ')' { $$ = $2; }
 | func_call
 | '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); }	%prec UPLUS
@@ -302,6 +302,7 @@ int main(int argc, char **argv) {
 
   initSymbolTable(997);
   ast_sem(t);
+  printf("after ast_sem\n");
   destroySymbolTable();
   return 0;
 }

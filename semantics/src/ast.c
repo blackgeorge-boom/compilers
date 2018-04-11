@@ -21,6 +21,7 @@ static ast ast_make (kind k, char *s, int n,
 }
 
 ast ast_id (char *s) {
+  printf("ast_id %s\n", s);
   return ast_make(ID, s, 0, NULL, NULL, NULL, NULL, NULL);
 }
 
@@ -32,8 +33,8 @@ ast ast_op (ast f, kind op, ast s) {
   return ast_make(op, '\0', 0, f, s, NULL, NULL, NULL);
 }
 
-ast ast_let (char *s, ast f) {
-  return ast_make(LET, s, 0, f, NULL, NULL, NULL, NULL);
+ast ast_let (ast f, ast s) {
+  return ast_make(LET, '\0', 0, f, s, NULL, NULL, NULL);
 }
 /*
 ast ast_for (ast l, ast r) {
@@ -46,7 +47,7 @@ ast ast_if (ast l, ast r) {
 */
 
 ast ast_seq (ast f, ast s) {
-  if (r == NULL) return l;
+  if (s == NULL) return f;
   return ast_make(SEQ, '\0', 0, f, s, NULL, NULL, NULL);
 }
 
@@ -83,9 +84,11 @@ activation_record current_AR = NULL;
 int ast_run (ast t) {
   if (t == NULL) return NOTHING;
   switch (t->k) {
+	  /*
   case PRINT:
     printf("%d\n", ast_run(t->first));
     return NOTHING;
+	*/
   case LET: {
     activation_record ar = current_AR;
     for (int i = 0; i < t->nesting_diff; ++i) ar = ar->previous;
@@ -103,8 +106,10 @@ int ast_run (ast t) {
     ast_run(t->first);
     ast_run(t->second);
     return NOTHING;
+	/*
   case DECL:
     return NOTHING;
+	*/
   case BLOCK: {
     activation_record new_AR =
         (activation_record) malloc(
@@ -152,8 +157,10 @@ int ast_run (ast t) {
     return ast_run(t->first) && ast_run(t->second);
   case OR:
     return ast_run(t->first) || ast_run(t->second);
+	/*
   case NOT:
     return !ast_run(t->first);
+	*/
   }
 }
 
@@ -173,9 +180,11 @@ void ast_sem (ast t) {
   if (t == NULL) return;
   switch (t->k) {
   case LET: {
-    SymbolEntry * e = lookup(t->id);
+	printf("LET\n");
     ast_sem(t->first);
-    if (!equalType(e->u.eVariable.type, t->first->type))
+    SymbolEntry * e = lookup(t->first->id);
+    ast_sem(t->second);
+    if (!equalType(e->u.eVariable.type, t->second->type))
       error("type mismatch in assignment");
     t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
     t->offset = e->u.eVariable.offset;
@@ -196,20 +205,27 @@ void ast_sem (ast t) {
     return;
 	*/
   case SEQ:
+	printf("SEQ\n");
     ast_sem(t->first);
     ast_sem(t->second);
     return;
   case ID: {
+	printf("ID %s\n", t->id);
     SymbolEntry *e = lookup(t->id);
+	printf("ID2\n");
     t->type = e->u.eVariable.type;
+	printf("ID3\n");
     t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
+	printf("ID4\n");
     t->offset = e->u.eVariable.offset;
     return;
   }
   case CONST:
+	printf("CONST\n");
     t->type = typeInteger;
     return;
   case PLUS:
+	printf("PLUS\n");
     ast_sem(t->first);
     ast_sem(t->second);
     if (!equalType(t->first->type, typeInteger) ||
@@ -322,13 +338,16 @@ void ast_sem (ast t) {
     return;
 	*/
   case ID_LIST:
-		return;
+	printf("ID_LIST\n");
+	return;
   case VAR_DEF:
+	printf("VAR_DEF %s %d\n", t->id, t->type);
     insert(t->id, t->type);
+	printf("VAR_DEF2\n");
 
 	if (t->first != NULL) {
-		
-		t->first->kind = VAR_DEF;
+		printf("VAR_DEF3\n");		
+		t->first->k = VAR_DEF;
 		t->first->type = t->type;
 		ast_sem(t->first);
 
@@ -336,8 +355,9 @@ void ast_sem (ast t) {
 
 	return;
   case FUNC_DEF:
+	printf("FUNC_DEF\n");
     openScope();
-    ast_sem(t->first);
+    //ast_sem(t->first);
     ast_sem(t->second);
     t->num_vars = currentScope->negOffset;
     ast_sem(t->third);
