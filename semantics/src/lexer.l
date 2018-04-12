@@ -1,4 +1,5 @@
 %{
+#include <string.h>
 #include "ast.h"
 #include "parser.h"
 #define T_eof 0
@@ -200,14 +201,14 @@ R[`~@#$^_\{\}\;?.]
 {S}          { return yytext[0]; }
 {Q}          { return yytext[0]; }
 
-({L})({L}|{D}|"_")*     { yylval.s = yytext; return T_id; }
+({L})({L}|{D}|"_")*     { yylval.s = strdup(yytext); return T_id; }
 {D}+            { yylval.n = atoi(yytext); return T_const; }
 \'({D}|{L}|"\\"[ntr0"\'""\""]|"\\"|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])))\' { 
 													yylval.c = yytext[0]; return T_char; }
 \'[ ]\'		{ yylval.c = yytext[0]; return T_char; }
 \"(({S}|{Q}|{L}|{R}|{D}|("\\"{E})|("\\"{X})|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])|" "))+)\" {
-													yylval.s = yytext; return T_str; }
-\"\"				{ yylval.s = yytext; return T_str; }     
+													yylval.s = strdup(yytext); return T_str; }
+\"\"				{ yylval.s = strdup(yytext); return T_str; }     
 {W}+                { /* nothing */ }
 \n                  { line_number++; current_line_indent = 0; if (command_line_flag) BEGIN(INDENT); }
 .                   { yyerror("Unknown word in a line"); }

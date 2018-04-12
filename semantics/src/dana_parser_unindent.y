@@ -109,17 +109,17 @@ program:
 ;
 
 func_def:
-"def" header local_def_list block { t = $$ = ast_func_def($2, $3, $4); printf("func_def %s\n", $2->id);}                 
+"def" header local_def_list block { t = $$ = ast_func_def($2, $3, $4); }//printf("func_def %s\n", $2->id);}                 
 ;
 
 
 local_def_list:
   /* nothing */ { $$ = NULL; }
-| local_def local_def_list { $$ = ast_seq($1, $2); printf("local_def_list\n");}
+| local_def local_def_list { $$ = ast_seq($1, $2); }//printf("local_def_list\n");}
 ;
 
 header:
-  T_id { $$ = ast_id($1); if ($1 == NULL) printf("fuuuck\n"); printf("header %s\n", $1);}
+  T_id { $$ = ast_id($1);  }//printf("header %s\n", $1);}
 | T_id "is" data_type
 | T_id ':' fpar_def fpar_def_list
 | T_id "is" data_type ':' fpar_def fpar_def_list
@@ -136,16 +136,16 @@ fpar_def:
 
 id_list:
   /* nothing */ { $$ = NULL; }
-| T_id id_list { $$ = ast_id_list($1, $2); printf("id_list\n");}
+| T_id id_list { $$ = ast_id_list($1, $2); }//printf("id_list\n");}
 ;
 
 data_type:
-  "int" { $$ = typeInteger; printf("data_type int\n");}
+  "int" { $$ = typeInteger; }//printf("data_type int\n");}
 | "byte" { $$ = typeInteger; }
 
 
 type:
-  data_type int_const_list { $$ = $1; printf("type\n");}
+  data_type int_const_list { $$ = $1; }//printf("type\n");}
 ;
 
 
@@ -156,14 +156,14 @@ fpar_type:
 ;   
 
 int_const_list:
-  /* nothing */ { $$ = NULL; printf("int_const_list\n");}
+  /* nothing */ { $$ = NULL; }//printf("int_const_list\n");}
 | '[' T_const ']' int_const_list { /*TODO*/ }
 ;
 
 local_def:
   func_def 
 | func_decl
-| var_def { $$ = $1; printf("local_def\n");}
+| var_def { $$ = $1; }//printf("local_def\n");}
 ;
 
 func_decl:
@@ -171,12 +171,12 @@ func_decl:
 ;
 
 var_def:
-  "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); printf("var_def %c %d\n", $2, ($5)->kind);}
+  "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }//printf("var_def %c %d\n", $2, ($5)->kind);}
 ;     
 
 stmt:
-  "skip" { $$ = NULL; printf("stmt_skip\n");}
-| l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_lvalue\n");}
+  "skip" { $$ = NULL; }//printf("stmt_skip\n");}
+| l_value ":=" expr { $$ = ast_let($1, $3);} //printf("stmt_lvalue %s  \n",$1->id);}
 | proc_call 
 | "exit"
 | "return" ':' expr 
@@ -196,12 +196,12 @@ elif_list:
 ;
 
 block:
-  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3); printf("block\n");}
+  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3); } //printf("blockn");}
 ;
 
 stmt_list:
   /* nothing */ { $$ = NULL; }
-| stmt stmt_list { $$ = ast_seq($1, $2); printf("stmt_list\n");}
+| stmt stmt_list { $$ = ast_seq($1, $2); }//printf("stmt_list\n");}
 ;
 
 proc_call:
@@ -220,15 +220,15 @@ func_call:
 ; 
 
 l_value:
-  T_id { $$ = ast_id($1); printf("l_value\n");}
+  T_id { $$ = ast_l_value($1, NULL, NULL); printf("T_id is : %s\n", $1);}
 | T_str 
-| l_value '[' expr ']' 
+| l_value '[' expr ']' { $$ = ast_l_value('\0', $1, $3); }
 ;
 
 expr:
   T_char
 | T_const { $$ = ast_const($1); printf("const\n");}
-| l_value { $$ = $1; printf("expr_lvalue\n");}
+| l_value { $$ = ast_id($1->id); printf("expr_lvalue\n");}
 | '(' expr ')' { $$ = $2; }
 | func_call
 | '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); }	%prec UPLUS

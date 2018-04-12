@@ -70,6 +70,10 @@ ast ast_block (ast l, ast r) {
 }
 */
 
+ast ast_l_value (char *string, ast f, ast s) {
+	return ast_make(L_VALUE, string, 0, f, s, NULL, NULL, NULL);
+}
+
 #define NOTHING 0
 
 struct activation_record_tag {
@@ -182,8 +186,12 @@ void ast_sem (ast t) {
   case LET: {
 	printf("LET\n");
     ast_sem(t->first);
+	//if (t->first->id == NULL) // TODO for n-dimensional array
     SymbolEntry * e = lookup(t->first->id);
+	if (e == NULL) {printf("LET - lookup failed\n"); return;}
+//	printf("LET looked up : %s\n", e->id);
     ast_sem(t->second);
+	if (t->second->type == NULL) { printf("error\n"); return;}
     if (!equalType(e->u.eVariable.type, t->second->type))
       error("type mismatch in assignment");
     t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
@@ -209,9 +217,13 @@ void ast_sem (ast t) {
     ast_sem(t->first);
     ast_sem(t->second);
     return;
-  case ID: {
+  case ID: { //TODO for n-dimensional array
 	printf("ID %s\n", t->id);
     SymbolEntry *e = lookup(t->id);
+	printf("ID - %s\n", t->id);
+	
+	if (e == NULL) {printf("ID - lookup failed\n"); return; }
+
 	printf("ID2\n");
     t->type = e->u.eVariable.type;
 	printf("ID3\n");
@@ -341,7 +353,7 @@ void ast_sem (ast t) {
 	printf("ID_LIST\n");
 	return;
   case VAR_DEF:
-	printf("VAR_DEF %s %d\n", t->id, t->type);
+	printf("VAR_DEF %s %d\n", t->id, t->type->kind);
     insert(t->id, t->type);
 	printf("VAR_DEF2\n");
 
@@ -363,5 +375,10 @@ void ast_sem (ast t) {
     ast_sem(t->third);
     closeScope();
     return;
+  case L_VALUE:
+    printf("L_VALUE\n");
+	if (t->first == NULL) return;
+	return; /* TODO for n-dimensional array*/
   }
+  	
 }
