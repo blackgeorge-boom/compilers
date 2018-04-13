@@ -105,11 +105,11 @@ extern int indent_level;
  */
 
 program:
-  func_def 
+  func_def { t = $$ = $1; }
 ;
 
 func_def:
-"def" header local_def_list block { t = $$ = ast_func_def($2, $3, $4); }//printf("func_def %s\n", $2->id);}                 
+"def" header local_def_list block { $$ = ast_func_def($2, $3, $4); }//printf("func_def %s\n", $2->id);}                 
 ;
 
 
@@ -145,7 +145,7 @@ data_type:
 
 
 type:
-  data_type int_const_list { $$ = $1; }//printf("type\n");}
+  data_type int_const_list { $$ = ast_type($1, $2); printf("type\n");}
 ;
 
 
@@ -156,8 +156,8 @@ fpar_type:
 ;   
 
 int_const_list:
-  /* nothing */ { $$ = NULL; }//printf("int_const_list\n");}
-| '[' T_const ']' int_const_list { /*TODO*/ }
+  /* nothing */ { $$ = NULL; printf("int_const_list - nothing\n");}
+| '[' T_const ']' int_const_list { $$ = ast_int_const_list($2, $4); printf("int_const_list\n");}
 ;
 
 local_def:

@@ -51,8 +51,8 @@ ast ast_seq (ast f, ast s) {
   return ast_make(SEQ, '\0', 0, f, s, NULL, NULL, NULL);
 }
 
-ast ast_var_def (char *s, ast f, Type t) {
-  return ast_make(VAR_DEF, s, 0, f, NULL, NULL, NULL, t);
+ast ast_var_def (char *string, ast f, ast s) {
+  return ast_make(VAR_DEF, string, 0, f, s, NULL, NULL, NULL);
 }
 
 ast ast_id_list (char *s, ast f) {
@@ -63,6 +63,14 @@ ast ast_func_def (ast f, ast s, ast t) {
   return ast_make(FUNC_DEF, '\0', 0, f, s, t, NULL, NULL);
 }
 
+ast ast_type (Type t, ast f) {
+  return ast_make(TYPE, '\0', 0, f, NULL, NULL, NULL, t);
+}
+
+ast ast_int_const_list (int n, ast f) {
+  return ast_make(INT_CONST_LIST, '\0', n, f, NULL, NULL, NULL, NULL); 
+} 
+  
 /*
 ast ast_block (ast l, ast r) {
   if (r == NULL) return l;
@@ -178,6 +186,36 @@ SymbolEntry * insert(char *s, Type t) {
   char *name;
   name = s;
   return newVariable(name, t);
+}
+
+void print_ast_node (ast f) {
+
+	printf("====== Node Info =====\n");
+	if (f == NULL) {
+		printf("NULL node\n");
+		printf("======================\n");
+		return;
+	}
+
+	printf(" Kind : %d\n", f->k);
+	printf(" Id : %s\n", f->id);
+	printf(" Num : %d\n", f->num);
+	if (f->type == NULL) printf(" Type : NULL\n");
+	else {
+		printf(" Type : %d\n", f->type->kind);
+		if (f->type->refType != NULL) 
+			printf("    with refType : %d\n", f->type->refType->kind);
+	}
+	printf("======================\n");
+	
+}	
+
+Type var_def_type (Type t, ast f) {
+	printf("var_def_type \n");
+	print_ast_node(f);
+	if (f == NULL) return t;
+	printf("var_def_type3\n");
+	return typeArray(f->num, var_def_type(t, f->first));
 }
 
 void ast_sem (ast t) {
@@ -351,17 +389,23 @@ void ast_sem (ast t) {
 	*/
   case ID_LIST:
 	printf("ID_LIST\n");
+	
 	return;
   case VAR_DEF:
-	printf("VAR_DEF %s %d\n", t->id, t->type->kind);
-    insert(t->id, t->type);
+	printf("VAR_DEF %s \n", t->id);
+	if (t->second->first == NULL) printf("yo\n");
+	Type type = var_def_type(t->second->type, t->second->first);
 	printf("VAR_DEF2\n");
+	print_ast_node(ast_type(type, NULL));
+    insert(t->id, type);
+	printf("VAR_DEF3\n");
 
-	if (t->first != NULL) {
-		printf("VAR_DEF3\n");		
-		t->first->k = VAR_DEF;
-		t->first->type = t->type;
-		ast_sem(t->first);
+	ast temp = t->first;
+	while (temp != NULL) {
+
+		printf("VAR_DEF4 %s \n", temp->id);
+		insert(temp->id, type);
+		temp = temp->first;
 
 	}
 
@@ -379,6 +423,12 @@ void ast_sem (ast t) {
     printf("L_VALUE\n");
 	if (t->first == NULL) return;
 	return; /* TODO for n-dimensional array*/
+  case TYPE:
+	printf("TYPE\n");
+	return;
+  case INT_CONST_LIST:
+	printf("INT_CONST_LIST\n");
+	return;
   }
   	
 }
