@@ -32,7 +32,7 @@ ast ast_var_def (char *string, ast f, ast s);
 //ast ast_block (ast f, ast s);
 ast ast_func_def (ast f, ast s, ast t);
 ast ast_id_list (char *s, ast f);
-ast ast_l_value (char *string, ast f, ast s);
+ast ast_l_value (ast f, ast s);
 ast ast_type (Type t, ast f);
 ast ast_int_const_list (int n, ast f);
 

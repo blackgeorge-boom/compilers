@@ -1,6 +1,7 @@
 def my_example
-var x is int
+var x is int [10]
+#var y is int
 begin
-x := 1
+x[x[1]] := x[1] + 4
 skip
 end

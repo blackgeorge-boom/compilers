@@ -5,7 +5,7 @@
 #include "symbol.h"
 
 static ast ast_make (kind k, char *s, int n,
-	   				ast first, ast second, ast third, ast fourth, Type t) {
+	   				 ast first, ast second, ast third, ast fourth, Type t) {
   ast p;
   if ((p = malloc(sizeof(struct node))) == NULL)
     exit(1);
@@ -78,8 +78,8 @@ ast ast_block (ast l, ast r) {
 }
 */
 
-ast ast_l_value (char *string, ast f, ast s) {
-	return ast_make(L_VALUE, string, 0, f, s, NULL, NULL, NULL);
+ast ast_l_value (ast f, ast s) {
+	return ast_make(L_VALUE, '\0', 0, f, s, NULL, NULL, NULL);
 }
 
 #define NOTHING 0
@@ -212,10 +212,45 @@ void print_ast_node (ast f) {
 
 Type var_def_type (Type t, ast f) {
 	printf("var_def_type \n");
-	print_ast_node(f);
+	//print_ast_node(f);
 	if (f == NULL) return t;
 	printf("var_def_type3\n");
 	return typeArray(f->num, var_def_type(t, f->first));
+}
+
+ast l_value_type (ast f, int count) {
+
+	printf("l_value_type \n");
+	print_ast_node(f);
+
+	if (f->k == ID) {
+		
+		printf("l_value_type2 \n");
+		SymbolEntry * e = lookup(f->id);
+		if (e == NULL) error("l_value_type - Undeclared variable : %s", f->id);
+
+		int i;
+		Type temp = e->u.eVariable.type;
+		for (i = count; i > 0; --i) {
+			if (temp->refType == NULL) 
+				error("Too many dimensions");
+			temp = temp->refType;
+		}
+
+		ast p;
+		if ((p = malloc(sizeof(struct node))) == NULL)
+			exit(1);
+		p->type = temp;
+		p->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
+		p->offset = e->u.eVariable.offset;
+		return p;
+	}
+	
+	ast_sem(f->second);
+	if (f->second->type != typeInteger && f->second->type != typeChar) 
+		error("Array index must be of type int or byte");
+	
+	return l_value_type(f->first, count + 1);
 }
 
 void ast_sem (ast t) {
@@ -224,16 +259,12 @@ void ast_sem (ast t) {
   case LET: {
 	printf("LET\n");
     ast_sem(t->first);
-	//if (t->first->id == NULL) // TODO for n-dimensional array
-    SymbolEntry * e = lookup(t->first->id);
-	if (e == NULL) {printf("LET - lookup failed\n"); return;}
-//	printf("LET looked up : %s\n", e->id);
     ast_sem(t->second);
 	if (t->second->type == NULL) { printf("error\n"); return;}
-    if (!equalType(e->u.eVariable.type, t->second->type))
-      error("type mismatch in assignment");
-    t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
-    t->offset = e->u.eVariable.offset;
+    if (!equalType(t->first->type, t->second->type))
+      error("Type mismatch in assignment");
+    t->nesting_diff = t->first->nesting_diff;
+    t->offset = t->first->offset;
     return;
   }
 /*
@@ -260,7 +291,8 @@ void ast_sem (ast t) {
     SymbolEntry *e = lookup(t->id);
 	printf("ID - %s\n", t->id);
 	
-	if (e == NULL) {printf("ID - lookup failed\n"); return; }
+	if (e == NULL) 
+		error("ID - Undeclared variable : %s", t->id);
 
 	printf("ID2\n");
     t->type = e->u.eVariable.type;
@@ -421,8 +453,12 @@ void ast_sem (ast t) {
     return;
   case L_VALUE:
     printf("L_VALUE\n");
-	if (t->first == NULL) return;
-	return; /* TODO for n-dimensional array*/
+	ast p = l_value_type(t, 0);
+	t->type = p->type;
+	t->nesting_diff = p->nesting_diff;
+    t->offset = p->offset;
+	free(p);	
+	return;
   case TYPE:
 	printf("TYPE\n");
 	return;

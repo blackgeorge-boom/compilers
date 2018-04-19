@@ -220,15 +220,15 @@ func_call:
 ; 
 
 l_value:
-  T_id { $$ = ast_l_value($1, NULL, NULL); printf("T_id is : %s\n", $1);}
+  T_id { $$ = ast_id($1); printf("l_value T_id is : %s\n", $1);}
 | T_str 
-| l_value '[' expr ']' { $$ = ast_l_value('\0', $1, $3); }
+| l_value '[' expr ']' { $$ = ast_l_value($1, $3); printf("l_value expr\n");}
 ;
 
 expr:
   T_char
 | T_const { $$ = ast_const($1); printf("const\n");}
-| l_value { $$ = ast_id($1->id); printf("expr_lvalue\n");}
+| l_value { $$ = $1; printf("expr_lvalue\n");}
 | '(' expr ')' { $$ = $2; }
 | func_call
 | '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); }	%prec UPLUS
