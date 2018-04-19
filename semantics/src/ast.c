@@ -29,6 +29,11 @@ ast ast_const (int n) {
   return ast_make(CONST, '\0', n, NULL, NULL, NULL, NULL, NULL);
 }
 
+ast ast_char (int n) {
+  printf("INSIDE AST_CHAR\n");
+  return ast_make(CHAR, '\0', n, NULL, NULL, NULL, NULL, NULL);
+}
+
 ast ast_op (ast f, kind op, ast s) {
   return ast_make(op, '\0', 0, f, s, NULL, NULL, NULL);
 }
@@ -305,6 +310,11 @@ void ast_sem (ast t) {
   case CONST:
 	printf("CONST\n");
     t->type = typeInteger;
+    return;
+
+  case CHAR:
+  printf("CHAR --- %d\n",t->num);
+    t->type = typeChar;
     return;
   case PLUS:
 	printf("PLUS\n");

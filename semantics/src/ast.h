@@ -4,7 +4,7 @@
 #include "symbol.h"
 
 typedef enum {
-  INT_CONST_LIST, TYPE,
+  INT_CONST_LIST, TYPE,  1,
   L_VALUE, FUNC_DEF, ID_LIST, LET, FOR, IF, SEQ,
   ID, CONST, PLUS, MINUS, TIMES, DIV, MOD,
   LT, GT, LE, GE, EQ, NE, AND, OR, VAR_DEF, BLOCK
@@ -23,6 +23,7 @@ typedef struct node {
 
 ast ast_id (char *s);
 ast ast_const (int n);
+ast ast_char(int n);
 ast ast_op (ast f, kind op, ast s);
 ast ast_let (ast f, ast s);
 //ast ast_for (ast l, ast r);

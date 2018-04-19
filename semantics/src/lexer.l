@@ -203,9 +203,56 @@ R[`~@#$^_\{\}\;?.]
 
 ({L})({L}|{D}|"_")*     { yylval.s = strdup(yytext); return T_id; }
 {D}+            { yylval.n = atoi(yytext); return T_const; }
-\'({D}|{L}|"\\"[ntr0"\'""\""]|"\\"|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])))\' { 
-													yylval.c = yytext[0]; return T_char; }
-\'[ ]\'		{ yylval.c = yytext[0]; return T_char; }
+\'({D}|{L})\' { printf("Lexer 1 - %d\n",yytext[1]);	
+				yylval.n = yytext[1]; return T_char;}
+
+\'("\\"[ntr0"\'""\"""\\"])\' { 
+                            printf("Lexer 2 \n");
+                            char c = yytext[2];
+                            if     ( c =='n')
+                            	yylval.n = '\n'; 
+                            else if( c =='r')
+                            	yylval.n = '\r';
+                            else if( c =='t')
+                            	yylval.n = '\t';
+                            else if( c =='0')
+                            	yylval.n = '\0';
+                            else if( c =='\'')
+                            	yylval.n = '\'';
+                            else if( c =='\"')
+                            	yylval.n = '\"'; //"
+                            else {
+                            	yylval.n = '\\';
+                            }
+                            printf("Character - %c",yylval.n);
+                            return T_char;	
+                        }
+\'("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F]))\' { printf("Lexer 3 - \n");
+                                                yytext[0] = yytext[1] = yytext[2] = '0'; 
+                                                yytext[5] = '\0';
+                                                int i, val,decimal = 0;;
+                                                for(i=3; i<5 ;i++){
+                                                	if(yytext[i]>='0' && yytext[i]<='9') {
+                                                       val = yytext[i] - 48;
+                                                      }
+                                                      else if(yytext[i]>='a' && yytext[i]<='f')
+                                                      {
+                                                          val = yytext[i] - 97 + 10;
+                                                      }
+                                                      else if(yytext[i]>='A' && yytext[i]<='F')
+                                                      {
+                                                          val = yytext[i] - 65 + 10;
+                                                      }
+                                                      if (i==3) {
+                                                      	decimal += val * 16; 
+                                                      }
+                                                      else{
+                                                      	decimal += val;
+                                                      }
+                                                }
+                                                printf("decimal = %d\n", decimal);
+                                                yylval.n = decimal; return T_char; }
+\'[ ]\'		{ yylval.n = yytext[1]; return T_char; }
 \"(({S}|{Q}|{L}|{R}|{D}|("\\"{E})|("\\"{X})|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])|" "))+)\" {
 													yylval.s = strdup(yytext); return T_str; }
 \"\"				{ yylval.s = strdup(yytext); return T_str; }     

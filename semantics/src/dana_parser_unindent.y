@@ -24,7 +24,7 @@ extern int indent_level;
 
 %union{
 	ast a;
-	char c;
+	unsigned char c;
 	char *s;
 	int n;
 	Type t;
@@ -141,7 +141,7 @@ id_list:
 
 data_type:
   "int" { $$ = typeInteger; }//printf("data_type int\n");}
-| "byte" { $$ = typeInteger; }
+| "byte" { $$ = typeChar; }
 
 
 type:
@@ -176,7 +176,7 @@ var_def:
 
 stmt:
   "skip" { $$ = NULL; }//printf("stmt_skip\n");}
-| l_value ":=" expr { $$ = ast_let($1, $3);} //printf("stmt_lvalue %s  \n",$1->id);}
+| l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_let\n");}
 | proc_call 
 | "exit"
 | "return" ':' expr 
@@ -226,7 +226,7 @@ l_value:
 ;
 
 expr:
-  T_char
+  T_char  { $$ = ast_char($1); printf("char\n");}
 | T_const { $$ = ast_const($1); printf("const\n");}
 | l_value { $$ = $1; printf("expr_lvalue\n");}
 | '(' expr ')' { $$ = $2; }
