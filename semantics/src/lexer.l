@@ -228,8 +228,6 @@ R[`~@#$^_\{\}\;?.]
                             return T_char;	
                         }
 \'("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F]))\' { printf("Lexer 3 - \n");
-                                                yytext[0] = yytext[1] = yytext[2] = '0'; 
-                                                yytext[5] = '\0';
                                                 int i, val,decimal = 0;;
                                                 for(i=3; i<5 ;i++){
                                                 	if(yytext[i]>='0' && yytext[i]<='9') {
@@ -254,8 +252,11 @@ R[`~@#$^_\{\}\;?.]
                                                 yylval.n = decimal; return T_char; }
 \'[ ]\'		{ yylval.n = yytext[1]; return T_char; }
 \"(({S}|{Q}|{L}|{R}|{D}|("\\"{E})|("\\"{X})|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])|" "))+)\" {
-													yylval.s = strdup(yytext); return T_str; }
-\"\"				{ yylval.s = strdup(yytext); return T_str; }     
+													char *s = "abc";
+													printf("Check mate %d\n", s[3]);
+													yytext[strlen(yytext) - 1] = '\0';
+													yylval.s = strdup(yytext + 1); return T_str; }
+\"\"				{ yylval.s = "\0"; return T_str; }     
 {W}+                { /* nothing */ }
 \n                  { line_number++; current_line_indent = 0; if (command_line_flag) BEGIN(INDENT); }
 .                   { yyerror("Unknown word in a line"); }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ast.h"
 #include "error.h"
 #include "symbol.h"
@@ -32,6 +33,12 @@ ast ast_const (int n) {
 ast ast_char (int n) {
   printf("INSIDE AST_CHAR\n");
   return ast_make(CHAR, '\0', n, NULL, NULL, NULL, NULL, NULL);
+}
+
+ast ast_str (char *s) {
+  printf("ast_str %s\n", s);
+  Type t = typeArray(strlen(s) + 1, typeChar);
+  return ast_make(STR, s, 0, NULL, NULL, NULL, NULL, t);
 }
 
 ast ast_op (ast f, kind op, ast s) {
@@ -223,6 +230,16 @@ Type var_def_type (Type t, ast f) {
 	return typeArray(f->num, var_def_type(t, f->first));
 }
 
+/*
+ * This function handles expressions:
+ * 1) x[i1]...[in]
+ * 2) "abc" or "abc"[i] 
+ * First, it checks the dimensions from right to left, 
+ * while it traverses the l_value ast tree.
+ * and then it returns an ast with the appropriate type.
+ * For case 1), it returns also nesting diff and offset. 
+ */
+
 ast l_value_type (ast f, int count) {
 
 	printf("l_value_type \n");
@@ -250,6 +267,31 @@ ast l_value_type (ast f, int count) {
 		p->offset = e->u.eVariable.offset;
 		return p;
 	}
+	else if (f->k == STR) {
+		
+			
+		printf("l_value_type3 \n");
+		int i;
+		Type temp = f->type;
+		printType(temp);
+
+		if (count > 1) {
+			error("Too many dimensions for string");
+		}
+		else if (count == 1) {
+			printf("l_value_type4 \n");
+			temp = temp->refType;
+			printf("l_value_type5 \n");
+		}
+
+		ast p;
+		if ((p = malloc(sizeof(struct node))) == NULL)
+			exit(1);
+		p->type = temp;
+		
+		printf("end_l_value_type3 \n");
+		return p;
+	}
 	
 	ast_sem(f->second);
 	if (f->second->type != typeInteger && f->second->type != typeChar) 
@@ -265,7 +307,9 @@ void ast_sem (ast t) {
 	printf("LET\n");
     ast_sem(t->first);
     ast_sem(t->second);
-	if (t->second->type == NULL) { printf("error\n"); return;}
+	printf("LET finished first - second\n");
+	printType(t->first->type);
+	printType(t->second->type);
     if (!equalType(t->first->type, t->second->type))
       error("Type mismatch in assignment");
     t->nesting_diff = t->first->nesting_diff;
@@ -311,10 +355,12 @@ void ast_sem (ast t) {
 	printf("CONST\n");
     t->type = typeInteger;
     return;
-
   case CHAR:
   printf("CHAR --- %d\n",t->num);
     t->type = typeChar;
+    return;
+  case STR:
+	printf("STR\n");
     return;
   case PLUS:
 	printf("PLUS\n");
@@ -438,7 +484,7 @@ void ast_sem (ast t) {
 	if (t->second->first == NULL) printf("yo\n");
 	Type type = var_def_type(t->second->type, t->second->first);
 	printf("VAR_DEF2\n");
-	print_ast_node(ast_type(type, NULL));
+	//print_ast_node(ast_type(type, NULL));
     insert(t->id, type);
 	printf("VAR_DEF3\n");
 
@@ -450,7 +496,7 @@ void ast_sem (ast t) {
 		temp = temp->first;
 
 	}
-
+	print_ast_node(t);
 	return;
   case FUNC_DEF:
 	printf("FUNC_DEF\n");

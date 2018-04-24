@@ -643,7 +643,7 @@ bool equalType (Type type1, Type type2)
 void printType (Type type)
 {
     if (type == NULL) {
-        printf("<undefined>");
+        printf("<undefined>\n");
         return;
     }
     
@@ -676,6 +676,8 @@ void printType (Type type)
             printType(type->refType);
             break;
     }
+
+	printf("\n");
 }
 
 void printMode (PassMode mode)

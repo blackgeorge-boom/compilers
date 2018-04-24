@@ -221,7 +221,7 @@ func_call:
 
 l_value:
   T_id { $$ = ast_id($1); printf("l_value T_id is : %s\n", $1);}
-| T_str 
+| T_str { $$ = ast_str($1); printf("l_value T_str : %s\n", $1); }
 | l_value '[' expr ']' { $$ = ast_l_value($1, $3); printf("l_value expr\n");}
 ;
 
