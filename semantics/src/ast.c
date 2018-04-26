@@ -6,7 +6,7 @@
 #include "symbol.h"
 
 static ast ast_make (kind k, char *s, int n,
-	   				 ast first, ast second, ast third, ast fourth, Type t) {
+	   				 ast first, ast second, ast third, ast last, Type t) {
   ast p;
   if ((p = malloc(sizeof(struct node))) == NULL)
     exit(1);
@@ -16,7 +16,7 @@ static ast ast_make (kind k, char *s, int n,
   p->first = first;
   p->second = second;
   p->third = third;
-  p->fourth = fourth;
+  p->last = last;
   p->type = t;
   return p;
 }
@@ -39,6 +39,30 @@ ast ast_str (char *s) {
   printf("ast_str %s\n", s);
   Type t = typeArray(strlen(s) + 1, typeChar);
   return ast_make(STR, s, 0, NULL, NULL, NULL, NULL, t);
+}
+
+ast ast_true () {
+  return ast_make(TRUE, '\0', 1, NULL, NULL, NULL, NULL, NULL);
+}
+
+ast ast_false () {
+  return ast_make(FALSE, '\0', 0, NULL, NULL, NULL, NULL, NULL);
+}
+
+ast ast_bit_not (ast f) {
+  return ast_make(BIT_NOT, '\0', 0, f, NULL, NULL, NULL, NULL);
+}
+
+ast ast_bit_and (ast f, ast s) {
+  return ast_make(BIT_AND, '\0', 0, f, s, NULL, NULL, NULL);
+}
+
+ast ast_bit_or (ast f, ast s) {
+  return ast_make(BIT_OR, '\0', 0, f, s, NULL, NULL, NULL);
+}
+
+ast ast_bool_not (ast f) {
+  return ast_make(BOOL_NOT, '\0', 0, f, NULL, NULL, NULL, NULL);
 }
 
 ast ast_op (ast f, kind op, ast s) {
@@ -92,6 +116,18 @@ ast ast_block (ast l, ast r) {
 
 ast ast_l_value (ast f, ast s) {
 	return ast_make(L_VALUE, '\0', 0, f, s, NULL, NULL, NULL);
+}
+
+ast ast_if (ast f, ast s, ast t) {
+	return ast_make(IF, '\0', 0, f, s, t, NULL, NULL);
+}
+
+ast ast_elif (ast f, ast s, ast t) {
+	return ast_make(ELIF, '\0', 0, f, s, t, NULL, NULL);
+}
+
+ast ast_if_else (ast f, ast s, ast t, ast l) {
+	return ast_make(IF_ELSE, '\0', 0, f, s, t, l, NULL);
 }
 
 #define NOTHING 0
@@ -296,9 +332,42 @@ ast l_value_type (ast f, int count) {
 	ast_sem(f->second);
 	if (f->second->type != typeInteger && f->second->type != typeChar) 
 		error("Array index must be of type int or byte");
-	
-	return l_value_type(f->first, count + 1);
+	return l_value_type(f->first, count + 1); } 
+/*
+ * This function takes two types as input, and returns 
+ * the result type or exits with an error for type mismatch.
+ * The result type is :
+ *  1) Integer + Integer ==> Integer
+ *  2) Integer + Byte ==> Integer
+ *  3) Byte + Integer ==> Integer
+ *  4) Byte + Byte ==> Byte
+ *  5) Anything else ==> Type mismatch
+ */
+
+Type check_op_type (Type first, Type second, char op) {
+
+	Type result;
+
+	if (equalType(first, typeInteger)) {
+       	if (!equalType(second, typeInteger) && !equalType(second, typeChar))
+			error("type mismatch in %c operator", op);
+		else
+			result = typeInteger;
+	}
+	else if (equalType(first, typeChar)) {
+		if (!equalType(second, typeInteger) && !equalType(second, typeChar))
+			error("type mismatch in %c operator", op);
+		else if (equalType(second, typeInteger))
+			result = typeInteger;
+		else 
+			result = typeChar;
+	}
+	else 
+		error("type mismatch in %c operator", op);
+
+	return result;
 }
+
 
 void ast_sem (ast t) {
   if (t == NULL) return;
@@ -310,8 +379,10 @@ void ast_sem (ast t) {
 	printf("LET finished first - second\n");
 	printType(t->first->type);
 	printType(t->second->type);
-    if (!equalType(t->first->type, t->second->type))
-      error("Type mismatch in assignment");
+	if (!equalType(t->first->type, t->second->type) && 
+	    !(equalType(t->first->type, typeInteger) && equalType(t->second->type, typeChar))
+	   )
+    	error("Type mismatch in assignment");
     t->nesting_diff = t->first->nesting_diff;
     t->offset = t->first->offset;
     return;
@@ -333,7 +404,9 @@ void ast_sem (ast t) {
   case SEQ:
 	printf("SEQ\n");
     ast_sem(t->first);
-    ast_sem(t->second);
+	print_ast_node(t->first);
+	//if (t->second != NULL)
+   	ast_sem(t->second);
     return;
   case ID: { //TODO for n-dimensional array
 	printf("ID %s\n", t->id);
@@ -362,46 +435,66 @@ void ast_sem (ast t) {
   case STR:
 	printf("STR\n");
     return;
+  case TRUE:
+	printf("TRUE\n");
+    t->type = typeChar;
+    return;
+  case FALSE:
+	printf("FALSE\n");
+    t->type = typeChar;
+    return;
+  case BIT_NOT:
+	printf("BIT_NOT\n");
+	ast_sem(t->first);
+	print_ast_node(t->first);
+    t->type = t->first->type;
+    return;
+  case BIT_AND:
+	printf("BIT_AND\n");
+	ast_sem(t->first);
+	ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, '&');
+    return;
+  case BIT_OR:
+	printf("BIT_OR\n");
+	ast_sem(t->first);
+	ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, '|');
+    return;
   case PLUS:
 	printf("PLUS\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in + operator");
-    t->type = typeInteger;
+    t->type = check_op_type(t->first->type, t->second->type, '+');
     return;
   case MINUS:
+    printf("MINUS\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("\rtype mismatch in - operator");
-    t->type = typeInteger;
+    t->type = check_op_type(t->first->type, t->second->type, '-');
     return;
   case TIMES:
+    printf("TIMES\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in * operator");
-    t->type = typeInteger;
+    t->type = check_op_type(t->first->type, t->second->type, '*');
     return;
   case DIV:
+    printf("DIV\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in / operator");
-    t->type = typeInteger;
+    t->type = check_op_type(t->first->type, t->second->type, '/');
     return;
   case MOD:
+    printf("MOD\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in % operator");
-    t->type = typeInteger;
+    t->type = check_op_type(t->first->type, t->second->type, '%');
+    return;
+  case BOOL_NOT:
+    printf("BOOL_NOT\n");
+    ast_sem(t->first);
+    t->type = typeChar;
     return;
 	/*
   case EQ:
@@ -521,6 +614,31 @@ void ast_sem (ast t) {
   case INT_CONST_LIST:
 	printf("INT_CONST_LIST\n");
 	return;
+  case IF:
+    printf("IF\n");
+	ast_sem(t->first);
+	if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+		error("Condition must be Integer or Byte!");
+	ast_sem(t->second);
+	ast_sem(t->third);
+	return;
+  case ELIF:
+	printf("ELIF\n");
+	ast_sem(t->first);
+	if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+		error("Condition must be Integer or Byte!");
+	ast_sem(t->second);
+	ast_sem(t->third);
+	return;
+  case IF_ELSE:
+	printf("IF_ELSE\n");
+	ast_sem(t->first);
+	if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+		error("Condition must be Integer or Byte!");
+	ast_sem(t->second);
+	ast_sem(t->third);
+	ast_sem(t->last);
+	return;
   }
-  	
+
 }

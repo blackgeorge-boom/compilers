@@ -175,13 +175,13 @@ var_def:
 ;     
 
 stmt:
-  "skip" { $$ = NULL; }//printf("stmt_skip\n");}
+  "skip" { $$ = NULL; printf("stmt_skip\n");}
 | l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_let\n");}
 | proc_call 
 | "exit"
 | "return" ':' expr 
-| "if" cond ':' block elif_list 
-| "if" cond ':' block elif_list "else" ':' block
+| "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); printf("if\n"); }
+| "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); printf("if-else\n"); }
 | "loop" ':' block 
 | "loop" T_id ':' block 
 | "break"
@@ -191,12 +191,12 @@ stmt:
 ;
 
 elif_list:
-  /* nothing */
-| "elif" cond ':' block elif_list
+  /* nothing */ { $$ = NULL; }
+| "elif" cond ':' block elif_list { $$ = ast_elif($2, $4, $5); printf("elif\n"); }
 ;
 
 block:
-  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3); } //printf("blockn");}
+  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3);  printf("block\n");}
 ;
 
 stmt_list:
@@ -238,21 +238,21 @@ expr:
 | expr '*' expr { $$ = ast_op($1, TIMES, $3); } 
 | expr '/' expr { $$ = ast_op($1, DIV, $3); } 
 | expr '%' expr { $$ = ast_op($1, MOD, $3); } 
-| "true" 
-| "false"
-| '!' expr 			%prec BYTE_NOT
-| expr '&' expr
-| expr '|' expr
+| "true" { $$ = ast_true(); printf("true\n"); } 
+| "false" { $$ = ast_false(); printf("false\n"); }
+| '!' expr { $$ = ast_bit_not($2); printf("bit_not\n"); }	%prec BYTE_NOT
+| expr '&' expr { $$ = ast_bit_and($1, $3); printf("bit_and\n"); }
+| expr '|' expr { $$ = ast_bit_or($1, $3); printf("bit_or\n"); }
 ;
 
 cond:
-  expr 
-| x_cond
+  expr { $$ = $1; } 
+| x_cond { $$ = $1; }
 ;
 
 x_cond:
   '(' x_cond ')'
-| "not" cond 		%prec NOT
+| "not" cond { $$ = ast_bool_not($2); printf("bool_not\n"); }		%prec NOT
 | cond "and" cond
 | cond "or" cond
 | expr '=' expr
