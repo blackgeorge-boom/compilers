@@ -182,12 +182,12 @@ stmt:
 | "return" ':' expr 
 | "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); printf("if\n"); }
 | "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); printf("if-else\n"); }
-| "loop" ':' block 
-| "loop" T_id ':' block 
-| "break"
-| "break" ':' T_id
-| "continue"
-| "continue" ':' T_id
+| "loop" ':' block { $$ = ast_loop('\0', $3); printf("loop\n"); }
+| "loop" T_id ':' block { $$ = ast_loop($2, $4); printf("loop id\n"); }
+| "break" { $$ = ast_break('\0'); printf("break\n"); }
+| "break" ':' T_id { $$ = ast_break($3); printf("break id\n"); }
+| "continue" { $$ = ast_continue('\0'); printf("continue\n"); }
+| "continue" ':' T_id { $$ = ast_continue($3); printf("continue id\n"); }
 ;
 
 elif_list:
@@ -251,16 +251,16 @@ cond:
 ;
 
 x_cond:
-  '(' x_cond ')'
+  '(' x_cond ')' { $$ = $2; }
 | "not" cond { $$ = ast_bool_not($2); printf("bool_not\n"); }		%prec NOT
-| cond "and" cond
-| cond "or" cond
-| expr '=' expr
-| expr "<>" expr
-| expr '<' expr
-| expr '>' expr
-| expr "<=" expr
-| expr ">=" expr 
+| cond "and" cond { $$ = ast_bool_and($1, $3); printf("bool_and\n"); }
+| cond "or" cond { $$ = ast_bool_or($1, $3); printf("bool_or\n"); }
+| expr '=' expr { $$ = ast_op($1, EQ, $3); } 
+| expr "<>" expr { $$ = ast_op($1, NE, $3); } 
+| expr '<' expr { $$ = ast_op($1, LT, $3); } 
+| expr '>' expr { $$ = ast_op($1, GT, $3); } 
+| expr "<=" expr { $$ = ast_op($1, LE, $3); } 
+| expr ">=" expr  { $$ = ast_op($1, GE, $3); } 
 ;
 
 %%

@@ -4,8 +4,9 @@
 #include "symbol.h"
 
 typedef enum {
-  IF, ELIF, IF_ELSE,
-  BIT_NOT, BIT_AND, BIT_OR, BOOL_NOT,
+  IF, ELIF, IF_ELSE, LOOP, BREAK, CONTINUE,
+  BIT_NOT, BIT_AND, BIT_OR, 
+  BOOL_NOT, BOOL_AND, BOOL_OR,
   INT_CONST_LIST, TYPE, CHAR, STR, TRUE, FALSE,
   L_VALUE, FUNC_DEF, ID_LIST, LET, FOR, SEQ,
   ID, CONST, PLUS, MINUS, TIMES, DIV, MOD,
@@ -31,8 +32,6 @@ ast ast_true ();
 ast ast_false ();
 ast ast_op (ast f, kind op, ast s);
 ast ast_let (ast f, ast s);
-//ast ast_for (ast l, ast r);
-//ast ast_if (ast l, ast r);
 ast ast_seq (ast f, ast s);
 ast ast_var_def (char *string, ast f, ast s);
 //ast ast_block (ast f, ast s);
@@ -42,13 +41,19 @@ ast ast_l_value (ast f, ast s);
 ast ast_type (Type t, ast f);
 ast ast_int_const_list (int n, ast f);
 ast ast_bool_not (ast f);
+ast ast_bool_and (ast f, ast s);
+ast ast_bool_or (ast f, ast s);
 ast ast_bit_not (ast f);
+ast ast_bit_and (ast f, ast s);
+ast ast_bit_or (ast f, ast s);
 ast ast_if (ast f, ast s, ast t);
 ast ast_elif (ast f, ast s, ast t);
 ast ast_if_else (ast f, ast s, ast t, ast l);
+ast ast_loop (char *s, ast f);
+ast ast_break (char *s);
+ast ast_continue (char *s);
 
 void ast_sem (ast t);
 
-int ast_run (ast t);
-
+int ast_run (ast t); 
 #endif

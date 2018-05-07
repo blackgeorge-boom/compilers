@@ -65,6 +65,14 @@ ast ast_bool_not (ast f) {
   return ast_make(BOOL_NOT, '\0', 0, f, NULL, NULL, NULL, NULL);
 }
 
+ast ast_bool_and (ast f, ast s) {
+  return ast_make(BOOL_AND, '\0', 0, f, s, NULL, NULL, NULL);
+}
+
+ast ast_bool_or (ast f, ast s) {
+  return ast_make(BOOL_OR, '\0', 0, f, s, NULL, NULL, NULL);
+}
+
 ast ast_op (ast f, kind op, ast s) {
   return ast_make(op, '\0', 0, f, s, NULL, NULL, NULL);
 }
@@ -72,15 +80,6 @@ ast ast_op (ast f, kind op, ast s) {
 ast ast_let (ast f, ast s) {
   return ast_make(LET, '\0', 0, f, s, NULL, NULL, NULL);
 }
-/*
-ast ast_for (ast l, ast r) {
-  return ast_make(FOR, '\0', 0, l, r, NULL);
-}
-
-ast ast_if (ast l, ast r) {
-  return ast_make(IF, '\0', 0, l, r, NULL);
-}
-*/
 
 ast ast_seq (ast f, ast s) {
   if (s == NULL) return f;
@@ -130,6 +129,18 @@ ast ast_if_else (ast f, ast s, ast t, ast l) {
 	return ast_make(IF_ELSE, '\0', 0, f, s, t, l, NULL);
 }
 
+ast ast_loop (char *s, ast f) {
+  return ast_make(LOOP, s, 0, f, NULL, NULL, NULL, NULL);
+}
+
+ast ast_break (char *s) {
+  return ast_make(BREAK, s, 0, NULL, NULL, NULL, NULL, NULL);
+}
+
+ast ast_continue (char *s) {
+  return ast_make(CONTINUE, s, 0, NULL, NULL, NULL, NULL, NULL);
+}
+
 #define NOTHING 0
 
 struct activation_record_tag {
@@ -140,6 +151,53 @@ struct activation_record_tag {
 typedef struct activation_record_tag * activation_record;
 
 activation_record current_AR = NULL;
+
+/*
+ * This struct represents a list of nested loops.
+ * -Id is the identifier of the current loop.
+ * -State is boolean. If state becomes false, then
+ *  this struct (which represents a loop) must terminate. 
+ * -Previous points to the loop of the next outermost scope.
+ */
+struct loop_record_tag {
+	char *id;
+	char state;
+	struct loop_record_tag * previous;
+};
+
+typedef struct loop_record_tag * loop_record;
+
+loop_record current_LR = NULL;
+
+void print_loop_list () {
+
+	loop_record t = current_LR;
+	
+	printf("===== Loop Records : ======\n");
+
+	while (t != NULL) {
+		printf("%s\n", t->id);
+		t = t->previous;
+	}
+
+	printf("==========\n");
+
+	return;
+}
+
+
+int look_up_loop (char *s) {
+	
+	loop_record t = current_LR;
+
+	while (t != NULL) {
+		if (t->id != NULL)
+			if (strcmp(t->id, s) == 0) return 1;
+		t = t->previous;
+	}
+
+	return 0;
+}
 
 int ast_run (ast t) {
   if (t == NULL) return NOTHING;
@@ -344,26 +402,26 @@ ast l_value_type (ast f, int count) {
  *  5) Anything else ==> Type mismatch
  */
 
-Type check_op_type (Type first, Type second, char op) {
+Type check_op_type (Type first, Type second, char *op) {
 
 	Type result;
 
 	if (equalType(first, typeInteger)) {
        	if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-			error("type mismatch in %c operator", op);
+			error("type mismatch in %s operator", op);
 		else
 			result = typeInteger;
 	}
 	else if (equalType(first, typeChar)) {
-		if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-			error("type mismatch in %c operator", op);
+		if (!equalType(second, typeInteger) && !equalType(second, typeChar)) 
+			error("type mismatch in %s operator", op);
 		else if (equalType(second, typeInteger))
 			result = typeInteger;
 		else 
 			result = typeChar;
 	}
 	else 
-		error("type mismatch in %c operator", op);
+		error("type mismatch in %s operator", op);
 
 	return result;
 }
@@ -453,124 +511,105 @@ void ast_sem (ast t) {
 	printf("BIT_AND\n");
 	ast_sem(t->first);
 	ast_sem(t->second);
-    t->type = check_op_type(t->first->type, t->second->type, '&');
+    t->type = check_op_type(t->first->type, t->second->type, "&");
     return;
   case BIT_OR:
 	printf("BIT_OR\n");
 	ast_sem(t->first);
 	ast_sem(t->second);
-    t->type = check_op_type(t->first->type, t->second->type, '|');
-    return;
-  case PLUS:
-	printf("PLUS\n");
-    ast_sem(t->first);
-    ast_sem(t->second);
-    t->type = check_op_type(t->first->type, t->second->type, '+');
-    return;
-  case MINUS:
-    printf("MINUS\n");
-    ast_sem(t->first);
-    ast_sem(t->second);
-    t->type = check_op_type(t->first->type, t->second->type, '-');
-    return;
-  case TIMES:
-    printf("TIMES\n");
-    ast_sem(t->first);
-    ast_sem(t->second);
-    t->type = check_op_type(t->first->type, t->second->type, '*');
-    return;
-  case DIV:
-    printf("DIV\n");
-    ast_sem(t->first);
-    ast_sem(t->second);
-    t->type = check_op_type(t->first->type, t->second->type, '/');
-    return;
-  case MOD:
-    printf("MOD\n");
-    ast_sem(t->first);
-    ast_sem(t->second);
-    t->type = check_op_type(t->first->type, t->second->type, '%');
+    t->type = check_op_type(t->first->type, t->second->type, "|");
     return;
   case BOOL_NOT:
     printf("BOOL_NOT\n");
     ast_sem(t->first);
     t->type = typeChar;
     return;
-	/*
-  case EQ:
+  case BOOL_AND:
+	printf("BOOL_AND\n");
+	ast_sem(t->first);
+	ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, "and");
+    return;
+  case BOOL_OR:
+	printf("BOOL_OR\n");
+	ast_sem(t->first);
+	ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, "or");
+    return;
+  case PLUS:
+	printf("PLUS\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in = operator");
-    t->type = typeBoolean;
+    t->type = check_op_type(t->first->type, t->second->type, "+");
+    return;
+  case MINUS:
+    printf("MINUS\n");
+    ast_sem(t->first);
+    ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, "-");
+    return;
+  case TIMES:
+    printf("TIMES\n");
+    ast_sem(t->first);
+    ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, "*");
+    return;
+  case DIV:
+    printf("DIV\n");
+    ast_sem(t->first);
+    ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, "/");
+    return;
+  case MOD:
+    printf("MOD\n");
+    ast_sem(t->first);
+    ast_sem(t->second);
+    t->type = check_op_type(t->first->type, t->second->type, "%");
+    return;
+  case EQ:
+	printf("EQ\n");
+    ast_sem(t->first);
+    ast_sem(t->second);
+    check_op_type(t->first->type, t->second->type, "=");
+    t->type = typeChar;
     return;
   case NE:
+	printf("NE\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in <> operator");
-    t->type = typeBoolean;
+    check_op_type(t->first->type, t->second->type, "<>");
+    t->type = typeChar;
     return;
   case LT:
+	printf("LT\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in < operator");
-    t->type = typeBoolean;
-    return;
-  case LE:
-    ast_sem(t->first);
-    ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in <= operator");
-    t->type = typeBoolean;
+    check_op_type(t->first->type, t->second->type, "<");
+    t->type = typeChar;
     return;
   case GT:
+	printf("GT\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in > operator");
-    t->type = typeBoolean;
+    check_op_type(t->first->type, t->second->type, ">");
+    t->type = typeChar;
+    return;
+  case LE:
+	printf("LE\n");
+    ast_sem(t->first);
+    ast_sem(t->second);
+    check_op_type(t->first->type, t->second->type, "<=");
+    t->type = typeChar;
     return;
   case GE:
+	printf("GE\n");
     ast_sem(t->first);
     ast_sem(t->second);
-    if (!equalType(t->first->type, typeInteger) ||
-        !equalType(t->second->type, typeInteger))
-      error("type mismatch in >= operator");
-    t->type = typeBoolean;
+    check_op_type(t->first->type, t->second->type, ">=");
+    t->type = typeChar;
     return;
-  case AND:
-    ast_sem(t->first);
-    ast_sem(t->second);
-    if (!equalType(t->first->type, typeBoolean) ||
-        !equalType(t->second->type, typeBoolean))
-      error("type mismatch in and operator");
-    t->type = typeBoolean;
-    return;
-  case OR:
-    ast_sem(t->first);
-    ast_sem(t->second);
-    if (!equalType(t->first->type, typeBoolean) ||
-        !equalType(t->second->type, typeBoolean))
-      error("type mismatch in or operator");
-    t->type = typeBoolean;
-    return;
-  case NOT:
-    ast_sem(t->first);
-    if (!equalType(t->first->type, typeBoolean))
-      error("type mismatch in not operator");
-    t->type = typeBoolean;
-    return;
-	*/
   case ID_LIST:
 	printf("ID_LIST\n");
-	
 	return;
   case VAR_DEF:
 	printf("VAR_DEF %s \n", t->id);
@@ -638,6 +677,45 @@ void ast_sem (ast t) {
 	ast_sem(t->second);
 	ast_sem(t->third);
 	ast_sem(t->last);
+	return;
+  case LOOP:
+	printf("LOOP\n");
+	print_ast_node(t);
+	print_loop_list();
+	if (t->id != NULL) 
+		if (look_up_loop(t->id)) {
+			error("Loop identifier already exists!\n");
+			exit(1);
+		}
+	loop_record new_LR = malloc(sizeof(struct loop_record_tag));
+	new_LR->id = t->id;
+	new_LR->previous = current_LR;
+	current_LR = new_LR;
+	ast_sem(t->first);
+	current_LR = current_LR->previous;
+	free(new_LR);
+	return;
+  case BREAK:
+	printf("BREAK\n");
+	print_ast_node(t);
+	if (t->id != NULL) { 
+		if (!look_up_loop(t->id)) {
+			error("Loop identifier does not exist!\n");
+			exit(1);
+		}
+	}
+    else if (current_LR == NULL) error("No loop to break");
+	return;
+  case CONTINUE:
+	printf("CONTINUE\n");
+	print_ast_node(t);
+	if (t->id != NULL) {
+		if (!look_up_loop(t->id)) {
+			error("Loop identifier does not exist!\n");
+			exit(1);
+		}
+	}
+    else if (current_LR == NULL) error("No loop to continue");
 	return;
   }
 
