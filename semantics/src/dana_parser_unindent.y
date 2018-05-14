@@ -119,19 +119,19 @@ local_def_list:
 ;
 
 header:
-  T_id { $$ = ast_id($1);  }//printf("header %s\n", $1);}
-| T_id "is" data_type
-| T_id ':' fpar_def fpar_def_list
-| T_id "is" data_type ':' fpar_def fpar_def_list
+  T_id { $$ = ast_header($1, NULL, NULL, NULL); printf("header proc\n");}
+| T_id "is" data_type { $$ = ast_header($1, NULL, NULL, $3); printf("header func\n");}
+| T_id ':' fpar_def fpar_def_list { $$ = ast_header($1, $3, $4, NULL); printf("header proc2\n");} 
+| T_id "is" data_type ':' fpar_def fpar_def_list { $$ = ast_header($1, $5, $6, $3); printf("header func2\n");} 
 ;
 
 fpar_def_list:
-  /* nothing */
-| ',' fpar_def fpar_def_list
+  /* nothing */ { $$ = NULL; }
+| ',' fpar_def fpar_def_list { $$ = ast_seq($1, $2); }//printf("fpar_def_list\n");}
 ;
 
 fpar_def:
-  T_id id_list "as" fpar_type
+  T_id id_list "as" fpar_type { $$ = ast_fpar_def($1, $2, $4); printf("fpar_def"); }
 ;
 
 id_list:
@@ -150,9 +150,9 @@ type:
 
 
 fpar_type:
-  type 
-| "ref" data_type 
-| data_type '[' ']' int_const_list
+  type { $$ = $1; printf("fpar_type - type\n"); }
+| "ref" data_type { $$ = ast_ref_type($2); printf("fpar_type - ref_type\n"); }
+| data_type '[' ']' int_const_list { $$ = ast_iarray_type($4, $1); printf("fpar_type - iarray\n"); }
 ;   
 
 int_const_list:

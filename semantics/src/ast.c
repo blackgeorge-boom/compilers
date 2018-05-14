@@ -141,6 +141,22 @@ ast ast_continue (char *s) {
   return ast_make(CONTINUE, s, 0, NULL, NULL, NULL, NULL, NULL);
 }
 
+ast ast_header (char *string, ast f, ast s, Type t) {
+  return ast_make(HEADER, s, 0, f, s, NULL, NULL, t);
+}
+
+ast ast_fpar_def (char *string, ast f, ast s) {
+  return ast_make(FPAR_DEF, s, 0, f, s, NULL, NULL, NULL);
+}
+
+ast ast_ref_type (Type t) {
+  return ast_make(REF_TYPE, '\0', 0, NULL, NULL, NULL, NULL, t);
+}
+
+ast ast_iarray_type (ast f, Type t) {
+  return ast_make(IARRAY_TYPE, '\0', 0, f, NULL, NULL, NULL, t);
+}
+
 #define NOTHING 0
 
 struct activation_record_tag {
@@ -264,8 +280,7 @@ int ast_run (ast t) {
   case GT:
     return ast_run(t->first) > ast_run(t->second);
   case LE:
-    return ast_run(t->first) <= ast_run(t->second);
-  case GE:
+    return ast_run(t->first) <= ast_run(t->second); case GE:
     return ast_run(t->first) >= ast_run(t->second);
   case EQ:
     return ast_run(t->first) == ast_run(t->second);
@@ -294,6 +309,26 @@ SymbolEntry * insert(char *s, Type t) {
   return newVariable(name, t);
 }
 
+SymbolEntry * insertFunction(char *s, Type t) {
+  char *name;
+  name = s;
+  SymbolEntry *e = newFunction(name);
+  e->u.eFunction.resultType = t;
+  return e;
+}
+
+SymbolEntry * insertParameter(char *s, Type t, SymbolEntry *f) {
+  char *name;
+  name = s;
+  PassMode mode = PASS_BY_VALUE;
+  if (t->kind == TYPE_POINTER) {
+	  mode = PASS_BY_REFERENCE;
+	  t = t->refType;
+  }
+  SymbolEntry *e = newParameter(name, t, mode, f);
+  return e;
+}
+
 void print_ast_node (ast f) {
 
 	printf("====== Node Info =====\n");
@@ -316,6 +351,11 @@ void print_ast_node (ast f) {
 	
 }	
 
+/*
+ * This function returns the Type of the
+ * expression x[i1]...[in].
+ * x is either "int" or "byte".
+ */
 Type var_def_type (Type t, ast f) {
 	printf("var_def_type \n");
 	//print_ast_node(f);
@@ -333,7 +373,6 @@ Type var_def_type (Type t, ast f) {
  * and then it returns an ast with the appropriate type.
  * For case 1), it returns also nesting diff and offset. 
  */
-
 ast l_value_type (ast f, int count) {
 
 	printf("l_value_type \n");
@@ -390,15 +429,17 @@ ast l_value_type (ast f, int count) {
 	ast_sem(f->second);
 	if (f->second->type != typeInteger && f->second->type != typeChar) 
 		error("Array index must be of type int or byte");
-	return l_value_type(f->first, count + 1); } 
+	return l_value_type(f->first, count + 1); 
+} 
+
 /*
  * This function takes two types as input, and returns 
  * the result type or exits with an error for type mismatch.
  * The result type is :
- *  1) Integer + Integer ==> Integer
- *  2) Integer + Byte ==> Integer
- *  3) Byte + Integer ==> Integer
- *  4) Byte + Byte ==> Byte
+ *  1) Integer `op` Integer ==> Integer
+ *  2) Integer `op` Byte ==> Integer
+ *  3) Byte `op` Integer ==> Integer
+ *  4) Byte `op` Byte ==> Byte
  *  5) Anything else ==> Type mismatch
  */
 
@@ -473,7 +514,7 @@ void ast_sem (ast t) {
 	
 	if (e == NULL) 
 		error("ID - Undeclared variable : %s", t->id);
-
+/
 	printf("ID2\n");
     t->type = e->u.eVariable.type;
 	printf("ID3\n");
@@ -613,8 +654,8 @@ void ast_sem (ast t) {
 	return;
   case VAR_DEF:
 	printf("VAR_DEF %s \n", t->id);
-	if (t->second->first == NULL) printf("yo\n");
-	Type type = var_def_type(t->second->type, t->second->first);
+	ast_sem(t->second);
+	Type type = t->type;
 	printf("VAR_DEF2\n");
 	//print_ast_node(ast_type(type, NULL));
     insert(t->id, type);
@@ -622,18 +663,16 @@ void ast_sem (ast t) {
 
 	ast temp = t->first;
 	while (temp != NULL) {
-
 		printf("VAR_DEF4 %s \n", temp->id);
 		insert(temp->id, type);
 		temp = temp->first;
-
 	}
 	print_ast_node(t);
 	return;
   case FUNC_DEF:
 	printf("FUNC_DEF\n");
     openScope();
-    //ast_sem(t->first);
+    ast_sem(t->first);
     ast_sem(t->second);
     t->num_vars = currentScope->negOffset;
     ast_sem(t->third);
@@ -649,6 +688,16 @@ void ast_sem (ast t) {
 	return;
   case TYPE:
 	printf("TYPE\n");
+	t->type = var_def_type(t->type, t->first);
+	return;
+  case REF_TYPE:
+	printf("REF_TYPE\n");
+	t->type = typePointer(t->type);
+	return;
+  case IARRAY_TYPE:
+	printf("IARRAY_TYPE\n");
+	Type type = var_def_type(t->type, t->first);
+	t->type = typeIArray(type);
 	return;
   case INT_CONST_LIST:
 	printf("INT_CONST_LIST\n");
@@ -717,6 +766,28 @@ void ast_sem (ast t) {
 	}
     else if (current_LR == NULL) error("No loop to continue");
 	return;
+	
+  /*
+   * We need to iterate for every parameter definition (fpar_def)
+   * and for every parameter in each definition (T_id).
+   */
+  case HEADER:
+	printf("HEADER\n");
+	Type func_type = typeVoid;
+	if (t->type != NULL) func_type = t->type;	// Check func or proc
+	SymbolEntry *f = insertFunction(t->id, func_type);	
+	ast par_def = t->first;	//First is fpar_def
+	Type par_type = NULL;
+	while (par_def != NULL) {
+		ast par = par_def->first;	
+		ast_sem(par->second); // Second is fpar_type
+		par_type = par->second->type;	
+		while (par != NULL) {
+			insert(par->id, par_type);
+			par = par->first;	// First is the rest of T_ids.
+		}
+		par_def = par_def->second; 	// Second is rest of fpar_defs.
+	}
   }
 
 }

@@ -4,10 +4,12 @@
 #include "symbol.h"
 
 typedef enum {
+  HEADER, FPAR_DEF, 
   IF, ELIF, IF_ELSE, LOOP, BREAK, CONTINUE,
   BIT_NOT, BIT_AND, BIT_OR, 
   BOOL_NOT, BOOL_AND, BOOL_OR,
-  INT_CONST_LIST, TYPE, CHAR, STR, TRUE, FALSE,
+  INT_CONST_LIST, TYPE, REF_TYPE, IARRAY_TYPE,
+  CHAR, STR, TRUE, FALSE,
   L_VALUE, FUNC_DEF, ID_LIST, LET, FOR, SEQ,
   ID, CONST, PLUS, MINUS, TIMES, DIV, MOD,
   LT, GT, LE, GE, EQ, NE, AND, OR, VAR_DEF, BLOCK
@@ -52,6 +54,10 @@ ast ast_if_else (ast f, ast s, ast t, ast l);
 ast ast_loop (char *s, ast f);
 ast ast_break (char *s);
 ast ast_continue (char *s);
+ast ast_header(char *string, ast f, ast s, Type t);
+ast ast_fpar_def(char *string, ast f, ast s);
+ast ast_ref_type(Type t);
+ast ast_iarray_type(ast f, Type t);
 
 void ast_sem (ast t);
 
