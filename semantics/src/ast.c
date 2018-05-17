@@ -82,7 +82,7 @@ ast ast_let (ast f, ast s) {
 }
 
 ast ast_seq (ast f, ast s) {
-  if (s == NULL) return f;
+  //if (s == NULL) return f;
   return ast_make(SEQ, '\0', 0, f, s, NULL, NULL, NULL);
 }
 
@@ -142,11 +142,11 @@ ast ast_continue (char *s) {
 }
 
 ast ast_header (char *string, ast f, ast s, Type t) {
-  return ast_make(HEADER, s, 0, f, s, NULL, NULL, t);
+  return ast_make(HEADER, string, 0, f, s, NULL, NULL, t);
 }
 
 ast ast_fpar_def (char *string, ast f, ast s) {
-  return ast_make(FPAR_DEF, s, 0, f, s, NULL, NULL, NULL);
+  return ast_make(FPAR_DEF, string, 0, f, s, NULL, NULL, NULL);
 }
 
 ast ast_ref_type (Type t) {
@@ -155,6 +155,14 @@ ast ast_ref_type (Type t) {
 
 ast ast_iarray_type (ast f, Type t) {
   return ast_make(IARRAY_TYPE, '\0', 0, f, NULL, NULL, NULL, t);
+}
+
+ast ast_proc_call (char *string, ast f, ast s) {
+	return ast_make(PROC_CALL, string, 0, f, s, NULL, NULL, NULL);
+}
+
+ast ast_program (ast f) {
+	return ast_make(PROGRAM, '\0', 0, f, NULL, NULL, NULL, NULL);
 }
 
 #define NOTHING 0
@@ -201,7 +209,6 @@ void print_loop_list () {
 	return;
 }
 
-
 int look_up_loop (char *s) {
 	
 	loop_record t = current_LR;
@@ -213,6 +220,55 @@ int look_up_loop (char *s) {
 	}
 
 	return 0;
+}
+
+/*
+ * Each node of the list has :
+ * 
+ * 1) a function name
+ * 2) a pointer to the corresponding ast 
+ *    which represents the code of the function
+ * 3) a pointer to the next node
+ */
+struct function_code_list_t {
+	char *name;
+	ast code;
+	struct function_code_list_t *next;
+};
+
+typedef struct function_code_list_t *function_code_list;
+
+function_code_list current_CL = NULL;
+
+ast find_code (char *func_name) {
+
+	function_code_list temp = current_CL;
+	while (temp != NULL) { // TODO maybe optimize
+		if (strcmp(temp->name, func_name) == 0) return temp->code;
+		temp = temp->next;
+	}
+	
+	return NULL;
+}
+
+void print_code_list () {
+
+	function_code_list temp = current_CL;
+	printf("===== Current CL =====\n");
+	while (temp != NULL) {
+		printf("%s\n", temp->name);
+		temp = temp->next;
+	}
+	printf("======================\n");
+}
+
+void insert_func_code (char *func_name, ast code) {
+
+	function_code_list new_code = malloc(sizeof(struct function_code_list_t));
+	new_code->name = func_name;
+	new_code->code = code;
+	new_code->next = current_CL;
+	current_CL = new_code;
 }
 
 int ast_run (ast t) {
@@ -309,9 +365,21 @@ SymbolEntry * insert(char *s, Type t) {
   return newVariable(name, t);
 }
 
+/*
+ * If function does not exists in the symbol table, insert it.
+ * Else if it does exist, check if it was declared (but not defined) before.
+ * This is done by looking it up in the code_list.
+ * If it does not exist in the code list, return NULL. It will be handled later.
+ * If it does exist in the code list, it means it was redefined -> exit with error.
+ */
 SymbolEntry * insertFunction(char *s, Type t) {
   char *name;
   name = s;
+  if (lookupEntry(name, LOOKUP_ALL_SCOPES, false)) {
+	  if (find_code(name)) fatal("Function %s already defined", name);
+	  return NULL;
+  }
+  printf("inserted function %s\n", name);
   SymbolEntry *e = newFunction(name);
   e->u.eFunction.resultType = t;
   return e;
@@ -503,7 +571,6 @@ void ast_sem (ast t) {
   case SEQ:
 	printf("SEQ\n");
     ast_sem(t->first);
-	print_ast_node(t->first);
 	//if (t->second != NULL)
    	ast_sem(t->second);
     return;
@@ -514,7 +581,7 @@ void ast_sem (ast t) {
 	
 	if (e == NULL) 
 		error("ID - Undeclared variable : %s", t->id);
-/
+
 	printf("ID2\n");
     t->type = e->u.eVariable.type;
 	printf("ID3\n");
@@ -655,27 +722,27 @@ void ast_sem (ast t) {
   case VAR_DEF:
 	printf("VAR_DEF %s \n", t->id);
 	ast_sem(t->second);
-	Type type = t->type;
 	printf("VAR_DEF2\n");
-	//print_ast_node(ast_type(type, NULL));
-    insert(t->id, type);
+	//print_ast_node(ast_type(t->type, NULL));
+    insert(t->id, t->second->type);
 	printf("VAR_DEF3\n");
 
 	ast temp = t->first;
 	while (temp != NULL) {
 		printf("VAR_DEF4 %s \n", temp->id);
-		insert(temp->id, type);
+		insert(temp->id, t->type);
 		temp = temp->first;
 	}
-	print_ast_node(t);
+	//print_ast_node(t);
 	return;
   case FUNC_DEF:
 	printf("FUNC_DEF\n");
-    openScope();
     ast_sem(t->first);
     ast_sem(t->second);
+	openScope();
     t->num_vars = currentScope->negOffset;
     ast_sem(t->third);
+	insert_func_code(t->first->id, t->third);
     closeScope();
     return;
   case L_VALUE:
@@ -696,8 +763,8 @@ void ast_sem (ast t) {
 	return;
   case IARRAY_TYPE:
 	printf("IARRAY_TYPE\n");
-	Type type = var_def_type(t->type, t->first);
-	t->type = typeIArray(type);
+	Type my_type = var_def_type(t->type, t->first);
+	t->type = typeIArray(my_type);
 	return;
   case INT_CONST_LIST:
 	printf("INT_CONST_LIST\n");
@@ -776,18 +843,61 @@ void ast_sem (ast t) {
 	Type func_type = typeVoid;
 	if (t->type != NULL) func_type = t->type;	// Check func or proc
 	SymbolEntry *f = insertFunction(t->id, func_type);	
-	ast par_def = t->first;	//First is fpar_def
+	if (f == NULL) { 
+		printf( "header-NULL\n");
+		return;	// f == NULL means, function was declared before
+	}						// The rest have already been done
+	ast par_def = t->first;	// First is fpar_def
 	Type par_type = NULL;
+	ast fpar_def_list = t->second;
 	while (par_def != NULL) {
-		ast par = par_def->first;	
-		ast_sem(par->second); // Second is fpar_type
-		par_type = par->second->type;	
-		while (par != NULL) {
-			insert(par->id, par_type);
-			par = par->first;	// First is the rest of T_ids.
+		printf("HEADER1\n");
+		ast_sem(par_def->second); // Second is fpar_type
+		par_type = par_def->second->type;	
+		insertParameter(par_def->id, par_type, f);	// Insert first parameter
+		ast par_list = par_def->first;
+		while (par_list != NULL) {		// Insert the rest parameters	
+			printf("HEADER2\n");
+			insertParameter(par_list->id, par_type, f);
+			par_list = par_list->first;	// First is the rest of T_ids.
 		}
-		par_def = par_def->second; 	// Second is rest of fpar_defs.
+		if (fpar_def_list == NULL) {printf("break\n"); break;}
+		print_ast_node(fpar_def_list);
+		par_def = fpar_def_list->first;	// Now for the rest of fpar_defs.
+		print_ast_node(par_def);
+		fpar_def_list = fpar_def_list->second;
 	}
+	return;
+  case FPAR_DEF:
+	printf("FPAR_DEF\n");
+	return;
+  case PROC_CALL:
+    printf("PROC_CALL\n");
+    SymbolEntry *proc = lookup(t->id);
+    printf("PROC_CALL2\n");
+	if (proc->u.eFunction.resultType != typeVoid) 
+		fatal("Cannot call function as a procedure\n");
+	ast real_param = t->first;
+	ast real_param_list = t->second;
+	SymbolEntry *func_param = proc->u.eFunction.firstArgument;
+	while (real_param != NULL || func_param != NULL) {
+		ast_sem(real_param);
+		if (!equalType(real_param->type, func_param->u.eParameter.type))
+			fatal("Type mismatch in	proc_call argument %s", func_param->id);
+		if (real_param_list == NULL) break;
+		real_param = real_param_list->first;
+		real_param_list = real_param_list->second;	
+		func_param = func_param->u.eParameter.next;
+	}
+	if (real_param != NULL || func_param != NULL) 
+		fatal("Incorrect number of parameters at proc_call");
+	return;
+  case PROGRAM:
+	printf("PROGRAM\n");
+	openScope();
+	ast_sem(t->first);
+	closeScope();
+	return;
   }
 
 }

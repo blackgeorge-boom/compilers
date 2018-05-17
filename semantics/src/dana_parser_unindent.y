@@ -105,7 +105,7 @@ extern int indent_level;
  */
 
 program:
-  func_def { t = $$ = $1; }
+  func_def { t = $$ = ast_program($1); }
 ;
 
 func_def:
@@ -119,7 +119,7 @@ local_def_list:
 ;
 
 header:
-  T_id { $$ = ast_header($1, NULL, NULL, NULL); printf("header proc\n");}
+  T_id { $$ = ast_header($1, NULL, NULL, NULL); printf("header proc %s\n", $1);}
 | T_id "is" data_type { $$ = ast_header($1, NULL, NULL, $3); printf("header func\n");}
 | T_id ':' fpar_def fpar_def_list { $$ = ast_header($1, $3, $4, NULL); printf("header proc2\n");} 
 | T_id "is" data_type ':' fpar_def fpar_def_list { $$ = ast_header($1, $5, $6, $3); printf("header func2\n");} 
@@ -127,11 +127,11 @@ header:
 
 fpar_def_list:
   /* nothing */ { $$ = NULL; }
-| ',' fpar_def fpar_def_list { $$ = ast_seq($1, $2); }//printf("fpar_def_list\n");}
+| ',' fpar_def fpar_def_list { $$ = ast_seq($2, $3); printf("fpar_def_list\n");}
 ;
 
 fpar_def:
-  T_id id_list "as" fpar_type { $$ = ast_fpar_def($1, $2, $4); printf("fpar_def"); }
+  T_id id_list "as" fpar_type { $$ = ast_fpar_def($1, $2, $4); printf("fpar_def\n"); }
 ;
 
 id_list:
@@ -161,13 +161,13 @@ int_const_list:
 ;
 
 local_def:
-  func_def 
-| func_decl
-| var_def { $$ = $1; }//printf("local_def\n");}
+  func_def { $$ = $1; } //printf("local_def\n");} 
+| func_decl { $$ = $1;} //printf("local_def\n");} 
+| var_def { $$ = $1;  } //printf("local_def\n");}
 ;
 
 func_decl:
-  "decl" header
+  "decl" header { $$ = $2; printf("func_decl\n"); }
 ;
 
 var_def:
@@ -177,7 +177,7 @@ var_def:
 stmt:
   "skip" { $$ = NULL; printf("stmt_skip\n");}
 | l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_let\n");}
-| proc_call 
+| proc_call { $$ = $1; printf("proc_calll\n"); }
 | "exit"
 | "return" ':' expr 
 | "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); printf("if\n"); }
@@ -205,8 +205,8 @@ stmt_list:
 ;
 
 proc_call:
-  T_id 
-| T_id':' expr expr_list
+  T_id { $$ = ast_proc_call($1, NULL, NULL); printf("proc_call1\n"); }
+| T_id':' expr expr_list { $$ = ast_proc_call($1, $3, $4); printf("proc_call2\n"); }
 ;  
 
 expr_list:
@@ -303,6 +303,7 @@ int main(int argc, char **argv) {
   initSymbolTable(997);
   ast_sem(t);
   printf("after ast_sem\n");
+  print_code_list();
   destroySymbolTable();
   return 0;
 }

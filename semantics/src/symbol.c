@@ -413,7 +413,7 @@ SymbolEntry * newParameter (const char * name, Type type,
                 insertEntry(e);
             f->u.eFunction.lastArgument = e;
             return e;
-        case PARDEF_COMPLETE[:
+        case PARDEF_COMPLETE:
             fatal("Cannot add a parameter to an already defined function");
     }
     return NULL;

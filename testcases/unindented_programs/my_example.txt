@@ -1,7 +1,8 @@
-def my_example
-var x is int [10]
-#var y is int
+def my_example is int: z as byte, w as int[10][2]
+var x is int
+def fact 
+begin skip end
+decl fact
 begin
-x[x[1]] := x[1] + 4
-skip
+fact
 end
