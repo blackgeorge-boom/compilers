@@ -161,6 +161,10 @@ ast ast_proc_call (char *string, ast f, ast s) {
 	return ast_make(PROC_CALL, string, 0, f, s, NULL, NULL, NULL);
 }
 
+ast ast_func_call (char *string, ast f, ast s) {
+	return ast_make(FUNC_CALL, string, 0, f, s, NULL, NULL, NULL);
+}
+
 ast ast_program (ast f) {
 	return ast_make(PROGRAM, '\0', 0, f, NULL, NULL, NULL, NULL);
 }
@@ -200,7 +204,8 @@ void print_loop_list () {
 	printf("===== Loop Records : ======\n");
 
 	while (t != NULL) {
-		printf("%s\n", t->id);
+		if (t->id == NULL) printf("Unamed loop\n");
+		else printf("%s\n", t->id);
 		t = t->previous;
 	}
 
@@ -535,6 +540,49 @@ Type check_op_type (Type first, Type second, char *op) {
 	return result;
 }
 
+/*
+ * This function compares the real and the typical parameters during
+ * a function or a procedure call. 
+ * f : the callers name
+ * first : first real parameter
+ * second : list with the rest real parameters
+ * call_type : "func" or "proc", to help messages
+ */
+void check_parameters (SymbolEntry *f, ast first, ast second, char *call_type) {
+	
+	ast real_param = first;
+	ast real_param_list = second;
+	SymbolEntry *func_param = f->u.eFunction.firstArgument;
+	
+	while (real_param != NULL && func_param != NULL) {
+		ast_sem(real_param);
+		Type real_param_type = real_param->type;
+		Type func_param_type = func_param->u.eParameter.type;
+
+		/*
+		 * If the types of the real and the typical parameters are not equal
+		 * then print error message.
+		 * Except when the 1st dimension of the 
+		 * real parameter is an Array and 
+		 * the 1st dimension of the typical parameter is an IArray.
+		 * Both Arrays must refer to the same types.
+		 */
+		if (!equalType(real_param_type, func_param_type) &&
+			  !(real_param_type->kind == TYPE_ARRAY  
+				&& func_param_type->kind == TYPE_IARRAY 
+				&& equalType(real_param_type->refType, func_param_type->refType)))
+			fatal("Type mismatch in	%s call argument %s", call_type, func_param->id);
+		func_param = func_param->u.eParameter.next;
+		if (real_param_list == NULL) { 
+			real_param = NULL; 
+			break;
+		}
+		real_param = real_param_list->first;
+		real_param_list = real_param_list->second;	
+	}
+	if (real_param != NULL || func_param != NULL) 
+		fatal("Incorrect number of parameters at %s call", call_type);
+} 
 
 void ast_sem (ast t) {
   if (t == NULL) return;
@@ -545,7 +593,7 @@ void ast_sem (ast t) {
     ast_sem(t->second);
 	printf("LET finished first - second\n");
 	printType(t->first->type);
-	printType(t->second->type);
+	printType(t->second->type)	;
 	if (!equalType(t->first->type, t->second->type) && 
 	    !(equalType(t->first->type, typeInteger) && equalType(t->second->type, typeChar))
 	   )
@@ -730,7 +778,8 @@ void ast_sem (ast t) {
 	ast temp = t->first;
 	while (temp != NULL) {
 		printf("VAR_DEF4 %s \n", temp->id);
-		insert(temp->id, t->type);
+		insert(temp->id, t->second->type);
+		printf("VAR_DEF5\n");
 		temp = temp->first;
 	}
 	//print_ast_node(t);
@@ -739,7 +788,6 @@ void ast_sem (ast t) {
 	printf("FUNC_DEF\n");
     ast_sem(t->first);
     ast_sem(t->second);
-	openScope();
     t->num_vars = currentScope->negOffset;
     ast_sem(t->third);
 	insert_func_code(t->first->id, t->third);
@@ -847,6 +895,12 @@ void ast_sem (ast t) {
 		printf( "header-NULL\n");
 		return;	// f == NULL means, function was declared before
 	}						// The rest have already been done
+	/*
+	 * We open the scope of the current function that was
+	 * just inserted. The name of the function itself, though, has
+	 * been inserted to the previous scope.
+	 */
+	openScope();
 	ast par_def = t->first;	// First is fpar_def
 	Type par_type = NULL;
 	ast fpar_def_list = t->second;
@@ -874,23 +928,18 @@ void ast_sem (ast t) {
   case PROC_CALL:
     printf("PROC_CALL\n");
     SymbolEntry *proc = lookup(t->id);
-    printf("PROC_CALL2\n");
 	if (proc->u.eFunction.resultType != typeVoid) 
 		fatal("Cannot call function as a procedure\n");
-	ast real_param = t->first;
-	ast real_param_list = t->second;
-	SymbolEntry *func_param = proc->u.eFunction.firstArgument;
-	while (real_param != NULL || func_param != NULL) {
-		ast_sem(real_param);
-		if (!equalType(real_param->type, func_param->u.eParameter.type))
-			fatal("Type mismatch in	proc_call argument %s", func_param->id);
-		if (real_param_list == NULL) break;
-		real_param = real_param_list->first;
-		real_param_list = real_param_list->second;	
-		func_param = func_param->u.eParameter.next;
-	}
-	if (real_param != NULL || func_param != NULL) 
-		fatal("Incorrect number of parameters at proc_call");
+	check_parameters(proc, t->first, t->second, "proc");		
+	return;
+  case FUNC_CALL:
+    printf("FUNC_CALL\n");
+    SymbolEntry *func = lookup(t->id);
+    printf("FUNC_CALL2\n");
+	if (func->u.eFunction.resultType == typeVoid) 
+		fatal("Function must have a return type\n");
+	check_parameters(func, t->first, t->second, "func");		
+	t->type = func->u.eFunction.resultType;
 	return;
   case PROGRAM:
 	printf("PROGRAM\n");

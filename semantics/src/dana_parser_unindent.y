@@ -178,8 +178,8 @@ stmt:
   "skip" { $$ = NULL; printf("stmt_skip\n");}
 | l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_let\n");}
 | proc_call { $$ = $1; printf("proc_calll\n"); }
-| "exit"
-| "return" ':' expr 
+| "exit" { $$ = NULL; printf("exit\n");}
+| "return" ':' expr { $$ = $3; printf("return\n"); }
 | "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); printf("if\n"); }
 | "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); printf("if-else\n"); }
 | "loop" ':' block { $$ = ast_loop('\0', $3); printf("loop\n"); }
@@ -196,7 +196,7 @@ elif_list:
 ;
 
 block:
-  "begin" stmt stmt_list "end"  { $$ = ast_seq($2, $3);  printf("block\n");}
+  "begin" stmt stmt_list "end" { $$ = ast_seq($2, $3);  printf("block\n");}
 ;
 
 stmt_list:
@@ -210,13 +210,13 @@ proc_call:
 ;  
 
 expr_list:
-  /* nothing */
-| ',' expr expr_list
+  /* nothing */ { $$ = NULL; }
+| ',' expr expr_list { $$ = ast_seq($2, $3);  printf("expr_list\n");}
 ;
 
 func_call:
-  T_id '('')'
-| T_id '(' expr expr_list ')'
+  T_id '('')' { $$ = ast_func_call($1, NULL, NULL); printf("func_call1\n"); }
+| T_id '(' expr expr_list ')' { $$ = ast_func_call($1, $3, $4); printf("func_call2\n"); }
 ; 
 
 l_value:

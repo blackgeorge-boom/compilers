@@ -1,8 +1,7 @@
-def my_example is int: z as byte, w as int[10][2]
-var x is int
-def fact 
-begin skip end
-decl fact
+def my_example 
+var x y is int var w is int[3][5] 
+def fact is int : x as int, y as int[][5]
+begin x := 3 end
 begin
-fact
+x := fact (x, w)
 end

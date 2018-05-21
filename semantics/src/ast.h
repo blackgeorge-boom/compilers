@@ -4,15 +4,16 @@
 #include "symbol.h"
 
 typedef enum {
-  PROGRAM, PROC_CALL, HEADER, FPAR_DEF, 
-  IF, ELIF, IF_ELSE, LOOP, BREAK, CONTINUE,
-  BIT_NOT, BIT_AND, BIT_OR, 
-  BOOL_NOT, BOOL_AND, BOOL_OR,
-  INT_CONST_LIST, TYPE, REF_TYPE, IARRAY_TYPE,
-  CHAR, STR, TRUE, FALSE,
-  L_VALUE, FUNC_DEF, ID_LIST, LET, FOR, SEQ,
-  ID, CONST, PLUS, MINUS, TIMES, DIV, MOD,
-  LT, GT, LE, GE, EQ, NE, AND, OR, VAR_DEF, BLOCK
+  IARRAY_TYPE, CHAR, PROGRAM, PROC_CALL, HEADER, 
+  FPAR_DEF, IF, ELIF, IF_ELSE, LOOP, 
+  BREAK, CONTINUE, BIT_NOT, BIT_AND, BIT_OR, 
+  BOOL_NOT, BOOL_AND, BOOL_OR, INT_CONST_LIST, BLOCK,
+  TYPE, REF_TYPE, STR, TRUE, FALSE,
+  L_VALUE, FUNC_DEF, ID_LIST, LET, FOR, 
+  SEQ, ID, CONST, PLUS, MINUS, 
+  TIMES, DIV, MOD, LT, GT, 
+  LE, GE, EQ, NE, AND, 
+  OR, VAR_DEF, FUNC_CALL
 } kind;
 
 typedef struct node {
@@ -59,6 +60,7 @@ ast ast_fpar_def(char *string, ast f, ast s);
 ast ast_ref_type(Type t);
 ast ast_iarray_type(ast f, Type t);
 ast ast_proc_call(char *string, ast f, ast s);
+ast ast_func_call(char *string, ast f, ast s);
 ast ast_program(ast f);
 
 void ast_sem (ast t);
