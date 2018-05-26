@@ -13,7 +13,7 @@ typedef enum {
   SEQ, ID, CONST, PLUS, MINUS, 
   TIMES, DIV, MOD, LT, GT, 
   LE, GE, EQ, NE, AND, 
-  OR, VAR_DEF, FUNC_CALL
+  OR, VAR_DEF, FUNC_CALL, RETURN
 } kind;
 
 typedef struct node {
@@ -62,6 +62,7 @@ ast ast_iarray_type(ast f, Type t);
 ast ast_proc_call(char *string, ast f, ast s);
 ast ast_func_call(char *string, ast f, ast s);
 ast ast_program(ast f);
+ast ast_return(ast f);
 
 void ast_sem (ast t);
 

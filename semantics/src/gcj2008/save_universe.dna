@@ -1,0 +1,103 @@
+def Program
+decl writeInteger: n as int
+decl writeByte: b as byte
+decl writeChar: b as byte
+decl writeString: s as byte[]
+
+decl readInteger is int
+decl readByte is byte
+decl readChar is byte
+decl readString: n as int, s as byte[]
+
+decl extend is int: b as byte
+decl shrink is byte: i as int
+
+decl strlen is int: s as byte[]
+decl strcmp is int: s1 s2 as byte[]
+decl strcpy: trg src as byte[]
+decl strcat: trg src as byte[]
+    def work is int: engines as byte[][101], e_length as int, queries as byte[][101], q_length as int
+        def ArrayIndexOf is int: arr as byte[][101], len as int, val as byte[101], start as int
+        var i j is int
+        begin
+            i := start
+            loop:
+            begin
+                if i = len: begin return: -1 end
+                if strcmp(arr[i], val) = 0: begin return: i end
+                i := i + 1
+            end
+        end
+
+    var pos maxpos choose startpos count i is int
+    begin
+        maxpos := -1
+        startpos := 0
+        count := 0
+        loop:
+        begin
+            if maxpos > q_length: begin break end
+            choose := -1
+            i := 0
+            loop:
+            begin
+                if i = e_length: begin break end
+                pos := ArrayIndexOf(queries, q_length, engines[i], startpos)
+                if pos = -1:
+                begin
+                    pos := q_length + 1
+                end
+                if pos > maxpos:
+                begin
+                    maxpos := pos
+                    choose := i
+                end
+                i := i + 1
+            end
+            startpos := maxpos
+            count := count + 1
+        end
+
+        return: count - 1
+    end
+
+    def main
+    var N i S j Q Y is int
+    var engines is byte[100][101]
+    var queries is byte[1000][101]
+    begin
+        N := readInteger()
+        i := 0
+        loop:
+        begin
+            if i = N: begin break end
+            S := readInteger()
+            j := 0
+            loop:
+            begin
+                if j = S: begin break end
+                readString: 101, engines[j]
+                j := j + 1
+            end
+            Q := readInteger()
+            j := 0
+            loop:
+            begin
+                if j = Q: begin break end
+                readString: 101, queries[j]
+                j := j + 1
+            end
+
+            Y := work(engines, S, queries, Q)
+
+            writeString: "Case #"
+            writeInteger: i+1
+            writeString: ": "
+            writeInteger: Y
+            writeString: "\n"
+            i := i + 1
+        end
+    end
+begin
+    main
+end

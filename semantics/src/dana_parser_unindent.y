@@ -119,7 +119,7 @@ local_def_list:
 ;
 
 header:
-  T_id { $$ = ast_header($1, NULL, NULL, NULL); printf("header proc %s\n", $1);}
+  T_id { $$ = ast_header($1, NULL, NULL, NULL); printf("header proc %s\n", $1); }
 | T_id "is" data_type { $$ = ast_header($1, NULL, NULL, $3); printf("header func\n");}
 | T_id ':' fpar_def fpar_def_list { $$ = ast_header($1, $3, $4, NULL); printf("header proc2\n");} 
 | T_id "is" data_type ':' fpar_def fpar_def_list { $$ = ast_header($1, $5, $6, $3); printf("header func2\n");} 
@@ -178,8 +178,8 @@ stmt:
   "skip" { $$ = NULL; printf("stmt_skip\n");}
 | l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_let\n");}
 | proc_call { $$ = $1; printf("proc_calll\n"); }
-| "exit" { $$ = NULL; printf("exit\n");}
-| "return" ':' expr { $$ = $3; printf("return\n"); }
+| "exit" { $$ = NULL; printf("exit\n"); }
+| "return" ':' expr { $$ = ast_return($3); printf("return\n"); }
 | "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); printf("if\n"); }
 | "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); printf("if-else\n"); }
 | "loop" ':' block { $$ = ast_loop('\0', $3); printf("loop\n"); }
@@ -230,7 +230,7 @@ expr:
 | T_const { $$ = ast_const($1); printf("const\n");}
 | l_value { $$ = $1; printf("expr_lvalue\n");}
 | '(' expr ')' { $$ = $2; }
-| func_call
+| func_call { $$ = $1; printf("func_call\n"); }
 | '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); }	%prec UPLUS
 | '-' expr { $$ = ast_op(ast_const(0), MINUS, $2); } %prec UMINUS
 | expr '+' expr { $$ = ast_op($1, PLUS, $3); } 

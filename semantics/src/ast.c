@@ -169,6 +169,11 @@ ast ast_program (ast f) {
 	return ast_make(PROGRAM, '\0', 0, f, NULL, NULL, NULL, NULL);
 }
 
+
+ast ast_return (ast f) {
+	return ast_make(RETURN, '\0', 0, f, NULL, NULL, NULL, NULL);
+}
+
 #define NOTHING 0
 
 struct activation_record_tag {
@@ -233,7 +238,8 @@ int look_up_loop (char *s) {
  * 1) a function name
  * 2) a pointer to the corresponding ast 
  *    which represents the code of the function
- * 3) a pointer to the next node
+ * 3) the function result type (typeVoid for proc)
+ * 4) a pointer to the next node
  */
 struct function_code_list_t {
 	char *name;
@@ -275,6 +281,8 @@ void insert_func_code (char *func_name, ast code) {
 	new_code->next = current_CL;
 	current_CL = new_code;
 }
+
+char *curr_func_name;
 
 int ast_run (ast t) {
   if (t == NULL) return NOTHING;
@@ -541,6 +549,26 @@ Type check_op_type (Type first, Type second, char *op) {
 }
 
 /*
+ * This function is called during a 'return' command. 
+ * It takes the result type of a function
+ * and the type of the returned expression
+ * and checks if they are compatible.
+ */
+void check_result_type (Type first, Type second, char *func_name) {
+
+	// Check if the return was during a procedure
+	if (equalType(first, typeVoid)) {
+		fatal("Proc %s does not return value", func_name);	
+	}
+	// Check if an integer is returned as byte
+	else if (equalType(first, typeChar) && equalType(second, typeInteger)) {
+		fatal("Result type must be a byte, not an integer in %s", func_name);
+	}
+
+	return;
+}
+
+/*
  * This function compares the real and the typical parameters during
  * a function or a procedure call. 
  * f : the callers name
@@ -789,6 +817,10 @@ void ast_sem (ast t) {
     ast_sem(t->first);
     ast_sem(t->second);
     t->num_vars = currentScope->negOffset;
+	printf("FUNC_DEF2\n");
+	//strcpy(curr_func_name, t->first->id);
+	curr_func_name = t->first->id;
+	printf("FUNC_DEF curr_func_name : %s \n", curr_func_name);
     ast_sem(t->third);
 	insert_func_code(t->first->id, t->third);
     closeScope();
@@ -946,6 +978,15 @@ void ast_sem (ast t) {
 	openScope();
 	ast_sem(t->first);
 	closeScope();
+	return;
+  case RETURN:
+	printf("RETURN\n");
+	ast_sem(t->first);
+	printf("curr_func_name : %s \n", curr_func_name);
+	SymbolEntry *curr_func = lookup(curr_func_name);
+	Type curr_func_type = curr_func->u.eFunction.resultType;
+    Type return_type = t->first->type;
+	check_result_type(curr_func_type, return_type, curr_func_name);
 	return;
   }
 
