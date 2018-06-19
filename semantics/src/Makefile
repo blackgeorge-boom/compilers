@@ -10,8 +10,8 @@ lexer.c: lexer.l
 
 lexer.o: lexer.c parser.h
 
-parser.h parser.c: dana_parser_unindent.y
-		bison -dv -o parser.c dana_parser_unindent.y
+parser.h parser.c: dana_parser_indent.y
+		bison -dv -o parser.c dana_parser_indent.y
 
 dana: lexer.o parser.o ast.o general.o error.o symbol.o
 		$(CC) $(CFLAGS) -o dana $^ -lfl

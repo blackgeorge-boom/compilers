@@ -3,7 +3,7 @@ def main
     def prime is byte: n as int
         var i is int
 
-                if n < 0: return: prime(-n)
+        if n < 0: return: prime(-n)
         elif n < 2: return: false
         elif n = 2: return: true
         elif n % 2 = 0: return: false

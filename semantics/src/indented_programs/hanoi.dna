@@ -1,0 +1,37 @@
+def solve
+
+  decl writeInteger: n as int
+  decl writeByte: b as byte
+  decl writeChar: b as byte
+  decl writeString: s as byte[]
+
+  decl readInteger is int
+  decl readByte is byte
+  decl readChar is byte
+  decl readString: n as int, s as byte[]
+
+  decl extend is int: b as byte
+  decl shrink is byte: i as int
+
+  decl strlen is int: s as byte[]
+  decl strcmp is int: s1 s2 as byte[]
+  decl strcpy: trg src as byte[]
+  decl strcat: trg src as byte[]
+  def hanoi: rings as int, source target auxiliary as byte []
+  
+    def move: source target as byte []  
+      writeString: "Moving from "
+      writeString: source
+      writeString: " to "
+      writeString: target
+      writeString: ".\n"
+
+    if rings >= 1:  
+      hanoi: rings-1, source, auxiliary, target
+      move: source, target
+      hanoi: rings-1, auxiliary, target, source
+
+  var numberOfRings is int
+  writeString: "Rings: "
+  numberOfRings := readInteger()
+  hanoi: numberOfRings, "left", "right", "middle"
