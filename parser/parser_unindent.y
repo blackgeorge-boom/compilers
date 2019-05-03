@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern int yylex();
+extern FILE* yyin;
+
 void yyerror (const char *msg);
 void debug (const char *msg);
 
@@ -229,7 +232,6 @@ x_cond:
 
 %%
 
-
 void yyerror (const char *msg) {
   fprintf(stderr, "Dana error: %s\n", msg);
   fprintf(stderr, "Aborting, I've had enough with line %d and boom is %d\n",
@@ -247,9 +249,18 @@ int main(int argc, char **argv) {
 
   int c;
 
-  if (argc > 1) {
-    printf("Usage: dana_unindent [input-file] \n");
-    return 0;
+//  if (argc > 1) {
+//    printf("Usage: dana_unindent [input-file] \n");
+//    return 0;
+//  }
+
+  if (argc == 2)
+      yyin = fopen(argv[command_line_flag + 1], "r");
+  else if (argc == 1)
+      yyin = stdin;
+  else {
+      printf("Usage: <parser_executable> [input-file] \n");
+      return 0;
   }
 
   command_line_flag = 0; /* No offside rule in dana_unindent. */

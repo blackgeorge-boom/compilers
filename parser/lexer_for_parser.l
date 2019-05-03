@@ -1,5 +1,5 @@
 %{
-#include "parser.h"
+#include "parser.hpp"
 #define T_eof 0
 
 void yyerror (const char *msg);

@@ -5,7 +5,7 @@ CFLAGS=-Wall
 
 default: dana_lexer 
 
-lexer.c: dana_lexer.l
+lexer.c: lexer.l
 	flex -s -o lexer.c dana_lexer.l
 
 dana_lexer: lexer.o

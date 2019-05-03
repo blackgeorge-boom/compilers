@@ -255,7 +255,8 @@ R[`~@#$^_\{\}\;?.]
  *
  */
 
-int main (int argc, char **argv) {
+int main (int argc, char **argv)
+{
 	int token, i, c;
 
 	opterr = 0; 
@@ -271,10 +272,8 @@ int main (int argc, char **argv) {
 
 	if (argc == 2)
 		yyin = fopen(argv[command_line_flag + 1], "r");
-
 	else if (argc == 1)
 		yyin = stdin;
-
 	else {
 		printf("Usage: <lexer_executable> [-i] [input-file] \n");
 		return 0;
