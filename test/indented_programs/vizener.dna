@@ -3,23 +3,23 @@
 def main
     def tolower is byte: c as byte
         if (((c>='a') and (c<='z'))):
-        return: c
-    else:
-        return: c+'A'-'a'
+	    return: c
+	else:
+	    return: c+'A'-'a'
 
     def encode: p as byte[]
         var n i j is int
-    var codec codep codenew c is byte
-    var result is byte[21]
+	var codec codep codenew c is byte
+	var result is byte[21]
 
-    n := strlen(p)
+	n := strlen(p)
         i := 0
         j := 0
-    loop:
-        c := readChar()
-        if (c = '0'):
-            writeChar: '\n'
-        break
+	loop:
+	    c := readChar()
+	    if (c = '0'):
+	        writeChar: '\n'
+		break
             if (((c >= 'a') and (c <= 'z')) or ((c >= 'A') and (c <= 'Z'))):
                 codec   := tolower(c) - 'a' + '\x01'
                 codep   := tolower(p[i]) - 'a' + '\x01'
@@ -35,26 +35,26 @@ def main
 
                 if (i+1 >= n):
                     i := 0
-        else:
-            i := i+1
+		else:
+		    i := i+1
             result[j] := c
-        j := j+1
-    result[j] := '\0'
+	    j := j+1
+	result[j] := '\0'
         writeString: result
 
     def decode: p as byte[]
-    var n i j is int
-    var codec codep codenew c is byte
-    var result is byte[21]
+	var n i j is int
+	var codec codep codenew c is byte
+	var result is byte[21]
 
-    n := strlen(p)
+	n := strlen(p)
         i := 0
-    j := 0
-    loop:
-        c := readChar()
-        if (c = '0'):
-            writeChar: '\n'
-        break
+	j := 0
+	loop:
+	    c := readChar()
+	    if (c = '0'):
+	        writeChar: '\n'
+		break
             if (((c>='a') and (c<='z')) or ((c>='A') and (c<='Z'))):
                 codec   := tolower(c) - 'a' + '\x01'
                 codep   := tolower(p[i]) - 'a' + '\x01'
@@ -70,12 +70,12 @@ def main
 
                 if (i+1 >= n):
                     i := 0
-        else:
-            i := i+1
+		else:
+		    i := i+1
             result[j] := c
-        j := j+1
-    result[j] := '\0'
-    writeString: result
+	    j := j+1
+	result[j] := '\0'
+	writeString: result
 
     var key is byte[6]
     var mode is byte

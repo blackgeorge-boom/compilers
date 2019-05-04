@@ -14,31 +14,31 @@ def main
 
         len := strlen(word)
         writeString: "\n"
-    i := 0
-    loop:
+	i := 0
+	loop:
             writeString: "****"
-        i := i+1
-        if (i>=len):
-        break
+	    i := i+1
+	    if (i>=len):
+		break
         writeString: "*\n"
-    i :=0
-    loop:
+	i :=0
+	loop:
             writeString: "* "
-        if((word[i]>='A') and (word[i]<='Z')):
+	    if((word[i]>='A') and (word[i]<='Z')):
                 writeChar: word[i]
-        elif((word[i]>='a') and (word[i]<='z')):
+	    elif((word[i]>='a') and (word[i]<='z')):
                 writeChar: word[i]+'A'-'a'
             writeString: " "
-        i := i+1
-        if (i>=len):
-        break
+	    i := i+1
+	    if (i>=len):
+		break
         writeString: "*\n"
-    i := 0
-    loop:
+	i := 0
+	loop:
             writeString: "****"
-        i := i+1
-        if (i>=len):
-        break
+	    i := i+1
+	    if (i>=len):
+		break
         writeString: "*\n\n"
 
     var word is byte[80]

@@ -1,5 +1,0 @@
-def hello
-decl writeString: s as byte[]
-begin
-        writeString: "Hello world!\n"
-end

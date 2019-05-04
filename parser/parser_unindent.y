@@ -249,11 +249,6 @@ int main(int argc, char **argv) {
 
   int c;
 
-//  if (argc > 1) {
-//    printf("Usage: dana_unindent [input-file] \n");
-//    return 0;
-//  }
-
   if (argc == 2)
       yyin = fopen(argv[command_line_flag + 1], "r");
   else if (argc == 1)
