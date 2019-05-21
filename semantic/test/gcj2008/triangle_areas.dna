@@ -1,0 +1,90 @@
+def program
+    def work: N M A as int, ret as byte[]
+        def toString: n as int, ret as byte[32]
+        var i j is int
+        var tmp is byte
+        begin
+            i := 0
+            loop:
+            begin
+                ret[i] := '0'+shrink(n%10)
+                i := i + 1
+                n := n/10
+                if n=0: begin break end
+            end
+            (* XXX: '\0' doesn't map to ASCII code 0 but to ASCII char 0 *)
+            ret[i] := shrink(0)
+            j := 0
+            i := i - 1
+            loop:
+            begin
+                if j >= i: begin break end
+                tmp := ret[j]
+                ret[j] := ret[i]
+                ret[i] := tmp
+                i := i - 1
+                j := j + 1
+            end
+        end
+
+        def MathAbs is int: x as int
+        begin
+            if x<0:
+            begin
+                x := -x
+            end
+            return: x
+        end
+
+    var x y is int[3]
+    var tmp is byte[8]
+    begin
+        x[1]:=0 loop: begin if x[1] > N: begin break end
+        x[2]:=0 loop: begin if x[2] > N: begin break end
+        y[1]:=0 loop: begin if y[1] > M: begin break end
+        y[2]:=0 loop: begin if y[2] > M: begin break end
+            if MathAbs(x[1] * y[2] - x[2] * y[1]) = A:
+            begin
+                strcpy: ret, ""
+                toString: x[0], tmp strcat: ret, tmp strcat: ret, " "
+                toString: y[0], tmp strcat: ret, tmp strcat: ret, " "
+                toString: x[1], tmp strcat: ret, tmp strcat: ret, " "
+                toString: y[1], tmp strcat: ret, tmp strcat: ret, " "
+                toString: x[2], tmp strcat: ret, tmp strcat: ret, " "
+                toString: y[2], tmp strcat: ret, tmp
+                exit
+            end
+        y[2] := y[2] + 1 end
+        y[1] := y[1] + 1 end
+        x[2] := x[2] + 1 end
+        x[1] := x[1] + 1 end
+        strcpy: ret, "IMPOSSIBLE"
+    end
+
+    def main
+    var C i N M A is int
+    var ans is byte[32]
+    begin
+        C := readInteger()
+        i := 0
+        loop:
+        begin
+            if i = C: begin break end
+            N := readInteger()
+            M := readInteger()
+            A := readInteger()
+
+            work: N, M, A, ans
+
+            writeString: "Case #"
+            writeInteger: i+1
+            writeString: ": "
+            writeString: ans
+            writeString: "\n"
+            i := i + 1
+        end
+    end
+
+begin
+    main
+end

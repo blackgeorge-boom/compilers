@@ -1,0 +1,108 @@
+def program
+var min is int
+var permutation is int[16]
+var used is byte[16]
+var S is byte[1001]
+
+    def work is int: k as int
+    var s_length is int
+
+        def compress is int: permutation as int[], S as byte []
+        var T is byte[1001]
+        var count j kk i is int
+        var prv is byte
+        begin
+            prv := shrink(-1)
+            count := 0
+            j := 0
+            kk := 0
+
+            i := 0
+            loop:
+            begin
+                if i = s_length: begin break end
+                T[i] := S[kk + permutation[j]]
+                j := j + 1
+                if j = k:
+                begin
+                    j := 0
+                    kk := kk + k
+                end
+                if T[i] <> prv:
+                begin
+                    count := count + 1
+                    prv := T[i]
+                end
+                i := i + 1
+            end
+            return: count
+        end
+
+        def go: p as int
+            def MathMin is int: x as int, y as int
+            begin
+                if x<y:
+                begin
+                    return: x
+                end
+                else:
+                begin
+                    return: y
+                end
+            end
+        var i is int
+        begin
+            if p = k:
+            begin
+                min := MathMin(min, compress(permutation, S))
+                exit
+            end
+
+            i := 0
+            loop:
+            begin
+                if i = k: begin break end
+                if used[i]:
+                begin
+                    i := i + 1
+                    continue
+                end
+                used[i] := true
+                permutation[p] := i
+                go: p + 1
+                used[i] := false
+                i := i + 1
+            end
+        end
+
+    begin
+        min := 1073741823
+        s_length := strlen(S)
+        go: 0
+
+        return: min
+    end
+
+    def main
+    var N i k ans is int
+    begin
+        N := readInteger()
+        i := 0
+        loop:
+        begin
+            if i = N: begin break end
+            k := readInteger()
+            readString: 1001, S
+            ans := work(k)
+
+            writeString: "Case #"
+            writeInteger: i+1
+            writeString: ": "
+            writeInteger: ans
+            writeString: "\n"
+            i := i + 1
+        end
+    end
+begin
+    main
+end
