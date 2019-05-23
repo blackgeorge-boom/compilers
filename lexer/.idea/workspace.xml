@@ -33,7 +33,41 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dd4514df-710d-4040-992f-593ec9fb2f78" name="Default Changelist" comment="" />
+    <list default="true" id="dd4514df-710d-4040-992f-593ec9fb2f78" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../parser/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../semantic/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../parser/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../parser/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/.idea/dana_semantic.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/dana_parser_indent.y" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/parser_indent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/dana_parser_unindent.y" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/parser_unindent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/lexer_for_sem.l" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/lexer.l" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/gcj2008/cheating_boolean_tree.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/gcj2008/cheating_boolean_tree.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/gcj2008/minimum_scalar_product.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/gcj2008/minimum_scalar_product.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/gcj2008/perm_rle.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/gcj2008/perm_rle.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/gcj2008/save_universe.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/gcj2008/save_universe.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/gcj2008/text_messaging_outrage.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/gcj2008/text_messaging_outrage.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/gcj2008/triangle_areas.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/gcj2008/triangle_areas.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/arrayTr.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/arrayTr.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/bubble.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/bubble.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/hanoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/hanoi.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/hello.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/hello.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/length.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/length.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/pinakes.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/pinakes.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/prwtoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/prwtoi.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/reverse.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/reverse.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/string.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/string.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/vizener.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/vizener.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/indented_programs/worBox.dna" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/indented_programs/worBox.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/unindented_programs/bubble.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/unindented_programs/bubble.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/unindented_programs/hanoi.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/unindented_programs/hanoi.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/unindented_programs/hello.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/unindented_programs/hello.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/unindented_programs/prwtoi.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/unindented_programs/prwtoi.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../semantic/test/unindented_programs/reverse.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../semantic/test/unindented_programs/reverse.txt" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -73,19 +107,63 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-1680594250">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="4" />
+          <entry key="project.open.time.0" value="1" />
+          <entry key="project.open.time.10" value="1" />
+          <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.32" value="1" />
+          <entry key="project.opened" value="4" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="l" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="PLAIN_TEXT" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="l" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="PLAIN_TEXT" value="1" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
+            <state relative-caret-position="255">
+              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lexer.l">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="548">
+              <caret line="262" column="4" selection-start-line="262" selection-start-column="4" selection-end-line="262" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -101,11 +179,12 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="47" />
-    <option name="y" value="88" />
-    <option name="width" value="1309" />
-    <option name="height" value="555" />
+    <option name="x" value="-44" />
+    <option name="y" value="27" />
+    <option name="width" value="1350" />
+    <option name="height" value="576" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -117,7 +196,7 @@
           <expand>
             <path>
               <item name="dana_lexer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="dana_lexer" type="462c0819:PsiDirectoryNode" />
+              <item name="lexer" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -170,19 +249,23 @@
       <updated>1558377187413</updated>
       <workItem from="1558377188745" duration="74000" />
       <workItem from="1558377285768" duration="76000" />
+      <workItem from="1558433140229" duration="85000" />
+      <workItem from="1558461176912" duration="656000" />
+      <workItem from="1558523039723" duration="35000" />
+      <workItem from="1558609980752" duration="295000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="150000" />
+    <option name="totallyTimeSpent" value="1221000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="47" y="25" width="1319" height="743" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25373134" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27022782" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="0" weight="0.3284553" />
+      <window_info anchor="bottom" id="Messages" order="0" weight="0.32626426" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -210,10 +293,17 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/lexer.l">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="548">
+          <caret line="262" column="4" selection-start-line="262" selection-start-column="4" selection-end-line="262" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
+        <state relative-caret-position="255">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>

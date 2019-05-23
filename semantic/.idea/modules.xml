@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/dana_semantic.iml" filepath="$PROJECT_DIR$/.idea/dana_semantic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/semantic.iml" filepath="$PROJECT_DIR$/.idea/semantic.iml" />
     </modules>
   </component>
 </project>

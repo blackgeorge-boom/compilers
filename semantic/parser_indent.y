@@ -4,6 +4,9 @@
 #include "ast.h"
 #include "symbol.h"
 
+extern int yylex();
+extern FILE* yyin;
+
 void yyerror (const char *msg);
 void debug (const char *msg);
 
@@ -79,7 +82,7 @@ extern int indent_level;
 %type<a> fpar_def
 %type<a> id_list
 %type<t> data_type
-%type<t> type
+%type<a> type
 %type<a> fpar_type
 %type<a> int_const_list
 %type<a> local_def
@@ -97,19 +100,25 @@ extern int indent_level;
 %type<a> cond
 %type<a> x_cond
 
+%expect 2
+
 %%
 
-/* 
- * This parser recognises programms without offside rule
- * Blocks are determined by begin/end tokens.
+/*
+ * This parser recognises programms with offside rule.
  */
 
 program:
   func_def { t = $$ = ast_program($1); }
 ;
 
+/* 
+ * Lexer must have put begin/end tokens after function
+ * definitions, due to identation. 
+ */
+
 func_def:
-"def" header local_def_list block { $$ = ast_func_def($2, $3, $4); }//printf("func_def %s\n", $2->id);}                 
+  "def" header "begin" local_def_list stmt stmt_list "end" { $$ = ast_func_def($2, $4, ast_seq($5, $6)); }//printf("func_def %s\n", $2->id);}
 ;
 
 
@@ -172,7 +181,7 @@ func_decl:
 
 var_def:
   "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }//printf("var_def %c %d\n", $2, ($5)->kind);}
-;     
+;      
 
 stmt:
   "skip" { $$ = NULL; printf("stmt_skip\n");}
@@ -192,11 +201,19 @@ stmt:
 
 elif_list:
   /* nothing */ { $$ = NULL; }
-| "elif" cond ':' block elif_list { $$ = ast_elif($2, $4, $5); printf("elif\n"); }
+| elif_list "elif" cond ':' block { $$ = ast_elif($3, $5, $1); printf("elif\n"); }
 ;
+
+/*
+ * A single statement can be a block, without the
+ * use of begin/end tokens (no indentation needed).
+ * More statements need to be indented (begin/end
+ * tokens will have been produced be lexer).
+ */
 
 block:
   "begin" stmt stmt_list "end" { $$ = ast_seq($2, $3);  printf("block\n");}
+| stmt { $$ = $1; printf("block stmt\n"); }
 ;
 
 stmt_list:
@@ -231,7 +248,7 @@ expr:
 | l_value { $$ = $1; printf("expr_lvalue\n");}
 | '(' expr ')' { $$ = $2; }
 | func_call { $$ = $1; printf("func_call\n"); }
-| '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); }	%prec UPLUS
+| '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); } %prec UPLUS
 | '-' expr { $$ = ast_op(ast_const(0), MINUS, $2); } %prec UMINUS
 | expr '+' expr { $$ = ast_op($1, PLUS, $3); } 
 | expr '-' expr { $$ = ast_op($1, MINUS, $3); }  
@@ -240,7 +257,7 @@ expr:
 | expr '%' expr { $$ = ast_op($1, MOD, $3); } 
 | "true" { $$ = ast_true(); printf("true\n"); } 
 | "false" { $$ = ast_false(); printf("false\n"); }
-| '!' expr { $$ = ast_bit_not($2); printf("bit_not\n"); }	%prec BYTE_NOT
+| '!' expr { $$ = ast_bit_not($2); printf("bit_not\n"); } %prec BYTE_NOT
 | expr '&' expr { $$ = ast_bit_and($1, $3); printf("bit_and\n"); }
 | expr '|' expr { $$ = ast_bit_or($1, $3); printf("bit_or\n"); }
 ;
@@ -252,7 +269,7 @@ cond:
 
 x_cond:
   '(' x_cond ')' { $$ = $2; }
-| "not" cond { $$ = ast_bool_not($2); printf("bool_not\n"); }		%prec NOT
+| "not" cond { $$ = ast_bool_not($2); printf("bool_not\n"); }   %prec NOT
 | cond "and" cond { $$ = ast_bool_and($1, $3); printf("bool_and\n"); }
 | cond "or" cond { $$ = ast_bool_or($1, $3); printf("bool_or\n"); }
 | expr '=' expr { $$ = ast_op($1, EQ, $3); } 
@@ -282,12 +299,16 @@ int main(int argc, char **argv) {
 
   int c;
 
-  if (argc > 1) {
-    printf("Usage: dana_unindent [input-file] \n");
-    return 0;
-  }
+   if (argc == 2)
+        yyin = fopen(argv[1], "r");
+    else if (argc == 1)
+        yyin = stdin;
+    else {
+        printf("Usage: <parser_executable> [input-file] \n");
+        return 0;
+   }
 
-  command_line_flag = 0; /* No offside rule in dana_unindent. */
+  command_line_flag = 1; /* Offside rule activated for dana_indent. */
 
   if (command_line_flag) {
     l = (struct stack_t *)malloc(sizeof(struct stack_t));

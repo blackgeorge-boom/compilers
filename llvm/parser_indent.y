@@ -4,6 +4,9 @@
 #include "ast.h"
 #include "symbol.h"
 
+extern int yylex();
+extern FILE* yyin;
+
 void yyerror (const char *msg);
 void debug (const char *msg);
 
@@ -79,7 +82,7 @@ extern int indent_level;
 %type<a> fpar_def
 %type<a> id_list
 %type<t> data_type
-%type<t> type
+%type<a> type
 %type<a> fpar_type
 %type<a> int_const_list
 %type<a> local_def
@@ -296,10 +299,14 @@ int main(int argc, char **argv) {
 
   int c;
 
-  if (argc > 1) {
-    printf("Usage: dana [-i] [input-file] \n");
-    return 0;
-  }
+   if (argc == 2)
+        yyin = fopen(argv[1], "r");
+    else if (argc == 1)
+        yyin = stdin;
+    else {
+        printf("Usage: <parser_executable> [input-file] \n");
+        return 0;
+   }
 
   command_line_flag = 1; /* Offside rule activated for dana_indent. */
 
