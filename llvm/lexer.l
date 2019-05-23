@@ -1,7 +1,7 @@
 %{
 #include <string.h>
-#include "ast.h"
-#include "parser.h"
+#include "ast.hpp"
+#include "parser.hpp"
 #define T_eof 0
 
 void yyerror (const char *msg);

@@ -1,8 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "ast.h"
-#include "symbol.h"
+#include "ast.hpp"
 
 extern int yylex();
 extern FILE* yyin;
@@ -191,11 +190,11 @@ stmt:
 | "return" ':' expr { $$ = ast_return($3); printf("return\n"); }
 | "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); printf("if\n"); }
 | "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); printf("if-else\n"); }
-| "loop" ':' block { $$ = ast_loop('\0', $3); printf("loop\n"); }
+| "loop" ':' block { $$ = ast_loop((char*)'\0', $3); printf("loop\n"); }
 | "loop" T_id ':' block { $$ = ast_loop($2, $4); printf("loop id\n"); }
-| "break" { $$ = ast_break('\0'); printf("break\n"); }
+| "break" { $$ = ast_break((char*)'\0'); printf("break\n"); }
 | "break" ':' T_id { $$ = ast_break($3); printf("break id\n"); }
-| "continue" { $$ = ast_continue('\0'); printf("continue\n"); }
+| "continue" { $$ = ast_continue((char*)'\0'); printf("continue\n"); }
 | "continue" ':' T_id { $$ = ast_continue($3); printf("continue id\n"); }
 ;
 

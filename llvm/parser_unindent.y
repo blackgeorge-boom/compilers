@@ -1,8 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "ast.h"
-#include "symbol.h"
+#include "ast.hpp"
 
 extern int yylex();
 extern FILE* yyin;

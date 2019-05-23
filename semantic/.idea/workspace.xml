@@ -35,40 +35,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f941420-210e-4ea6-a841-3f87047543f9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../parser/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lexer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../lexer/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../parser/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../parser/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dana_semantic.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../llvm/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../llvm/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../llvm/ast.c" beforeDir="false" afterPath="$PROJECT_DIR$/../llvm/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../llvm/ast.h" beforeDir="false" afterPath="$PROJECT_DIR$/../llvm/ast.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../llvm/lexer.l" beforeDir="false" afterPath="$PROJECT_DIR$/../llvm/lexer.l" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../llvm/parser_indent.y" beforeDir="false" afterPath="$PROJECT_DIR$/../llvm/parser_indent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../llvm/parser_unindent.y" beforeDir="false" afterPath="$PROJECT_DIR$/../llvm/parser_unindent.y" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast.h" beforeDir="false" afterPath="$PROJECT_DIR$/ast.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dana_parser_indent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_indent.y" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dana_parser_unindent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_unindent.y" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lexer_for_sem.l" beforeDir="false" afterPath="$PROJECT_DIR$/lexer.l" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/cheating_boolean_tree.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/cheating_boolean_tree.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/perm_rle.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/perm_rle.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/save_universe.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/save_universe.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/text_messaging_outrage.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/text_messaging_outrage.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/triangle_areas.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/triangle_areas.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/arrayTr.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/arrayTr.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/bubble.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/bubble.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/hanoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/hanoi.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/hello.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/hello.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/length.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/length.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/pinakes.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/pinakes.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/prwtoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/prwtoi.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/reverse.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/reverse.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/string.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/string.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/vizener.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/vizener.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/worBox.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/worBox.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/bubble.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/bubble.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/hanoi.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/hanoi.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/hello.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/hello.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/prwtoi.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/prwtoi.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/reverse.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/reverse.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -82,13 +55,13 @@
     <session id="-907856199">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
-          <entry key="project.open.time.1" value="1" />
+          <entry key="project.closed" value="6" />
+          <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.4" value="1" />
-          <entry key="project.opened" value="5" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -139,8 +112,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/parser_indent.y">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="112">
-                  <caret line="290" lean-forward="true" selection-start-line="290" selection-end-line="290" />
+                <state relative-caret-position="4350">
+                  <caret line="290" selection-start-line="290" selection-end-line="290" />
                 </state>
               </provider>
             </entry>
@@ -157,7 +130,7 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/parser_unindent.y">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="315">
+                <state>
                   <caret line="84" column="6" selection-start-line="84" selection-start-column="6" selection-end-line="84" selection-end-column="6" />
                 </state>
               </provider>
@@ -212,7 +185,7 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ast.h">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="533">
+                <state relative-caret-position="521">
                   <caret line="69" column="22" selection-start-line="69" selection-start-column="22" selection-end-line="69" selection-end-column="22" />
                 </state>
               </provider>
@@ -244,7 +217,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
     <option name="x" value="47" />
     <option name="y" value="25" />
     <option name="width" value="1319" />
@@ -255,25 +228,7 @@
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="dana_semantic" type="b2602c69:ProjectViewProjectNode" />
-              <item name="semantic" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="dana_semantic" type="b2602c69:ProjectViewProjectNode" />
-              <item name="semantic" type="462c0819:PsiDirectoryNode" />
-              <item name="cmake-build-debug" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -372,15 +327,17 @@
       <workItem from="1558460197362" duration="3832000" />
       <workItem from="1558609951881" duration="27000" />
       <workItem from="1558610340823" duration="3312000" />
-      <workItem from="1558602912321" duration="329000" />
+      <workItem from="1558602912321" duration="479000" />
+      <workItem from="1558609370970" duration="6000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7883000" />
+    <option name="totallyTimeSpent" value="8039000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="47" y="25" width="1319" height="743" extended-state="6" />
+    <frame x="0" y="-30" width="1366" height="798" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.27101335" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -394,7 +351,7 @@
       <window_info anchor="bottom" id="Database Changes" order="6" show_stripe_button="false" />
       <window_info anchor="bottom" id="TeamCity" order="7" />
       <window_info anchor="bottom" x="1366" y="27" width="1280" height="741" id="Messages" order="8" type="FLOATING" visible="true" weight="0.32952693" />
-      <window_info anchor="bottom" id="Terminal" order="9" weight="0.32789558" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.9928058" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="CMake" order="12" weight="0.37030995" />
@@ -403,7 +360,7 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="make" order="3" />
       <window_info anchor="right" id="Database" order="4" />
-      <window_info active="true" anchor="right" id="Run" order="5" visible="true" weight="0.43519247" />
+      <window_info anchor="right" id="Run" order="5" weight="0.43519247" />
     </layout>
     <layout-to-restore>
       <window_info content_ui="combo" id="Project" order="0" weight="0.27101335" />
@@ -455,6 +412,13 @@
         <state relative-caret-position="-630" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/parser_indent.y">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4350">
+          <caret line="290" selection-start-line="290" selection-end-line="290" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/symbol.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1080">
@@ -469,6 +433,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/parser_unindent.y">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="84" column="6" selection-start-line="84" selection-start-column="6" selection-end-line="84" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -478,8 +449,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ast.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2115">
-          <caret line="141" selection-start-line="141" selection-end-line="141" />
+        <state relative-caret-position="3960">
+          <caret line="264" column="13" selection-start-line="264" selection-start-column="13" selection-end-line="264" selection-end-column="13" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -488,22 +459,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ast.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
+        <state relative-caret-position="521">
           <caret line="69" column="22" selection-start-line="69" selection-start-column="22" selection-end-line="69" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/parser_indent.y">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="290" lean-forward="true" selection-start-line="290" selection-end-line="290" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/parser_unindent.y">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="84" column="6" selection-start-line="84" selection-start-column="6" selection-end-line="84" selection-end-column="6" />
         </state>
       </provider>
     </entry>
