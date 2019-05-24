@@ -12,7 +12,7 @@ void debug (const char *msg);
 extern int line_number;
 extern int command_line_flag;
 extern int boom;
-ast t;
+ast tree;
 
 struct stack_t {      
   int top, flag;      
@@ -107,7 +107,7 @@ extern int indent_level;
  */
 
 program:
-  func_def { t = $$ = ast_program($1); }
+  func_def { tree = $$ = ast_program($1); }
 ;
 
 func_def:
@@ -306,7 +306,7 @@ int main(int argc, char **argv) {
   printf("Compilation was successful.\n");
 
   initSymbolTable(997);
-  ast_sem(t);
+  ast_sem(tree);
   printf("after ast_sem\n");
   print_code_list();
   destroySymbolTable();

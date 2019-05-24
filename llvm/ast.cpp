@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ast.hpp"
+#include "ast.h"
+
+loop_record current_LR = nullptr;
+function_code_list current_CL = nullptr;
+char* curr_func_name;
 
 static ast ast_make (kind k, char *s, int n,
                      ast first, ast second, ast third, ast last, Type t) {
@@ -20,7 +24,6 @@ static ast ast_make (kind k, char *s, int n,
 }
 
 ast ast_id (char *s) {
-    printf("ast_id %s\n", s);
     return ast_make(ID, s, 0, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
@@ -29,12 +32,10 @@ ast ast_const (int n) {
 }
 
 ast ast_char (int n) {
-    printf("INSIDE AST_CHAR\n");
     return ast_make(CHAR, nullptr, n, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
 ast ast_str (char* s) {
-    printf("ast_str %s\n", s);
     Type t = typeArray(static_cast<RepInteger>(strlen(s) + 1), typeChar);
     return ast_make(STR, s, 0, nullptr, nullptr, nullptr, nullptr, t);
 }
@@ -215,12 +216,12 @@ ast find_code (char *func_name) {
 void print_code_list () {
 
     function_code_list temp = current_CL;
-    printf("===== Current CL =====\n");
+    printf("===== Current Code List =====\n");
     while (temp != nullptr) {
         printf("%s\n", temp->name);
         temp = temp->next;
     }
-    printf("======================\n");
+    printf("=============================\n");
 }
 
 void insert_func_code (char *func_name, ast code) {
@@ -365,7 +366,7 @@ SymbolEntry* insertFunction(char *s, Type t) {
         if (find_code(name)) fatal("Function %s already defined", name);
         return nullptr;
     }
-    printf("inserted function %s\n", name);
+//    printf("inserted function %s\n", name);
     SymbolEntry *e = newFunction(name);
     e->u.eFunction.resultType = t;
     return e;
@@ -411,10 +412,9 @@ void print_ast_node (ast f) {
  * x is either "int" or "byte".
  */
 Type var_def_type (Type t, ast f) {
-    printf("var_def_type \n");
-    //print_ast_node(f);
+//    printf("var_def_type \n");
     if (f == nullptr) return t;
-    printf("var_def_type3\n");
+//    printf("var_def_type3\n");
     return typeArray(f->num, var_def_type(t, f->first));
 }
 
@@ -427,14 +427,10 @@ Type var_def_type (Type t, ast f) {
  * and then it returns an ast with the appropriate type.
  * For case 1), it returns also nesting diff and offset. 
  */
-ast l_value_type (ast f, int count) {
-
-    printf("l_value_type \n");
-    print_ast_node(f);
-
+ast l_value_type (ast f, int count)
+{
     if (f->k == ID) {
 
-        printf("l_value_type2 \n");
         SymbolEntry * e = lookup(f->id);
         if (e == nullptr) error("l_value_type - Undeclared variable : %s", f->id);
 
@@ -455,17 +451,13 @@ ast l_value_type (ast f, int count) {
         return p;
     }
     else if (f->k == STR) {
-        printf("l_value_type3 \n");
         Type temp = f->type;
-        printType(temp);
 
         if (count > 1) {
             error("Too many dimensions for string");
         }
         else if (count == 1) {
-            printf("l_value_type4 \n");
             temp = temp->refType;
-            printf("l_value_type5 \n");
         }
 
         ast p;
@@ -473,7 +465,6 @@ ast l_value_type (ast f, int count) {
             exit(1);
         p->type = temp;
 
-        printf("end_l_value_type3 \n");
         return p;
     }
 
@@ -494,26 +485,26 @@ ast l_value_type (ast f, int count) {
  *  5) Anything else ==> Type mismatch
  */
 
-Type check_op_type (Type first, Type second, char *op) {
+Type check_op_type(Type first, Type second, std::string op) {
 
     Type result = typeInteger;
 
     if (equalType(first, typeInteger)) {
         if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-            error("type mismatch in %s operator", op);
+            error("type mismatch in %s operator", op.c_str());
         else
             result = typeInteger;
     }
     else if (equalType(first, typeChar)) {
         if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-            error("type mismatch in %s operator", op);
+            error("type mismatch in %s operator", op.c_str());
         else if (equalType(second, typeInteger))
             result = typeInteger;
         else
             result = typeChar;
     }
     else
-        error("type mismatch in %s operator", op);
+        error("type mismatch in %s operator", op.c_str());
 
     return result;
 }
@@ -524,15 +515,15 @@ Type check_op_type (Type first, Type second, char *op) {
  * and the type of the returned expression
  * and checks if they are compatible.
  */
-void check_result_type (Type first, Type second, char *func_name)
+void check_result_type (Type first, Type second, std::string func_name)
 {
     // Check if the return was during a procedure
     if (equalType(first, typeVoid)) {
-        fatal("Proc %s does not return value", func_name);
+        fatal("Proc %s does not return value", func_name.c_str());
     }
         // Check if an integer is returned as byte
     else if (equalType(first, typeChar) && equalType(second, typeInteger)) {
-        fatal("Result type must be a byte, not an integer in %s", func_name);
+        fatal("Result type must be a byte, not an integer in %s", func_name.c_str());
     }
 }
 
@@ -544,7 +535,7 @@ void check_result_type (Type first, Type second, char *func_name)
  * second : list with the rest real parameters
  * call_type : "func" or "proc", to help messages
  */
-void check_parameters (SymbolEntry *f, ast first, ast second, char *call_type) {
+void check_parameters (SymbolEntry *f, ast first, ast second, std::string call_type) {
 
     ast real_param = first;
     ast real_param_list = second;
@@ -567,7 +558,7 @@ void check_parameters (SymbolEntry *f, ast first, ast second, char *call_type) {
             !(real_param_type->kind == Type_tag::TYPE_ARRAY
               && func_param_type->kind == Type_tag::TYPE_IARRAY
               && equalType(real_param_type->refType, func_param_type->refType)))
-            fatal("Type mismatch in	%s call argument %s", call_type, func_param->id);
+            fatal("Type mismatch in	%s call argument %s", call_type.c_str(), func_param->id);
         func_param = func_param->u.eParameter.next;
         if (real_param_list == nullptr) {
             real_param = nullptr;
@@ -577,19 +568,17 @@ void check_parameters (SymbolEntry *f, ast first, ast second, char *call_type) {
         real_param_list = real_param_list->second;
     }
     if (real_param != nullptr || func_param != nullptr)
-        fatal("Incorrect number of parameters at %s call", call_type);
+        fatal("Incorrect number of parameters at %s call", call_type.c_str());
 }
 
 void ast_sem (ast t) {
     if (t == nullptr) return;
     switch (t->k) {
         case LET: {
-            printf("LET\n");
+//            printf("LET\n");
             ast_sem(t->first);
             ast_sem(t->second);
-            printf("LET finished first - second\n");
-            printType(t->first->type);
-            printType(t->second->type)	;
+//            printf("LET finished first - second\n");
             if (!equalType(t->first->type, t->second->type) &&
                 !(equalType(t->first->type, typeInteger) && equalType(t->second->type, typeChar))
                     )
@@ -613,191 +602,154 @@ void ast_sem (ast t) {
     return;
 	*/
         case SEQ:
-            printf("SEQ\n");
+//            printf("SEQ\n");
             ast_sem(t->first);
             //if (t->second != nullptr)
             ast_sem(t->second);
             return;
         case ID: { //TODO for n-dimensional array
-            printf("ID %s\n", t->id);
             SymbolEntry *e = lookup(t->id);
-            printf("ID - %s\n", t->id);
 
             if (e == nullptr)
                 error("ID - Undeclared variable : %s", t->id);
 
-            printf("ID2\n");
             t->type = e->u.eVariable.type;
-            printf("ID3\n");
             t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
-            printf("ID4\n");
             t->offset = e->u.eVariable.offset;
             return;
         }
         case CONST:
-            printf("CONST\n");
             t->type = typeInteger;
             return;
         case CHAR:
-            printf("CHAR --- %d\n",t->num);
             t->type = typeChar;
             return;
         case STR:
-            printf("STR\n");
             return;
         case TRUE:
-            printf("TRUE\n");
             t->type = typeChar;
             return;
         case FALSE:
-            printf("FALSE\n");
             t->type = typeChar;
             return;
         case BIT_NOT:
-            printf("BIT_NOT\n");
             ast_sem(t->first);
-            print_ast_node(t->first);
             t->type = t->first->type;
             return;
         case BIT_AND:
-            printf("BIT_AND\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "&");
             return;
         case BIT_OR:
-            printf("BIT_OR\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "|");
             return;
         case BOOL_NOT:
-            printf("BOOL_NOT\n");
             ast_sem(t->first);
             t->type = typeChar;
             return;
         case BOOL_AND:
-            printf("BOOL_AND\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "and");
             return;
         case BOOL_OR:
-            printf("BOOL_OR\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "or");
             return;
         case PLUS:
-            printf("PLUS\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "+");
             return;
         case MINUS:
-            printf("MINUS\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "-");
             return;
         case TIMES:
-            printf("TIMES\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "*");
             return;
         case DIV:
-            printf("DIV\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "/");
             return;
         case MOD:
-            printf("MOD\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "%");
             return;
         case EQ:
-            printf("EQ\n");
             ast_sem(t->first);
             ast_sem(t->second);
             check_op_type(t->first->type, t->second->type, "=");
             t->type = typeChar;
             return;
         case NE:
-            printf("NE\n");
             ast_sem(t->first);
             ast_sem(t->second);
             check_op_type(t->first->type, t->second->type, "<>");
             t->type = typeChar;
             return;
         case LT:
-            printf("LT\n");
             ast_sem(t->first);
             ast_sem(t->second);
             check_op_type(t->first->type, t->second->type, "<");
             t->type = typeChar;
             return;
         case GT:
-            printf("GT\n");
             ast_sem(t->first);
             ast_sem(t->second);
             check_op_type(t->first->type, t->second->type, ">");
             t->type = typeChar;
             return;
         case LE:
-            printf("LE\n");
             ast_sem(t->first);
             ast_sem(t->second);
             check_op_type(t->first->type, t->second->type, "<=");
             t->type = typeChar;
             return;
         case GE:
-            printf("GE\n");
             ast_sem(t->first);
             ast_sem(t->second);
             check_op_type(t->first->type, t->second->type, ">=");
             t->type = typeChar;
             return;
         case ID_LIST:
-            printf("ID_LIST\n");
             return;
         case VAR_DEF:
         {
-            printf("VAR_DEF %s \n", t->id);
+//            printf("VAR_DEF %s \n", t->id);
             ast_sem(t->second);
-            printf("VAR_DEF2\n");
-            //print_ast_node(ast_type(t->type, nullptr));
             insert(t->id, t->second->type);
-            printf("VAR_DEF3\n");
 
             ast temp = t->first;
             while (temp != nullptr) {
-                printf("VAR_DEF4 %s \n", temp->id);
                 insert(temp->id, t->second->type);
-                printf("VAR_DEF5\n");
                 temp = temp->first;
             }
-            //print_ast_node(t);
             return;
         }
         case FUNC_DEF:
-            printf("FUNC_DEF\n");
             ast_sem(t->first);
             ast_sem(t->second);
             t->num_vars = currentScope->negOffset;
-            printf("FUNC_DEF2\n");
             //strcpy(curr_func_name, t->first->id);
             curr_func_name = t->first->id;
-            printf("FUNC_DEF curr_func_name : %s \n", curr_func_name);
+//            printf("FUNC_DEF curr_func_name : %s \n", curr_func_name);
             ast_sem(t->third);
             insert_func_code(t->first->id, t->third);
             closeScope();
             return;
         case L_VALUE:
         {
-            printf("L_VALUE\n");
+//            printf("L_VALUE\n");
             ast p = l_value_type(t, 0);
             t->type = p->type;
             t->nesting_diff = p->nesting_diff;
@@ -806,25 +758,24 @@ void ast_sem (ast t) {
             return;
         }
         case TYPE:
-            printf("TYPE\n");
+//            printf("TYPE\n");
             t->type = var_def_type(t->type, t->first);
             return;
         case REF_TYPE:
-            printf("REF_TYPE\n");
+//            printf("REF_TYPE\n");
             t->type = typePointer(t->type);
             return;
         case IARRAY_TYPE:
         {
-            printf("IARRAY_TYPE\n");
+//            printf("IARRAY_TYPE\n");
             Type my_type = var_def_type(t->type, t->first);
             t->type = typeIArray(my_type);
             return;
         }
         case INT_CONST_LIST:
-            printf("INT_CONST_LIST\n");
             return;
         case IF:
-            printf("IF\n");
+//            printf("IF\n");
             ast_sem(t->first);
             if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -832,7 +783,7 @@ void ast_sem (ast t) {
             ast_sem(t->third);
             return;
         case ELIF:
-            printf("ELIF\n");
+//            printf("ELIF\n");
             ast_sem(t->first);
             if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -840,7 +791,7 @@ void ast_sem (ast t) {
             ast_sem(t->third);
             return;
         case IF_ELSE:
-            printf("IF_ELSE\n");
+//            printf("IF_ELSE\n");
             ast_sem(t->first);
             if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -850,9 +801,7 @@ void ast_sem (ast t) {
             return;
         case LOOP:
         {
-            printf("LOOP\n");
-            print_ast_node(t);
-            print_loop_list();
+//            printf("LOOP\n");
             if (t->id != nullptr)
                 if (look_up_loop(t->id)) {
                     error("Loop identifier already exists!\n");
@@ -868,8 +817,7 @@ void ast_sem (ast t) {
             return;
         }
         case BREAK:
-            printf("BREAK\n");
-            print_ast_node(t);
+//            printf("BREAK\n");
             if (t->id != nullptr) {
                 if (!look_up_loop(t->id)) {
                     error("Loop identifier does not exist!\n");
@@ -880,8 +828,7 @@ void ast_sem (ast t) {
                 error("No loop to break");
             return;
         case CONTINUE:
-            printf("CONTINUE\n");
-            print_ast_node(t);
+//            printf("CONTINUE\n");
             if (t->id != nullptr) {
                 if (!look_up_loop(t->id)) {
                     error("Loop identifier does not exist!\n");
@@ -896,12 +843,11 @@ void ast_sem (ast t) {
              * and for every parameter in each definition (T_id).
              */
         case HEADER: {
-            printf("HEADER\n");
+//            printf("HEADER\n");
             Type func_type = typeVoid;
             if (t->type != nullptr) func_type = t->type;    // Check func or proc
             SymbolEntry *f = insertFunction(t->id, func_type);
             if (f == nullptr) {
-                printf("header-nullptr\n");
                 return;    // f == nullptr means, function was declared before
             }                        // The rest have already been done
             /*
@@ -914,33 +860,27 @@ void ast_sem (ast t) {
             Type par_type = nullptr;
             ast fpar_def_list = t->second;
             while (par_def != nullptr) {
-                printf("HEADER1\n");
                 ast_sem(par_def->second); // Second is fpar_type
                 par_type = par_def->second->type;
                 insertParameter(par_def->id, par_type, f);    // Insert first parameter
                 ast par_list = par_def->first;
                 while (par_list != nullptr) {        // Insert the rest parameters
-                    printf("HEADER2\n");
                     insertParameter(par_list->id, par_type, f);
                     par_list = par_list->first;    // First is the rest of T_ids.
                 }
                 if (fpar_def_list == nullptr) {
-                    printf("break\n");
                     break;
                 }
-                print_ast_node(fpar_def_list);
                 par_def = fpar_def_list->first;    // Now for the rest of fpar_defs.
-                print_ast_node(par_def);
                 fpar_def_list = fpar_def_list->second;
             }
             return;
         }
         case FPAR_DEF:
-            printf("FPAR_DEF\n");
             return;
         case PROC_CALL:
         {
-            printf("PROC_CALL\n");
+//            printf("PROC_CALL\n");
             SymbolEntry *proc = lookup(t->id);
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
@@ -949,9 +889,8 @@ void ast_sem (ast t) {
         }
         case FUNC_CALL:
         {
-            printf("FUNC_CALL\n");
+//            printf("FUNC_CALL\n");
             SymbolEntry *func = lookup(t->id);
-            printf("FUNC_CALL2\n");
             if (func->u.eFunction.resultType == typeVoid)
                 fatal("Function must have a return type\n");
             check_parameters(func, t->first, t->second, "func");
@@ -959,16 +898,16 @@ void ast_sem (ast t) {
             return;
         }
         case PROGRAM:
-            printf("PROGRAM\n");
+//            printf("PROGRAM\n");
             openScope();
             ast_sem(t->first);
             closeScope();
             return;
         case RETURN:
         {
-            printf("RETURN\n");
+//            printf("RETURN\n");
             ast_sem(t->first);
-            printf("curr_func_name : %s \n", curr_func_name);
+//            printf("curr_func_name : %s \n", curr_func_name);
             SymbolEntry *curr_func = lookup(curr_func_name);
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = t->first->type;

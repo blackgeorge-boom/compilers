@@ -1,6 +1,6 @@
 %{
 #include <string.h>
-#include "ast.hpp"
+#include "ast.h"
 #include "parser.hpp"
 #define T_eof 0
 
@@ -252,11 +252,9 @@ R[`~@#$^_\{\}\;?.]
                                                 yylval.n = decimal; return T_char; }
 \'[ ]\'		{ yylval.n = yytext[1]; return T_char; }
 \"(({S}|{Q}|{L}|{R}|{D}|("\\"{E})|("\\"{X})|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])|" "))+)\" {
-													char *s = "abc";
-													printf("Check mate %d\n", s[3]);
 													yytext[strlen(yytext) - 1] = '\0';
 													yylval.s = strdup(yytext + 1); return T_str; }
-\"\"				{ yylval.s = "\0"; return T_str; }     
+\"\"				{ std::string temp = "\0"; strcpy(yylval.s, temp.c_str()); return T_str; }
 {W}+                { /* nothing */ }
 \n                  { line_number++; current_line_indent = 0; if (command_line_flag) BEGIN(INDENT); }
 .                   { yyerror("Unknown word in a line"); }

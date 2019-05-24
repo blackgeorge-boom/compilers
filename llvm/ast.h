@@ -1,10 +1,12 @@
-#ifndef __AST_HPP__
-#define __AST_HPP__
+#ifndef __AST_H__
+#define __AST_H__
 
 #include <string>
 
-#include "symbol.h"
-#include "error.h"
+extern "C" {
+    #include "error.h"
+    #include "symbol.h"
+}
 
 typedef enum {
   IARRAY_TYPE, CHAR, PROGRAM, PROC_CALL, HEADER, 
@@ -76,8 +78,6 @@ struct activation_record_tag {
 
 typedef struct activation_record_tag* activation_record;
 
-activation_record current_AR = nullptr;
-
 /*
  * This struct represents a list of nested loops.
  * -Id is the identifier of the current loop.
@@ -86,17 +86,19 @@ activation_record current_AR = nullptr;
  * -Previous points to the loop of the next outermost scope.
  */
 struct loop_record_tag {
-	char *id;
-	char state;
-	struct loop_record_tag * previous;
+    char *id;
+    char state;
+    struct loop_record_tag * previous;
 };
 
 typedef struct loop_record_tag * loop_record;
 
-void print_loop_list ();
+extern loop_record current_LR;
 
+void print_loop_list ();
 int look_up_loop (char *s);
-    /*
+
+/*
  * Each node of the list has :
  *
  * 1) a function name
@@ -106,24 +108,23 @@ int look_up_loop (char *s);
  * 4) a pointer to the next node
  */
 struct function_code_list_t {
-	char *name;
-	ast code;
-	struct function_code_list_t *next;
+    char *name;
+    ast code;
+    struct function_code_list_t *next;
 };
 
 typedef struct function_code_list_t *function_code_list;
 
-function_code_list current_CL = nullptr;
+extern function_code_list current_CL;
 
 ast find_code (char *func_name);
 void print_code_list ();
 void insert_func_code (char *func_name, ast code);
 
-char *curr_func_name;
+extern char *curr_func_name;
 
 int ast_run(ast t);
 
-loop_record current_LR = nullptr;
 SymbolEntry * lookup(char *s);
 SymbolEntry * insert(char *s, Type t);
 SymbolEntry * insertFunction(char *s, Type t);

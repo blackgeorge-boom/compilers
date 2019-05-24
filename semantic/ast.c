@@ -185,6 +185,7 @@ typedef struct activation_record_tag * activation_record;
 
 activation_record current_AR = NULL;
 
+
 /*
  * This struct represents a list of nested loops.
  * -Id is the identifier of the current loop.
