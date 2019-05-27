@@ -184,7 +184,7 @@ func_decl:
 
 var_def:
   "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }
-;      
+;
 
 stmt:
   "skip" { $$ = NULL; }
@@ -272,7 +272,7 @@ cond:
 
 x_cond:
   '(' x_cond ')' { $$ = $2; }
-| "not" cond { $$ = ast_bool_not($2); }   %prec NOT
+| "not" cond { $$ = ast_bool_not($2); } %prec NOT
 | cond "and" cond { $$ = ast_bool_and($1, $3); }
 | cond "or" cond { $$ = ast_bool_or($1, $3); }
 | expr '=' expr { $$ = ast_op($1, EQ, $3); } 
@@ -302,14 +302,14 @@ int main(int argc, char **argv) {
 
   int c;
 
-   if (argc == 2)
-        yyin = fopen(argv[1], "r");
-    else if (argc == 1)
-        yyin = stdin;
-    else {
-        printf("Usage: <parser_executable> [input-file] \n");
-        return 0;
-   }
+  if (argc == 2)
+      yyin = fopen(argv[1], "r");
+  else if (argc == 1)
+      yyin = stdin;
+  else {
+      printf("Usage: <parser_executable> [input-file] \n");
+      return 0;
+  }
 
   command_line_flag = 1; /* Offside rule activated for dana_indent. */
 
@@ -325,7 +325,7 @@ int main(int argc, char **argv) {
 
   initSymbolTable(997);
   ast_sem(tree);
-  printf("Semantic check was successful\n");
+  printf("Semantic check was successful.\n");
   print_code_list();
   destroySymbolTable();
   return 0;

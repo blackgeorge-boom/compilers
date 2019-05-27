@@ -1,7 +1,11 @@
 %{
+extern "C" {
+    #include "symbol.h"
+}
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "ast.hpp"
+#include "ast.h"
 
 extern int yylex();
 extern FILE* yyin;
@@ -111,140 +115,140 @@ program:
 ;
 
 func_def:
-"def" header local_def_list block { $$ = ast_func_def($2, $3, $4); }//printf("func_def %s\n", $2->id);}                 
+"def" header local_def_list block { $$ = ast_func_def($2, $3, $4); }
 ;
 
 
 local_def_list:
   /* nothing */ { $$ = NULL; }
-| local_def local_def_list { $$ = ast_seq($1, $2); }//printf("local_def_list\n");}
+| local_def local_def_list { $$ = ast_seq($1, $2); }
 ;
 
 header:
-  T_id { $$ = ast_header($1, NULL, NULL, NULL); printf("header proc %s\n", $1); }
-| T_id "is" data_type { $$ = ast_header($1, NULL, NULL, $3); printf("header func\n");}
-| T_id ':' fpar_def fpar_def_list { $$ = ast_header($1, $3, $4, NULL); printf("header proc2\n");} 
-| T_id "is" data_type ':' fpar_def fpar_def_list { $$ = ast_header($1, $5, $6, $3); printf("header func2\n");} 
+  T_id { $$ = ast_header($1, NULL, NULL, NULL); }
+| T_id "is" data_type { $$ = ast_header($1, NULL, NULL, $3); }
+| T_id ':' fpar_def fpar_def_list { $$ = ast_header($1, $3, $4, NULL); }
+| T_id "is" data_type ':' fpar_def fpar_def_list { $$ = ast_header($1, $5, $6, $3); }
 ;
 
 fpar_def_list:
   /* nothing */ { $$ = NULL; }
-| ',' fpar_def fpar_def_list { $$ = ast_seq($2, $3); printf("fpar_def_list\n");}
+| ',' fpar_def fpar_def_list { $$ = ast_seq($2, $3); }
 ;
 
 fpar_def:
-  T_id id_list "as" fpar_type { $$ = ast_fpar_def($1, $2, $4); printf("fpar_def\n"); }
+  T_id id_list "as" fpar_type { $$ = ast_fpar_def($1, $2, $4); }
 ;
 
 id_list:
   /* nothing */ { $$ = NULL; }
-| T_id id_list { $$ = ast_id_list($1, $2); }//printf("id_list\n");}
+| T_id id_list { $$ = ast_id_list($1, $2); }
 ;
 
 data_type:
-  "int" { $$ = typeInteger; }//printf("data_type int\n");}
+  "int" { $$ = typeInteger; }
 | "byte" { $$ = typeChar; }
 
 
 type:
-  data_type int_const_list { $$ = ast_type($1, $2); printf("type\n");}
+  data_type int_const_list { $$ = ast_type($1, $2); }
 ;
 
 
 fpar_type:
-  type { $$ = $1; printf("fpar_type - type\n"); }
-| "ref" data_type { $$ = ast_ref_type($2); printf("fpar_type - ref_type\n"); }
-| data_type '[' ']' int_const_list { $$ = ast_iarray_type($4, $1); printf("fpar_type - iarray\n"); }
+  type { $$ = $1; }
+| "ref" data_type { $$ = ast_ref_type($2); }
+| data_type '[' ']' int_const_list { $$ = ast_iarray_type($4, $1); }
 ;   
 
 int_const_list:
-  /* nothing */ { $$ = NULL; printf("int_const_list - nothing\n");}
-| '[' T_const ']' int_const_list { $$ = ast_int_const_list($2, $4); printf("int_const_list\n");}
+  /* nothing */ { $$ = NULL; }
+| '[' T_const ']' int_const_list { $$ = ast_int_const_list($2, $4); }
 ;
 
 local_def:
-  func_def { $$ = $1; } //printf("local_def\n");} 
-| func_decl { $$ = $1;} //printf("local_def\n");} 
-| var_def { $$ = $1;  } //printf("local_def\n");}
+  func_def { $$ = $1; }
+| func_decl { $$ = $1; }
+| var_def { $$ = $1; }
 ;
 
 func_decl:
-  "decl" header { $$ = $2; printf("func_decl\n"); }
+  "decl" header { $$ = $2; }
 ;
 
 var_def:
-  "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }//printf("var_def %c %d\n", $2, ($5)->kind);}
+  "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }
 ;     
 
 stmt:
-  "skip" { $$ = NULL; printf("stmt_skip\n");}
-| l_value ":=" expr { $$ = ast_let($1, $3); printf("stmt_let\n");}
-| proc_call { $$ = $1; printf("proc_calll\n"); }
-| "exit" { $$ = NULL; printf("exit\n"); }
-| "return" ':' expr { $$ = ast_return($3); printf("return\n"); }
-| "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); printf("if\n"); }
-| "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); printf("if-else\n"); }
-| "loop" ':' block { $$ = ast_loop('\0', $3); printf("loop\n"); }
-| "loop" T_id ':' block { $$ = ast_loop($2, $4); printf("loop id\n"); }
-| "break" { $$ = ast_break('\0'); printf("break\n"); }
-| "break" ':' T_id { $$ = ast_break($3); printf("break id\n"); }
-| "continue" { $$ = ast_continue('\0'); printf("continue\n"); }
-| "continue" ':' T_id { $$ = ast_continue($3); printf("continue id\n"); }
+  "skip" { $$ = NULL; }
+| l_value ":=" expr { $$ = ast_let($1, $3); }
+| proc_call { $$ = $1; }
+| "exit" { $$ = NULL; }
+| "return" ':' expr { $$ = ast_return($3); }
+| "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); }
+| "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); }
+| "loop" ':' block { $$ = ast_loop((char*)'\0', $3); }
+| "loop" T_id ':' block { $$ = ast_loop($2, $4); }
+| "break" { $$ = ast_break((char*)'\0'); }
+| "break" ':' T_id { $$ = ast_break($3); }
+| "continue" { $$ = ast_continue((char*)'\0'); }
+| "continue" ':' T_id { $$ = ast_continue($3); }
 ;
 
 elif_list:
   /* nothing */ { $$ = NULL; }
-| "elif" cond ':' block elif_list { $$ = ast_elif($2, $4, $5); printf("elif\n"); }
+| "elif" cond ':' block elif_list { $$ = ast_elif($2, $4, $5); }
 ;
 
 block:
-  "begin" stmt stmt_list "end" { $$ = ast_seq($2, $3);  printf("block\n");}
+  "begin" stmt stmt_list "end" { $$ = ast_seq($2, $3); } 
 ;
 
 stmt_list:
   /* nothing */ { $$ = NULL; }
-| stmt stmt_list { $$ = ast_seq($1, $2); }//printf("stmt_list\n");}
+| stmt stmt_list { $$ = ast_seq($1, $2); }
 ;
 
 proc_call:
-  T_id { $$ = ast_proc_call($1, NULL, NULL); printf("proc_call1\n"); }
-| T_id':' expr expr_list { $$ = ast_proc_call($1, $3, $4); printf("proc_call2\n"); }
+  T_id { $$ = ast_proc_call($1, NULL, NULL); }
+| T_id':' expr expr_list { $$ = ast_proc_call($1, $3, $4); }
 ;  
 
 expr_list:
   /* nothing */ { $$ = NULL; }
-| ',' expr expr_list { $$ = ast_seq($2, $3);  printf("expr_list\n");}
+| ',' expr expr_list { $$ = ast_seq($2, $3); }
 ;
 
 func_call:
-  T_id '('')' { $$ = ast_func_call($1, NULL, NULL); printf("func_call1\n"); }
-| T_id '(' expr expr_list ')' { $$ = ast_func_call($1, $3, $4); printf("func_call2\n"); }
+  T_id '('')' { $$ = ast_func_call($1, NULL, NULL); }
+| T_id '(' expr expr_list ')' { $$ = ast_func_call($1, $3, $4); }
 ; 
 
 l_value:
-  T_id { $$ = ast_id($1); printf("l_value T_id is : %s\n", $1);}
-| T_str { $$ = ast_str($1); printf("l_value T_str : %s\n", $1); }
-| l_value '[' expr ']' { $$ = ast_l_value($1, $3); printf("l_value expr\n");}
+  T_id { $$ = ast_id($1); }
+| T_str { $$ = ast_str($1); }
+| l_value '[' expr ']' { $$ = ast_l_value($1, $3); }
 ;
 
 expr:
-  T_char  { $$ = ast_char($1); printf("char\n");}
-| T_const { $$ = ast_const($1); printf("const\n");}
-| l_value { $$ = $1; printf("expr_lvalue\n");}
+  T_char  { $$ = ast_char($1); }
+| T_const { $$ = ast_const($1); }
+| l_value { $$ = $1; }
 | '(' expr ')' { $$ = $2; }
-| func_call { $$ = $1; printf("func_call\n"); }
-| '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); }	%prec UPLUS
+| func_call { $$ = $1; }
+| '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); } %prec UPLUS
 | '-' expr { $$ = ast_op(ast_const(0), MINUS, $2); } %prec UMINUS
 | expr '+' expr { $$ = ast_op($1, PLUS, $3); } 
 | expr '-' expr { $$ = ast_op($1, MINUS, $3); }  
 | expr '*' expr { $$ = ast_op($1, TIMES, $3); } 
 | expr '/' expr { $$ = ast_op($1, DIV, $3); } 
 | expr '%' expr { $$ = ast_op($1, MOD, $3); } 
-| "true" { $$ = ast_true(); printf("true\n"); } 
-| "false" { $$ = ast_false(); printf("false\n"); }
-| '!' expr { $$ = ast_bit_not($2); printf("bit_not\n"); }	%prec BYTE_NOT
-| expr '&' expr { $$ = ast_bit_and($1, $3); printf("bit_and\n"); }
-| expr '|' expr { $$ = ast_bit_or($1, $3); printf("bit_or\n"); }
+| "true" { $$ = ast_true(); }
+| "false" { $$ = ast_false(); }
+| '!' expr { $$ = ast_bit_not($2); } %prec BYTE_NOT
+| expr '&' expr { $$ = ast_bit_and($1, $3); }
+| expr '|' expr { $$ = ast_bit_or($1, $3); }
 ;
 
 cond:
@@ -254,9 +258,9 @@ cond:
 
 x_cond:
   '(' x_cond ')' { $$ = $2; }
-| "not" cond { $$ = ast_bool_not($2); printf("bool_not\n"); }		%prec NOT
-| cond "and" cond { $$ = ast_bool_and($1, $3); printf("bool_and\n"); }
-| cond "or" cond { $$ = ast_bool_or($1, $3); printf("bool_or\n"); }
+| "not" cond { $$ = ast_bool_not($2); } %prec NOT
+| cond "and" cond { $$ = ast_bool_and($1, $3); }
+| cond "or" cond { $$ = ast_bool_or($1, $3); }
 | expr '=' expr { $$ = ast_op($1, EQ, $3); } 
 | expr "<>" expr { $$ = ast_op($1, NE, $3); } 
 | expr '<' expr { $$ = ast_op($1, LT, $3); } 
@@ -307,7 +311,7 @@ int main(int argc, char **argv) {
 
   initSymbolTable(997);
   ast_sem(tree);
-  printf("after ast_sem\n");
+  printf("Semantic check was successful.\n");
   print_code_list();
   destroySymbolTable();
   return 0;

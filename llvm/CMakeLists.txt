@@ -11,9 +11,9 @@ find_package(BISON)
 FLEX_TARGET(Scanner lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
 
 ## No Offside Rule
-BISON_TARGET(ParserU parser_unindent.y ${CMAKE_CURRENT_BINARY_DIR}/parser_u.cpp)
+BISON_TARGET(ParserU parser_unindent.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
 ## Offside Rule
-BISON_TARGET(ParserI parser_indent.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
+BISON_TARGET(ParserI parser_indent.y ${CMAKE_CURRENT_BINARY_DIR}/parser_i.cpp)
 ADD_FLEX_BISON_DEPENDENCY(Scanner ParserU)
 ADD_FLEX_BISON_DEPENDENCY(Scanner ParserI)
 
