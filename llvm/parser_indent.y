@@ -6,6 +6,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast.h"
+#include "auxiliary.h"
 
 extern int yylex();
 extern FILE* yyin;
@@ -179,7 +180,7 @@ local_def:
 ;
 
 func_decl:
-  "decl" header { $$ = $2; }
+  "decl" header { $$ = ast_func_decl($2); }
 ;
 
 var_def:

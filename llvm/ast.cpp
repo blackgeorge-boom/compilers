@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ast.h"
+#include "auxiliary.h"
 
 loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
@@ -97,6 +98,10 @@ ast ast_func_def (ast f, ast s, ast t) {
     return ast_make(FUNC_DEF, nullptr, 0, f, s, t, nullptr, nullptr);
 }
 
+ast ast_func_decl(ast f) {
+    return ast_make(FUNC_DECL, nullptr, 0, f, nullptr, nullptr, nullptr, nullptr);
+}
+
 ast ast_type (Type t, ast f) {
     return ast_make(TYPE, nullptr, 0, f, nullptr, nullptr, nullptr, t);
 }
@@ -173,404 +178,6 @@ ast ast_return (ast f) {
     return ast_make(RETURN, nullptr, 0, f, nullptr, nullptr, nullptr, nullptr);
 }
 
-void print_loop_list () {
-
-    loop_record t = current_LR;
-
-    printf("===== Loop Records : ======\n");
-
-    while (t != nullptr) {
-        if (t->id == nullptr) printf("Unamed loop\n");
-        else printf("%s\n", t->id);
-        t = t->previous;
-    }
-
-    printf("==========\n");
-}
-
-int look_up_loop (char *s) {
-
-    loop_record t = current_LR;
-
-    while (t != nullptr) {
-        if (t->id != nullptr)
-            if (strcmp(t->id, s) == 0) return 1;
-        t = t->previous;
-    }
-
-    return 0;
-}
-
-
-ast find_code (char *func_name) {
-
-    function_code_list temp = current_CL;
-    while (temp != nullptr) { // TODO maybe optimize
-        if (strcmp(temp->name, func_name) == 0) return temp->code;
-        temp = temp->next;
-    }
-
-    return nullptr;
-}
-
-void print_code_list () {
-
-    function_code_list temp = current_CL;
-    printf("===== Current Code List =====\n");
-    while (temp != nullptr) {
-        printf("%s\n", temp->name);
-        temp = temp->next;
-    }
-    printf("=============================\n");
-}
-
-void insert_func_code (char *func_name, ast code) {
-
-    auto new_code = new struct function_code_list_t;
-    new_code->name = func_name;
-    new_code->code = code;
-    new_code->next = current_CL;
-    current_CL = new_code;
-}
-
-/*
-int ast_run (ast t) {
-    if (t == nullptr) return NOTHING;
-    switch (t->k) {
-//    case PRINT:
-//      printf("%d\n", ast_run(t->first));
-//      return NOTHING;
-        case LET: {
-            activation_record ar = current_AR;
-            for (int i = 0; i < t->nesting_diff; ++i) ar = ar->previous;
-            ar->data[t->offset] = ast_run(t->first);
-            return NOTHING;
-        }
-        case FOR:
-            for (int i = 0, times = ast_run(t->first); i < times; ++i)
-                ast_run(t->second);
-            return NOTHING;
-        case IF:
-            if (ast_run(t->first) != 0) ast_run(t->second);
-            return NOTHING;
-        case SEQ:
-            ast_run(t->first);
-            ast_run(t->second);
-            return NOTHING;
-//          case DECL:
-//            return NOTHING;
-        case BLOCK: {
-            auto new_AR =
-                    (activation_record) malloc(
-                            sizeof(struct activation_record_tag) +
-                            t->num_vars * sizeof(int));
-            new_AR->previous = current_AR;
-            current_AR = new_AR;
-            for (int i = 0; i < t->num_vars; ++i) new_AR->data[i] = 0;
-            ast_run(t->first);
-            ast_run(t->second);
-            current_AR = current_AR->previous;
-            free(new_AR);
-            return NOTHING;
-        }
-        case ID: {
-            activation_record ar = current_AR;
-            for (int i = 0; i < t->nesting_diff; ++i) ar = ar->previous;
-            return ar->data[t->offset];
-        }
-        case CONST:
-            return t->num;
-        case PLUS:
-            return ast_run(t->first) + ast_run(t->second);
-        case MINUS:
-            return ast_run(t->first) - ast_run(t->second);
-        case TIMES:
-            return ast_run(t->first) * ast_run(t->second);
-        case DIV:
-            return ast_run(t->first) / ast_run(t->second);
-        case MOD:
-            return ast_run(t->first) % ast_run(t->second);
-        case LT:
-            return ast_run(t->first) < ast_run(t->second);
-        case GT:
-            return ast_run(t->first) > ast_run(t->second);
-        case LE:
-            return ast_run(t->first) <= ast_run(t->second); case GE:
-            return ast_run(t->first) >= ast_run(t->second);
-        case EQ:
-            return ast_run(t->first) == ast_run(t->second);
-        case NE:
-            return ast_run(t->first) != ast_run(t->second);
-        case AND:
-            return ast_run(t->first) && ast_run(t->second);
-        case OR:
-            return ast_run(t->first) || ast_run(t->second);
-//          case NOT:
-//            return !ast_run(t->first);
-        case IARRAY_TYPE:break;
-        case CHAR:break;
-        case PROGRAM:break;
-        case PROC_CALL:break;
-        case HEADER:break;
-        case FPAR_DEF:break;
-        case ELIF:break;
-        case IF_ELSE:break;
-        case LOOP:break;
-        case BREAK:break;
-        case CONTINUE:break;
-        case BIT_NOT:break;
-        case BIT_AND:break;
-        case BIT_OR:break;
-        case BOOL_NOT:break;
-        case BOOL_AND:break;
-        case BOOL_OR:break;
-        case INT_CONST_LIST:break;
-        case TYPE:break;
-        case REF_TYPE:break;
-        case STR:break;
-        case TRUE:break;
-        case FALSE:break;
-        case L_VALUE:break;
-        case FUNC_DEF:break;
-        case ID_LIST:break;
-        case VAR_DEF:break;
-        case FUNC_CALL:break;
-        case RETURN:break;
-    }
-}
-*/
-
-SymbolEntry* lookup(char *s) {
-    char *name;
-    name = s;
-    return lookupEntry(name, LOOKUP_ALL_SCOPES, true);
-}
-
-SymbolEntry* insert(char *s, Type t) {
-    char *name;
-    name = s;
-    return newVariable(name, t);
-}
-
-/*
- * If function does not exists in the symbol table, insert it.
- * Else if it does exist, check if it was declared (but not defined) before.
- * This is done by looking it up in the code_list.
- * If it does not exist in the code list, return nullptr. It will be handled later.
- * If it does exist in the code list, it means it was redefined -> exit with error.
- */
-SymbolEntry* insertFunction(char *s, Type t) {
-    char *name;
-    name = s;
-    if (lookupEntry(name, LOOKUP_ALL_SCOPES, false)) {
-        if (find_code(name)) fatal("Function %s already defined", name);
-        return nullptr;
-    }
-//    printf("inserted function %s\n", name);
-    SymbolEntry *e = newFunction(name);
-    e->u.eFunction.resultType = t;
-    return e;
-}
-
-SymbolEntry * insertParameter(char *s, Type t, SymbolEntry *f) {
-    char *name;
-    name = s;
-    PassMode mode = PASS_BY_VALUE;
-    if (t->kind == Type_tag::TYPE_POINTER) {
-        mode = PASS_BY_REFERENCE;
-        t = t->refType;
-    }
-    SymbolEntry *e = newParameter(name, t, mode, f);
-    return e;
-}
-
-void print_ast_node (ast f) {
-
-    printf("====== Node Info =====\n");
-    if (f == nullptr) {
-        printf("nullptr node\n");
-        printf("======================\n");
-        return;
-    }
-
-    printf(" Kind : %d\n", f->k);
-    printf(" Id : %s\n", f->id);
-    printf(" Num : %d\n", f->num);
-    if (f->type == nullptr) printf(" Type : nullptr\n");
-    else {
-        printf(" Type : %d\n", f->type->kind);
-        if (f->type->refType != nullptr)
-            printf("    with refType : %d\n", f->type->refType->kind);
-    }
-    printf("======================\n");
-
-}
-
-/*
- * This function returns the Type of the
- * expression x[i1]...[in].
- * x is either "int" or "byte".
- */
-Type var_def_type (Type t, ast f) {
-//    printf("var_def_type \n");
-    if (f == nullptr) return t;
-//    printf("var_def_type3\n");
-    return typeArray(f->num, var_def_type(t, f->first));
-}
-
-/*
- * This function handles expressions:
- * 1) x[i1]...[in]
- * 2) "abc" or "abc"[i] 
- * First, it checks the dimensions from right to left, 
- * while it traverses the l_value ast tree.
- * and then it returns an ast with the appropriate type.
- * For case 1), it returns also nesting diff and offset. 
- */
-ast l_value_type (ast f, int count)
-{
-    if (f->k == ID) {
-
-        SymbolEntry * e = lookup(f->id);
-        if (e == nullptr) error("l_value_type - Undeclared variable : %s", f->id);
-
-        int i;
-        Type temp = e->u.eVariable.type;
-        for (i = count; i > 0; --i) {
-            if (temp->refType == nullptr)
-                error("Too many dimensions");
-            temp = temp->refType;
-        }
-
-        ast p;
-        if ((p = new struct node) == nullptr)
-            exit(1);
-        p->type = temp;
-        p->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
-        p->offset = e->u.eVariable.offset;
-        return p;
-    }
-    else if (f->k == STR) {
-        Type temp = f->type;
-
-        if (count > 1) {
-            error("Too many dimensions for string");
-        }
-        else if (count == 1) {
-            temp = temp->refType;
-        }
-
-        ast p;
-        if ((p = new struct node) == nullptr)
-            exit(1);
-        p->type = temp;
-
-        return p;
-    }
-
-    ast_sem(f->second);
-    if (f->second->type != typeInteger && f->second->type != typeChar)
-        error("Array index must be of type int or byte");
-    return l_value_type(f->first, count + 1);
-}
-
-/*
- * This function takes two types as input, and returns 
- * the result type or exits with an error for type mismatch.
- * The result type is :
- *  1) Integer `op` Integer ==> Integer
- *  2) Integer `op` Byte ==> Integer
- *  3) Byte `op` Integer ==> Integer
- *  4) Byte `op` Byte ==> Byte
- *  5) Anything else ==> Type mismatch
- */
-
-Type check_op_type(Type first, Type second, std::string op) {
-
-    Type result = typeInteger;
-
-    if (equalType(first, typeInteger)) {
-        if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-            error("type mismatch in %s operator", op.c_str());
-        else
-            result = typeInteger;
-    }
-    else if (equalType(first, typeChar)) {
-        if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-            error("type mismatch in %s operator", op.c_str());
-        else if (equalType(second, typeInteger))
-            result = typeInteger;
-        else
-            result = typeChar;
-    }
-    else
-        error("type mismatch in %s operator", op.c_str());
-
-    return result;
-}
-
-/*
- * This function is called during a 'return' command. 
- * It takes the result type of a function
- * and the type of the returned expression
- * and checks if they are compatible.
- */
-void check_result_type (Type first, Type second, std::string func_name)
-{
-    // Check if the return was during a procedure
-    if (equalType(first, typeVoid)) {
-        fatal("Proc %s does not return value", func_name.c_str());
-    }
-        // Check if an integer is returned as byte
-    else if (equalType(first, typeChar) && equalType(second, typeInteger)) {
-        fatal("Result type must be a byte, not an integer in %s", func_name.c_str());
-    }
-}
-
-/*
- * This function compares the real and the typical parameters during
- * a function or a procedure call. 
- * f : the callers name
- * first : first real parameter
- * second : list with the rest real parameters
- * call_type : "func" or "proc", to help messages
- */
-void check_parameters (SymbolEntry *f, ast first, ast second, std::string call_type) {
-
-    ast real_param = first;
-    ast real_param_list = second;
-    SymbolEntry *func_param = f->u.eFunction.firstArgument;
-
-    while (real_param != nullptr && func_param != nullptr) {
-        ast_sem(real_param);
-        Type real_param_type = real_param->type;
-        Type func_param_type = func_param->u.eParameter.type;
-
-        /*
-         * If the types of the real and the typical parameters are not equal
-         * then print error message.
-         * Except when the 1st dimension of the
-         * real parameter is an Array and
-         * the 1st dimension of the typical parameter is an IArray.
-         * Both Arrays must refer to the same types.
-         */
-        if (!equalType(real_param_type, func_param_type) &&
-            !(real_param_type->kind == Type_tag::TYPE_ARRAY
-              && func_param_type->kind == Type_tag::TYPE_IARRAY
-              && equalType(real_param_type->refType, func_param_type->refType)))
-            fatal("Type mismatch in	%s call argument %s", call_type.c_str(), func_param->id);
-        func_param = func_param->u.eParameter.next;
-        if (real_param_list == nullptr) {
-            real_param = nullptr;
-            break;
-        }
-        real_param = real_param_list->first;
-        real_param_list = real_param_list->second;
-    }
-    if (real_param != nullptr || func_param != nullptr)
-        fatal("Incorrect number of parameters at %s call", call_type.c_str());
-}
-
 void ast_sem (ast t) {
     if (t == nullptr) return;
     switch (t->k) {
@@ -587,20 +194,6 @@ void ast_sem (ast t) {
             t->offset = t->first->offset;
             return;
         }
-/*
-  case FOR:
-    ast_sem(t->first);
-    if (!equalType(t->first->type, typeInteger))
-      error("for loop expects an integer number");
-    ast_sem(t->second);
-    return;
-  case IF:
-    ast_sem(t->first);
-    if (!equalType(t->first->type, typeBoolean))
-      error("if expects a boolean condition");
-    ast_sem(t->second);
-    return;
-	*/
         case SEQ:
 //            printf("SEQ\n");
             ast_sem(t->first);
@@ -742,9 +335,14 @@ void ast_sem (ast t) {
             t->num_vars = currentScope->negOffset;
             //strcpy(curr_func_name, t->first->id);
             curr_func_name = t->first->id;
-//            printf("FUNC_DEF curr_func_name : %s \n", curr_func_name);
+            printf("FUNC_DEF curr_func_name : %s \n", curr_func_name);
             ast_sem(t->third);
             insert_func_code(t->first->id, t->third);
+            closeScope();
+            return;
+        case FUNC_DECL:
+            printf("FUNC_DECL\n");
+            ast_sem(t->first);
             closeScope();
             return;
         case L_VALUE:
@@ -843,7 +441,6 @@ void ast_sem (ast t) {
              * and for every parameter in each definition (T_id).
              */
         case HEADER: {
-//            printf("HEADER\n");
             Type func_type = typeVoid;
             if (t->type != nullptr) func_type = t->type;    // Check func or proc
             SymbolEntry *f = insertFunction(t->id, func_type);
@@ -898,7 +495,7 @@ void ast_sem (ast t) {
             return;
         }
         case PROGRAM:
-//            printf("PROGRAM\n");
+            printf("PROGRAM\n");
             openScope();
             ast_sem(t->first);
             closeScope();
