@@ -25,7 +25,7 @@ void print_loop_list () {
     printf("==========\n");
 }
 
-int look_up_loop (char *s) {
+int look_up_loop (char* s) {
 
     loop_record t = current_LR;
 
@@ -39,7 +39,7 @@ int look_up_loop (char *s) {
 }
 
 
-ast find_code (char *func_name) {
+ast find_code (char* func_name) {
 
     function_code_list temp = current_CL;
     while (temp != nullptr) { // TODO maybe optimize
@@ -50,8 +50,8 @@ ast find_code (char *func_name) {
     return nullptr;
 }
 
-void print_code_list () {
-
+void print_code_list ()
+{
     function_code_list temp = current_CL;
     printf("===== Current Code List =====\n");
     while (temp != nullptr) {
@@ -61,7 +61,7 @@ void print_code_list () {
     printf("=============================\n");
 }
 
-void insert_func_code (char *func_name, ast code) {
+void insert_func_code (char* func_name, ast code) {
 
     auto new_code = new struct function_code_list_t;
     new_code->name = func_name;
@@ -70,47 +70,40 @@ void insert_func_code (char *func_name, ast code) {
     current_CL = new_code;
 }
 
-SymbolEntry* lookup(char *s) {
-    char *name;
+SymbolEntry* lookup(char* s) {
+    char* name;
     name = s;
     return lookupEntry(name, LOOKUP_ALL_SCOPES, true);
 }
 
-SymbolEntry* insert(char *s, Type t) {
-    char *name;
+SymbolEntry* insert(char* s, Type t) {
+    char* name;
     name = s;
     return newVariable(name, t);
 }
 
-/*
- * If function does not exists in the symbol table, insert it.
- * Else if it does exist, check if it was declared (but not defined) before.
- * This is done by looking it up in the code_list.
- * If it does not exist in the code list, return nullptr. It will be handled later.
- * If it does exist in the code list, it means it was redefined -> exit with error.
- */
-SymbolEntry* insertFunction(char *s, Type t) {
-    char *name;
+SymbolEntry* insertFunction(char* s, Type t) {
+    char* name;
     name = s;
     if (lookupEntry(name, LOOKUP_ALL_SCOPES, false)) {
         if (find_code(name)) fatal("Function %s already defined", name);
         return nullptr;
     }
 //    printf("inserted function %s\n", name);
-    SymbolEntry *e = newFunction(name);
+    SymbolEntry* e = newFunction(name);
     e->u.eFunction.resultType = t;
     return e;
 }
 
-SymbolEntry * insertParameter(char *s, Type t, SymbolEntry *f) {
-    char *name;
+SymbolEntry*  insertParameter(char* s, Type t, SymbolEntry* f) {
+    char* name;
     name = s;
     PassMode mode = PASS_BY_VALUE;
     if (t->kind == Type_tag::TYPE_POINTER) {
         mode = PASS_BY_REFERENCE;
         t = t->refType;
     }
-    SymbolEntry *e = newParameter(name, t, mode, f);
+    SymbolEntry* e = newParameter(name, t, mode, f);
     return e;
 }
 
@@ -137,11 +130,7 @@ void print_ast_node (ast f) {
 
 }
 
-/*
- * This function returns the Type of the
- * expression x[i1]...[in].
- * x is either "int" or "byte".
- */
+
 Type var_def_type (Type t, ast f) {
 //    printf("var_def_type \n");
     if (f == nullptr) return t;
@@ -149,20 +138,11 @@ Type var_def_type (Type t, ast f) {
     return typeArray(f->num, var_def_type(t, f->first));
 }
 
-/*
- * This function handles expressions:
- * 1) x[i1]...[in]
- * 2) "abc" or "abc"[i]
- * First, it checks the dimensions from right to left,
- * while it traverses the l_value ast tree.
- * and then it returns an ast with the appropriate type.
- * For case 1), it returns also nesting diff and offset.
- */
 ast l_value_type (ast f, int count)
 {
     if (f->k == ID) {
 
-        SymbolEntry * e = lookup(f->id);
+        SymbolEntry*  e = lookup(f->id);
         if (e == nullptr) error("l_value_type - Undeclared variable : %s", f->id);
 
         int i;
@@ -205,17 +185,6 @@ ast l_value_type (ast f, int count)
     return l_value_type(f->first, count + 1);
 }
 
-/*
- * This function takes two types as input, and returns
- * the result type or exits with an error for type mismatch.
- * The result type is :
- *  1) Integer `op` Integer ==> Integer
- *  2) Integer `op` Byte ==> Integer
- *  3) Byte `op` Integer ==> Integer
- *  4) Byte `op` Byte ==> Byte
- *  5) Anything else ==> Type mismatch
- */
-
 Type check_op_type(Type first, Type second, std::string op) {
 
     Type result = typeInteger;
@@ -240,12 +209,6 @@ Type check_op_type(Type first, Type second, std::string op) {
     return result;
 }
 
-/*
- * This function is called during a 'return' command.
- * It takes the result type of a function
- * and the type of the returned expression
- * and checks if they are compatible.
- */
 void check_result_type (Type first, Type second, std::string func_name)
 {
     // Check if the return was during a procedure
@@ -258,33 +221,24 @@ void check_result_type (Type first, Type second, std::string func_name)
     }
 }
 
-/*
- * This function compares the real and the typical parameters during
- * a function or a procedure call.
- * f : the callers name
- * first : first real parameter
- * second : list with the rest real parameters
- * call_type : "func" or "proc", to help messages
- */
-void check_parameters (SymbolEntry *f, ast first, ast second, std::string call_type) {
+void check_parameters (SymbolEntry* f, ast first, ast second, std::string call_type) {
 
     ast real_param = first;
     ast real_param_list = second;
-    SymbolEntry *func_param = f->u.eFunction.firstArgument;
+    SymbolEntry* func_param = f->u.eFunction.firstArgument;
 
     while (real_param != nullptr && func_param != nullptr) {
         ast_sem(real_param);
         Type real_param_type = real_param->type;
         Type func_param_type = func_param->u.eParameter.type;
 
-        /*
-         * If the types of the real and the typical parameters are not equal
-         * then print error message.
-         * Except when the 1st dimension of the
-         * real parameter is an Array and
-         * the 1st dimension of the typical parameter is an IArray.
-         * Both Arrays must refer to the same types.
-         */
+
+        // If the types of the real and the typical parameters are not equal
+        // then print error message.
+        // Except when the 1st dimension of the
+        // real parameter is an Array and
+        // the 1st dimension of the typical parameter is an IArray.
+        // Both Arrays must refer to the same types.
         if (!equalType(real_param_type, func_param_type) &&
             !(real_param_type->kind == Type_tag::TYPE_ARRAY
               && func_param_type->kind == Type_tag::TYPE_IARRAY

@@ -8,7 +8,7 @@ loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
 char* curr_func_name;
 
-static ast ast_make (kind k, char *s, int n,
+static ast ast_make (kind k, char* s, int n,
                      ast first, ast second, ast third, ast last, Type t) {
     ast p;
     if ((p = new struct node) == nullptr)
@@ -24,7 +24,7 @@ static ast ast_make (kind k, char *s, int n,
     return p;
 }
 
-ast ast_id (char *s) {
+ast ast_id (char* s) {
     return ast_make(ID, s, 0, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
@@ -86,11 +86,11 @@ ast ast_seq (ast f, ast s) {
     return ast_make(SEQ, nullptr, 0, f, s, nullptr, nullptr, nullptr);
 }
 
-ast ast_var_def (char *string, ast f, ast s) {
+ast ast_var_def (char* string, ast f, ast s) {
     return ast_make(VAR_DEF, string, 0, f, s, nullptr, nullptr, nullptr);
 }
 
-ast ast_id_list (char *s, ast f) {
+ast ast_id_list (char* s, ast f) {
     return ast_make(ID_LIST, s, 0, f, nullptr, nullptr, nullptr, nullptr);
 }
 
@@ -110,13 +110,6 @@ ast ast_int_const_list (int n, ast f) {
     return ast_make(INT_CONST_LIST, nullptr, n, f, nullptr, nullptr, nullptr, nullptr);
 }
 
-/*
-ast ast_block (ast l, ast r) {
-  if (r == nullptr) return l;
-  return ast_make(BLOCK, '\0', 0, l, r, nullptr);
-}
-*/
-
 ast ast_l_value (ast f, ast s) {
     return ast_make(L_VALUE, nullptr, 0, f, s, nullptr, nullptr, nullptr);
 }
@@ -133,23 +126,23 @@ ast ast_if_else (ast f, ast s, ast t, ast l) {
     return ast_make(IF_ELSE, nullptr, 0, f, s, t, l, nullptr);
 }
 
-ast ast_loop (char *s, ast f) {
+ast ast_loop (char* s, ast f) {
     return ast_make(LOOP, s, 0, f, nullptr, nullptr, nullptr, nullptr);
 }
 
-ast ast_break (char *s) {
+ast ast_break (char* s) {
     return ast_make(BREAK, s, 0, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
-ast ast_continue (char *s) {
+ast ast_continue (char* s) {
     return ast_make(CONTINUE, s, 0, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
-ast ast_header (char *string, ast f, ast s, Type t) {
+ast ast_header (char* string, ast f, ast s, Type t) {
     return ast_make(HEADER, string, 0, f, s, nullptr, nullptr, t);
 }
 
-ast ast_fpar_def (char *string, ast f, ast s) {
+ast ast_fpar_def (char* string, ast f, ast s) {
     return ast_make(FPAR_DEF, string, 0, f, s, nullptr, nullptr, nullptr);
 }
 
@@ -161,11 +154,11 @@ ast ast_iarray_type (ast f, Type t) {
     return ast_make(IARRAY_TYPE, nullptr, 0, f, nullptr, nullptr, nullptr, t);
 }
 
-ast ast_proc_call (char *string, ast f, ast s) {
+ast ast_proc_call (char* string, ast f, ast s) {
     return ast_make(PROC_CALL, string, 0, f, s, nullptr, nullptr, nullptr);
 }
 
-ast ast_func_call (char *string, ast f, ast s) {
+ast ast_func_call (char* string, ast f, ast s) {
     return ast_make(FUNC_CALL, string, 0, f, s, nullptr, nullptr, nullptr);
 }
 
@@ -182,10 +175,8 @@ void ast_sem (ast t) {
     if (t == nullptr) return;
     switch (t->k) {
         case LET: {
-//            printf("LET\n");
             ast_sem(t->first);
             ast_sem(t->second);
-//            printf("LET finished first - second\n");
             if (!equalType(t->first->type, t->second->type) &&
                 !(equalType(t->first->type, typeInteger) && equalType(t->second->type, typeChar))
                     )
@@ -195,13 +186,12 @@ void ast_sem (ast t) {
             return;
         }
         case SEQ:
-//            printf("SEQ\n");
             ast_sem(t->first);
             //if (t->second != nullptr)
             ast_sem(t->second);
             return;
         case ID: { //TODO for n-dimensional array
-            SymbolEntry *e = lookup(t->id);
+            SymbolEntry* e = lookup(t->id);
 
             if (e == nullptr)
                 error("ID - Undeclared variable : %s", t->id);
@@ -318,7 +308,6 @@ void ast_sem (ast t) {
             return;
         case VAR_DEF:
         {
-//            printf("VAR_DEF %s \n", t->id);
             ast_sem(t->second);
             insert(t->id, t->second->type);
 
@@ -341,13 +330,11 @@ void ast_sem (ast t) {
             closeScope();
             return;
         case FUNC_DECL:
-            printf("FUNC_DECL\n");
             ast_sem(t->first);
             closeScope();
             return;
         case L_VALUE:
         {
-//            printf("L_VALUE\n");
             ast p = l_value_type(t, 0);
             t->type = p->type;
             t->nesting_diff = p->nesting_diff;
@@ -356,16 +343,13 @@ void ast_sem (ast t) {
             return;
         }
         case TYPE:
-//            printf("TYPE\n");
             t->type = var_def_type(t->type, t->first);
             return;
         case REF_TYPE:
-//            printf("REF_TYPE\n");
             t->type = typePointer(t->type);
             return;
         case IARRAY_TYPE:
         {
-//            printf("IARRAY_TYPE\n");
             Type my_type = var_def_type(t->type, t->first);
             t->type = typeIArray(my_type);
             return;
@@ -373,7 +357,6 @@ void ast_sem (ast t) {
         case INT_CONST_LIST:
             return;
         case IF:
-//            printf("IF\n");
             ast_sem(t->first);
             if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -381,7 +364,6 @@ void ast_sem (ast t) {
             ast_sem(t->third);
             return;
         case ELIF:
-//            printf("ELIF\n");
             ast_sem(t->first);
             if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -389,7 +371,6 @@ void ast_sem (ast t) {
             ast_sem(t->third);
             return;
         case IF_ELSE:
-//            printf("IF_ELSE\n");
             ast_sem(t->first);
             if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -399,7 +380,6 @@ void ast_sem (ast t) {
             return;
         case LOOP:
         {
-//            printf("LOOP\n");
             if (t->id != nullptr)
                 if (look_up_loop(t->id)) {
                     error("Loop identifier already exists!\n");
@@ -415,7 +395,6 @@ void ast_sem (ast t) {
             return;
         }
         case BREAK:
-//            printf("BREAK\n");
             if (t->id != nullptr) {
                 if (!look_up_loop(t->id)) {
                     error("Loop identifier does not exist!\n");
@@ -426,7 +405,6 @@ void ast_sem (ast t) {
                 error("No loop to break");
             return;
         case CONTINUE:
-//            printf("CONTINUE\n");
             if (t->id != nullptr) {
                 if (!look_up_loop(t->id)) {
                     error("Loop identifier does not exist!\n");
@@ -436,22 +414,19 @@ void ast_sem (ast t) {
             else if (current_LR == nullptr) error("No loop to continue");
             return;
 
-            /*
-             * We need to iterate for every parameter definition (fpar_def)
-             * and for every parameter in each definition (T_id).
-             */
+            // We need to iterate for every parameter definition (fpar_def)
+            // and for every parameter in each definition (T_id).
         case HEADER: {
             Type func_type = typeVoid;
             if (t->type != nullptr) func_type = t->type;    // Check func or proc
-            SymbolEntry *f = insertFunction(t->id, func_type);
+            SymbolEntry* f = insertFunction(t->id, func_type);
             if (f == nullptr) {
                 return;    // f == nullptr means, function was declared before
             }                        // The rest have already been done
-            /*
-             * We open the scope of the current function that was
-             * just inserted. The name of the function itself, though, has
-             * been inserted to the previous scope.
-             */
+
+            // We open the scope of the current function that was
+            // just inserted. The name of the function itself, though, has
+            // been inserted to the previous scope.
             openScope();
             ast par_def = t->first;    // First is fpar_def
             Type par_type = nullptr;
@@ -477,8 +452,7 @@ void ast_sem (ast t) {
             return;
         case PROC_CALL:
         {
-//            printf("PROC_CALL\n");
-            SymbolEntry *proc = lookup(t->id);
+            SymbolEntry* proc = lookup(t->id);
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
             check_parameters(proc, t->first, t->second, "proc");
@@ -486,8 +460,7 @@ void ast_sem (ast t) {
         }
         case FUNC_CALL:
         {
-//            printf("FUNC_CALL\n");
-            SymbolEntry *func = lookup(t->id);
+            SymbolEntry* func = lookup(t->id);
             if (func->u.eFunction.resultType == typeVoid)
                 fatal("Function must have a return type\n");
             check_parameters(func, t->first, t->second, "func");
@@ -502,19 +475,18 @@ void ast_sem (ast t) {
             return;
         case RETURN:
         {
-//            printf("RETURN\n");
             ast_sem(t->first);
-//            printf("curr_func_name : %s \n", curr_func_name);
-            SymbolEntry *curr_func = lookup(curr_func_name);
+            SymbolEntry* curr_func = lookup(curr_func_name);
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = t->first->type;
             check_result_type(curr_func_type, return_type, curr_func_name);
             return;
         }
-        case BLOCK:break;
         case FOR:break;
         case AND:break;
         case OR:break;
     }
 
 }
+
+// TODO : Function, Prototype(header), simple scope, only skip statement
