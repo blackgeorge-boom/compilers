@@ -168,7 +168,7 @@ void destroySymbolTable ()
 
 void openScope ()
 {
-    printf("open\n");
+//    printf("open\n");
     Scope * newScope = (Scope *) new(sizeof(Scope));
 
     newScope->negOffset = START_NEGATIVE_OFFSET;
@@ -185,7 +185,7 @@ void openScope ()
 
 void closeScope ()
 {
-    printf("close\n");
+//    printf("close\n");
     SymbolEntry * e = currentScope->entries;
     Scope       * t = currentScope;
     

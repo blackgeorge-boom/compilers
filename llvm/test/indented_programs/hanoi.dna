@@ -4,8 +4,9 @@ def solve
   decl readInteger is int
 
   def hanoi: rings as int, source target auxiliary as byte []
-  
-    def move: source target as byte []  
+
+    decl moveme: boom as int
+    def move: source target as byte []
       writeString: "Moving from "
       writeString: source
       writeString: " to "

@@ -6,6 +6,24 @@ extern "C" {
 #include "symbol.h"
 }
 
+#include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/Verifier.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/GVN.h"
+
 #include <string>
 
 typedef enum {
@@ -19,6 +37,7 @@ typedef enum {
   TIMES, DIV, MOD, LT, GT,
   LE, GE, EQ, NE, AND,
   OR, VAR_DEF, FUNC_CALL, RETURN,
+  SKIP,
 } kind;
 
 typedef struct node {
@@ -68,8 +87,11 @@ ast ast_proc_call(char* string, ast f, ast s);
 ast ast_func_call(char* string, ast f, ast s);
 ast ast_program(ast f);
 ast ast_return(ast f);
+ast ast_skip();
 
 void ast_sem(ast t);
+llvm::Value* ast_compile(ast t);
+void llvm_compile_and_dump(ast t);
 
 //int ast_run(ast t);
 

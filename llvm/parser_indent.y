@@ -188,7 +188,7 @@ var_def:
 ;
 
 stmt:
-  "skip" { $$ = NULL; }
+  "skip" { $$ = ast_skip(); }
 | l_value ":=" expr { $$ = ast_let($1, $3); }
 | proc_call { $$ = $1; }
 | "exit" { $$ = NULL; }
@@ -325,9 +325,12 @@ int main(int argc, char **argv) {
   printf("Compilation was successful.\n");
 
   initSymbolTable(997);
-  ast_sem(tree);
-  printf("Semantic check was successful.\n");
-  print_code_list();
+//  ast_sem(tree);
+//  printf("Semantic check was successful.\n");
+//  print_code_list();
+
+  llvm_compile_and_dump(tree);
+
   destroySymbolTable();
   return 0;
 }

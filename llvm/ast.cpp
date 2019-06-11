@@ -3,6 +3,8 @@
 #include <string.h>
 #include "ast.h"
 #include "auxiliary.h"
+#include "logger.h"
+
 
 loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
@@ -171,7 +173,206 @@ ast ast_return (ast f) {
     return ast_make(RETURN, nullptr, 0, f, nullptr, nullptr, nullptr, nullptr);
 }
 
-void ast_sem (ast t) {
+ast ast_skip () {
+    return ast_make(SKIP, nullptr, 0, nullptr, nullptr, nullptr, nullptr, nullptr);
+}
+
+// Global LLVM variables related to the LLVM suite.
+static llvm::LLVMContext TheContext;
+static llvm::IRBuilder<> Builder(TheContext);
+static std::unique_ptr<llvm::Module> TheModule;
+static std::map<std::string, llvm::Value*> NamedValues;
+
+// Useful LLVM types.
+static llvm::Type* byte_ty = llvm::IntegerType::get(TheContext, 8);
+static llvm::Type* int_ty = llvm::IntegerType::get(TheContext, 32);
+static llvm::Type* void_ty = llvm::Type::getVoidTy(TheContext);
+//static Type* i64 = IntegerType::get(TheContext, 64);
+
+llvm::Value* ast_compile(ast t)
+{
+    if (!t)
+        return nullptr;
+
+    switch (t->k) {
+
+        case PROGRAM:
+        {
+            openScope();
+            llvm::Value* V = ast_compile(t->first);
+            closeScope();
+            return V;
+        }
+        case FUNC_DECL:
+        {
+            llvm::Value* V = ast_compile(t->first);
+            closeScope();
+            return V;
+        }
+        case FUNC_DEF:
+        {
+            curr_func_name = t->first->id;
+            llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
+
+            if (!TheFunction)
+                TheFunction = static_cast<llvm::Function *>(ast_compile(t->first));
+
+            if (!TheFunction)
+                return nullptr;
+
+            if (!TheFunction->empty())
+                return (llvm::Function*)LogErrorV("Function cannot be redefined.") ;
+
+            llvm::Value* VS = ast_compile(t->second);
+
+            // Create a new basic block to start insertion into.
+            llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", TheFunction);
+            Builder.SetInsertPoint(BB);
+
+            // Record the function arguments in the NamedValues map.
+            NamedValues.clear();
+            for (auto& Arg : TheFunction->args())
+                NamedValues[Arg.getName()] = &Arg;
+
+            llvm::Value* TheBody = ast_compile(t->third);
+
+            if (TheBody) {
+
+                // Finish off the function.
+                Builder.CreateRet(TheBody);
+
+                // Validate the generated code, checking for consistency.
+                llvm::verifyFunction(*TheFunction);
+
+                closeScope();
+                return TheFunction;
+            }
+
+            // Error reading body, remove function.
+            TheFunction->eraseFromParent();
+
+            closeScope();
+            return nullptr;
+        }
+        case HEADER:
+        {
+            Type func_type = typeVoid;
+            llvm::Type*  func_ty = void_ty;
+            if (t->type != nullptr) {
+                func_type = t->type;    // Check func or proc
+                if (func_type->kind == Type_tag::TYPE_INTEGER)
+                    func_ty = int_ty;
+                else
+                    func_ty = byte_ty;
+            }
+
+            SymbolEntry* f = insertFunction(t->id, func_type);
+            if (f == nullptr) {
+                return nullptr;    // f == nullptr means, function was declared before
+            }                        // The rest have already been done
+
+            std::vector<llvm::Type*> Params;
+
+            llvm::FunctionType* FT =
+                    llvm::FunctionType::get(func_ty, Params, false);
+
+            llvm::Function* F =
+                    llvm::Function::Create(FT, llvm::Function::ExternalLinkage,
+                                           t->id, TheModule.get());
+
+            // Set names for all arguments.
+//            unsigned Idx = 0;
+//            for (auto& Arg : F->args())
+//                Arg.setName(Params[Idx++]);
+
+
+            // We open the scope of the current function that was
+            // just inserted. The name of the function itself, though, has
+            // been inserted to the previous scope.
+            openScope();
+            ast par_def = t->first;    // First is fpar_def
+            Type par_type = nullptr;
+            ast fpar_def_list = t->second;
+            while (par_def != nullptr) {
+                ast_sem(par_def->second); // Second is fpar_type
+                par_type = par_def->second->type;
+                insertParameter(par_def->id, par_type, f);    // Insert first parameter
+                ast par_list = par_def->first;
+                while (par_list != nullptr) {        // Insert the rest parameters
+                    insertParameter(par_list->id, par_type, f);
+                    par_list = par_list->first;    // First is the rest of T_ids.
+                }
+                if (fpar_def_list == nullptr) {
+                    break;
+                }
+                par_def = fpar_def_list->first;    // Now for the rest of fpar_defs.
+                fpar_def_list = fpar_def_list->second;
+            }
+            return F;
+        }
+        case SEQ:
+        {
+            return ast_compile(t->first);
+        }
+        case SKIP:
+        {
+            return llvm::ConstantFP::get(TheContext, llvm::APFloat(666.0));
+        }
+        case IARRAY_TYPE:break;
+        case CHAR:break;
+        case PROC_CALL:break;
+        case FPAR_DEF:break;
+        case IF:break;
+        case ELIF:break;
+        case IF_ELSE:break;
+        case LOOP:break;
+        case BREAK:break;
+        case CONTINUE:break;
+        case BIT_NOT:break;
+        case BIT_AND:break;
+        case BIT_OR:break;
+        case BOOL_NOT:break;
+        case BOOL_AND:break;
+        case BOOL_OR:break;
+        case INT_CONST_LIST:break;
+        case TYPE:break;
+        case REF_TYPE:break;
+        case STR:break;
+        case TRUE:break;
+        case FALSE:break;
+        case L_VALUE:break;
+        case ID_LIST:break;
+        case LET:break;
+        case FOR:break;
+        case ID:break;
+        case CONST:break;
+        case PLUS:break;
+        case MINUS:break;
+        case TIMES:break;
+        case DIV:break;
+        case MOD:break;
+        case LT:break;
+        case GT:break;
+        case LE:break;
+        case GE:break;
+        case EQ:break;
+        case NE:break;
+        case AND:break;
+        case OR:break;
+        case VAR_DEF:break;
+        case FUNC_CALL:break;
+        case RETURN:break;
+    }
+}
+
+void llvm_compile_and_dump(ast t)
+{
+    TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
+    ast_compile(t);
+    TheModule->print(llvm::errs(), nullptr);
+}
+
+void ast_sem(ast t) {
     if (t == nullptr) return;
     switch (t->k) {
         case LET: {
@@ -418,7 +619,10 @@ void ast_sem (ast t) {
             // and for every parameter in each definition (T_id).
         case HEADER: {
             Type func_type = typeVoid;
-            if (t->type != nullptr) func_type = t->type;    // Check func or proc
+            if (t->type != nullptr) {
+                func_type = t->type;    // Check func or proc
+            }
+
             SymbolEntry* f = insertFunction(t->id, func_type);
             if (f == nullptr) {
                 return;    // f == nullptr means, function was declared before
@@ -485,8 +689,11 @@ void ast_sem (ast t) {
         case FOR:break;
         case AND:break;
         case OR:break;
+        case SKIP:break;
     }
 
 }
 
 // TODO : Function, Prototype(header), simple scope, only skip statement
+
+
