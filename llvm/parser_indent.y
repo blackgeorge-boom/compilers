@@ -156,11 +156,9 @@ data_type:
   "int" { $$ = typeInteger; }
 | "byte" { $$ = typeChar; }
 
-
 type:
   data_type int_const_list { $$ = ast_type($1, $2); }
 ;
-
 
 fpar_type:
   type { $$ = $1; }

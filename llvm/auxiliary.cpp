@@ -95,7 +95,7 @@ SymbolEntry* insertFunction(char* s, Type t) {
     return e;
 }
 
-SymbolEntry*  insertParameter(char* s, Type t, SymbolEntry* f) {
+SymbolEntry* insertParameter(char* s, Type t, SymbolEntry* f) {
     char* name;
     name = s;
     PassMode mode = PASS_BY_VALUE;
@@ -132,9 +132,7 @@ void print_ast_node (ast f) {
 
 
 Type var_def_type (Type t, ast f) {
-//    printf("var_def_type \n");
     if (f == nullptr) return t;
-//    printf("var_def_type3\n");
     return typeArray(f->num, var_def_type(t, f->first));
 }
 

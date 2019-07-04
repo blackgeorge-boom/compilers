@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 #include "ast.h"
 #include "auxiliary.h"
 #include "logger.h"
@@ -184,9 +185,9 @@ static std::unique_ptr<llvm::Module> TheModule;
 static std::map<std::string, llvm::Value*> NamedValues;
 
 // Useful LLVM types.
-static llvm::Type* byte_ty = llvm::IntegerType::get(TheContext, 8);
-static llvm::Type* int_ty = llvm::IntegerType::get(TheContext, 32);
-static llvm::Type* void_ty = llvm::Type::getVoidTy(TheContext);
+static llvm::Type* llvm_byte = llvm::IntegerType::get(TheContext, 8);
+static llvm::Type* llvm_int = llvm::IntegerType::get(TheContext, 32);
+static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
 //static Type* i64 = IntegerType::get(TheContext, 64);
 
 llvm::Value* ast_compile(ast t)
@@ -215,7 +216,7 @@ llvm::Value* ast_compile(ast t)
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
 
             if (!TheFunction)
-                TheFunction = static_cast<llvm::Function *>(ast_compile(t->first));
+                TheFunction = static_cast<llvm::Function*>(ast_compile(t->first));
 
             if (!TheFunction)
                 return nullptr;
@@ -257,57 +258,72 @@ llvm::Value* ast_compile(ast t)
         case HEADER:
         {
             Type func_type = typeVoid;
-            llvm::Type*  func_ty = void_ty;
+            llvm::Type* llvm_func_type = llvm_void;
+
             if (t->type != nullptr) {
                 func_type = t->type;    // Check func or proc
-                if (func_type->kind == Type_tag::TYPE_INTEGER)
-                    func_ty = int_ty;
-                else
-                    func_ty = byte_ty;
+                llvm_func_type = to_llvm_type(t->type);
             }
+
 
             SymbolEntry* f = insertFunction(t->id, func_type);
             if (f == nullptr) {
                 return nullptr;    // f == nullptr means, function was declared before
-            }                        // The rest have already been done
+            }                      // The rest has already been done
 
             std::vector<llvm::Type*> Params;
+            std::vector<std::string> Args;
+
+            // We open the scope of the current function that was
+            // just inserted. The name of the function itself, though, has
+            // been inserted to the previous scope.
+            openScope();
+
+            ast par_def = t->first;         // First is fpar_def
+            ast fpar_def_list = t->second;
+
+            Type par_type = nullptr;
+            llvm::Type* llvm_par_ty= llvm_void;
+
+            while (par_def != nullptr) {
+
+                ast_compile(par_def->second);           // Second is fpar_type
+                par_type = par_def->second->type;
+                llvm_par_ty = to_llvm_type(par_type);   // Get corresponding llvm type
+
+                insertParameter(par_def->id, par_type, f);    // Insert first parameter
+
+                Params.push_back(llvm_par_ty);
+                Args.emplace_back(par_def->id);
+
+                ast par_list = par_def->first;
+                while (par_list != nullptr) {           // Insert the rest parameters
+                    insertParameter(par_list->id, par_type, f);
+                    Params.push_back(llvm_par_ty);
+                    Args.emplace_back(par_list->id);
+                    par_list = par_list->first;         // First is the rest of T_ids.
+                }
+
+                if (fpar_def_list == nullptr) {
+                    break;
+                }
+
+                par_def = fpar_def_list->first;        // Now for the rest of fpar_defs.
+                fpar_def_list = fpar_def_list->second;
+            }
 
             llvm::FunctionType* FT =
-                    llvm::FunctionType::get(func_ty, Params, false);
+                    llvm::FunctionType::get(llvm_func_type, Params, false);
 
             llvm::Function* F =
                     llvm::Function::Create(FT, llvm::Function::ExternalLinkage,
                                            t->id, TheModule.get());
 
             // Set names for all arguments.
-//            unsigned Idx = 0;
-//            for (auto& Arg : F->args())
-//                Arg.setName(Params[Idx++]);
+            unsigned Idx = 0;
+            for (auto& Arg : F->args())
+                Arg.setName(Args[Idx++]);
 
-
-            // We open the scope of the current function that was
-            // just inserted. The name of the function itself, though, has
-            // been inserted to the previous scope.
-            openScope();
-            ast par_def = t->first;    // First is fpar_def
-            Type par_type = nullptr;
-            ast fpar_def_list = t->second;
-            while (par_def != nullptr) {
-                ast_sem(par_def->second); // Second is fpar_type
-                par_type = par_def->second->type;
-                insertParameter(par_def->id, par_type, f);    // Insert first parameter
-                ast par_list = par_def->first;
-                while (par_list != nullptr) {        // Insert the rest parameters
-                    insertParameter(par_list->id, par_type, f);
-                    par_list = par_list->first;    // First is the rest of T_ids.
-                }
-                if (fpar_def_list == nullptr) {
-                    break;
-                }
-                par_def = fpar_def_list->first;    // Now for the rest of fpar_defs.
-                fpar_def_list = fpar_def_list->second;
-            }
             return F;
         }
         case SEQ:
@@ -318,7 +334,22 @@ llvm::Value* ast_compile(ast t)
         {
             return llvm::ConstantFP::get(TheContext, llvm::APFloat(666.0));
         }
-        case IARRAY_TYPE:break;
+        case TYPE:
+        {
+            t->type = var_def_type(t->type, t->first);
+            return nullptr;
+        }
+        case REF_TYPE:
+        {
+            t->type = typePointer(t->type);
+            return nullptr;
+        }
+        case IARRAY_TYPE:
+        {
+            Type my_type = var_def_type(t->type, t->first);
+            t->type = typeIArray(my_type);
+            return nullptr;
+        }
         case CHAR:break;
         case PROC_CALL:break;
         case FPAR_DEF:break;
@@ -335,8 +366,6 @@ llvm::Value* ast_compile(ast t)
         case BOOL_AND:break;
         case BOOL_OR:break;
         case INT_CONST_LIST:break;
-        case TYPE:break;
-        case REF_TYPE:break;
         case STR:break;
         case TRUE:break;
         case FALSE:break;
@@ -694,6 +723,25 @@ void ast_sem(ast t) {
 
 }
 
-// TODO : Function, Prototype(header), simple scope, only skip statement
+llvm::Type* to_llvm_type(Type type) {
+    switch(type->kind) {
+        case Type_tag::TYPE_VOID:
+            return llvm_void;
+        case Type_tag::TYPE_INTEGER:
+            return llvm_int;
+        case Type_tag::TYPE_CHAR:
+            return llvm_byte;
+        case Type_tag::TYPE_POINTER:
+            return llvm::PointerType::get(to_llvm_type(type->refType), 0);
+        case Type_tag::TYPE_ARRAY:
+            return llvm::ArrayType::get(to_llvm_type(type->refType),type->size);
+        case Type_tag::TYPE_IARRAY:
+            return llvm::PointerType::get(to_llvm_type(type->refType), 0);
+        default:
+            return nullptr;
+    }
+}
+
+// TODO : Function, Func_call, Local def list, Var def, simple scope,
 
 

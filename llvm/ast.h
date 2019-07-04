@@ -89,6 +89,8 @@ ast ast_program(ast f);
 ast ast_return(ast f);
 ast ast_skip();
 
+llvm::Type* to_llvm_type(Type type);
+
 void ast_sem(ast t);
 llvm::Value* ast_compile(ast t);
 void llvm_compile_and_dump(ast t);

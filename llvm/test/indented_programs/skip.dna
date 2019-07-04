@@ -1,2 +1,2 @@
-def hello
+def hello is int: x as int[][4][16][32], z as ref byte, w as byte[10][20]
     skip
