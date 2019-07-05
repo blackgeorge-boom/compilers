@@ -190,6 +190,14 @@ static llvm::Type* llvm_int = llvm::IntegerType::get(TheContext, 32);
 static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
 //static Type* i64 = IntegerType::get(TheContext, 64);
 
+// Useful LLVM helper functions.
+inline llvm::ConstantInt* c8(char c) {
+  return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, false));
+}
+inline llvm::ConstantInt* c32(int n) {
+  return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, false));
+}
+
 llvm::Value* ast_compile(ast t)
 {
     if (!t)
@@ -237,10 +245,12 @@ llvm::Value* ast_compile(ast t)
 
             llvm::Value* TheBody = ast_compile(t->third);
 
-            if (TheBody) {
+            if (!TheBody) {
 
-                // Finish off the function.
-                Builder.CreateRet(TheBody);
+                if (TheFunction->getReturnType() == llvm_void) {
+                    // Finish off the proc.
+                    Builder.CreateRetVoid();
+                }
 
                 // Validate the generated code, checking for consistency.
                 llvm::verifyFunction(*TheFunction);
@@ -264,7 +274,6 @@ llvm::Value* ast_compile(ast t)
                 func_type = t->type;    // Check func or proc
                 llvm_func_type = to_llvm_type(t->type);
             }
-
 
             SymbolEntry* f = insertFunction(t->id, func_type);
             if (f == nullptr) {
@@ -328,11 +337,12 @@ llvm::Value* ast_compile(ast t)
         }
         case SEQ:
         {
-            return ast_compile(t->first);
+            ast_compile(t->first);
+            return nullptr;
         }
         case SKIP:
         {
-            return llvm::ConstantFP::get(TheContext, llvm::APFloat(666.0));
+            return nullptr;
         }
         case TYPE:
         {
@@ -350,8 +360,50 @@ llvm::Value* ast_compile(ast t)
             t->type = typeIArray(my_type);
             return nullptr;
         }
-        case CHAR:break;
-        case PROC_CALL:break;
+        case CONST:
+        {
+            return c32(t->num);
+        }
+        case CHAR:
+        {
+            return c8(t->num);
+        }
+        case PROC_CALL:
+        {
+            SymbolEntry* proc = lookup(t->id);
+            if (proc->u.eFunction.resultType != typeVoid)
+                fatal("Cannot call function as a procedure\n");
+            check_parameters(proc, t->first, t->second, "proc");
+
+            // Look up the name in the global module table.
+            llvm::Function* CalleeF = TheModule->getFunction(t->id);
+            if (!CalleeF)
+                return LogErrorV("Unknown function referenced");
+
+            std::vector<llvm::Value*> ArgsV;
+
+            ast param = t->first;         // First is expr
+            ast param_list = t->second;
+
+            while (param != nullptr) {
+
+                ArgsV.push_back(ast_compile(param));
+
+                if (!param_list)
+                    break;
+
+                param = param_list->first;        // Now for the rest of paramams.
+                param_list = param_list->second;
+            }
+
+//            bool check = std::equal(CalleeF->arg_begin(), CalleeF->arg_end(), ArgsV.begin());
+//            if (!check) {
+//                std::cout << "Incorrect arguments LLVM" << std::endl;
+//                return nullptr;
+//            }
+
+            return Builder.CreateCall(CalleeF, ArgsV, "calltmp");
+        }
         case FPAR_DEF:break;
         case IF:break;
         case ELIF:break;
@@ -374,7 +426,6 @@ llvm::Value* ast_compile(ast t)
         case LET:break;
         case FOR:break;
         case ID:break;
-        case CONST:break;
         case PLUS:break;
         case MINUS:break;
         case TIMES:break;

@@ -230,7 +230,6 @@ void check_parameters (SymbolEntry* f, ast first, ast second, std::string call_t
         Type real_param_type = real_param->type;
         Type func_param_type = func_param->u.eParameter.type;
 
-
         // If the types of the real and the typical parameters are not equal
         // then print error message.
         // Except when the 1st dimension of the
