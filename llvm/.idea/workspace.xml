@@ -37,7 +37,6 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -56,15 +55,14 @@
         <state>
           <splitter split-orientation="horizontal" split-proportion="0.5">
             <split-first>
-              <leaf>
-                <file pinned="false" current-in-tab="true">
+              <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+                <file pinned="false" current-in-tab="false">
                   <entry file="file://$PROJECT_DIR$/ast.h">
                     <provider selected="true" editor-type-id="text-editor">
-                      <state>
-                        <caret line="43" column="2" selection-start-line="43" selection-start-column="2" selection-end-line="43" selection-end-column="2" />
+                      <state relative-caret-position="495">
+                        <caret line="33" column="31" selection-start-line="33" selection-start-column="31" selection-end-line="33" selection-end-column="31" />
                         <folding>
                           <element signature="e#50#68#0" expanded="true" />
-                          <element signature="e#92#121#0" expanded="true" />
                         </folding>
                       </state>
                     </provider>
@@ -73,17 +71,17 @@
                 <file pinned="false" current-in-tab="false">
                   <entry file="file://$PROJECT_DIR$/symbol.c">
                     <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="466">
+                      <state relative-caret-position="8790">
                         <caret line="586" column="30" selection-start-line="586" selection-start-column="30" selection-end-line="586" selection-end-column="30" />
                       </state>
                     </provider>
                   </entry>
                 </file>
-                <file pinned="false" current-in-tab="false">
+                <file pinned="false" current-in-tab="true">
                   <entry file="file://$PROJECT_DIR$/symbol.h">
                     <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="420">
-                        <caret line="77" column="26" selection-start-line="77" selection-start-column="26" selection-end-line="77" selection-end-column="26" />
+                      <state relative-caret-position="649">
+                        <caret line="191" column="22" selection-start-line="191" selection-start-column="22" selection-end-line="191" selection-end-column="22" />
                       </state>
                     </provider>
                   </entry>
@@ -91,12 +89,12 @@
               </leaf>
             </split-first>
             <split-second>
-              <leaf>
+              <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
                 <file pinned="false" current-in-tab="true">
                   <entry file="file://$PROJECT_DIR$/symbol.h">
                     <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="-210">
-                        <caret line="59" column="5" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
+                      <state relative-caret-position="859">
+                        <caret line="193" column="18" selection-start-line="193" selection-start-column="18" selection-end-line="193" selection-end-column="18" />
                       </state>
                     </provider>
                   </entry>
@@ -110,14 +108,14 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.41627908">
+    <splitter split-orientation="horizontal" split-proportion="0.31016442">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/parser_indent.y">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="211">
-                  <caret line="136" selection-start-line="136" selection-end-line="136" />
+                <state relative-caret-position="2235">
+                  <caret line="149" column="6" selection-start-line="149" selection-start-column="6" selection-end-line="149" selection-end-column="6" />
                 </state>
               </provider>
             </entry>
@@ -143,7 +141,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/lexer.l">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-231">
+                <state relative-caret-position="2655">
                   <caret line="177" column="18" selection-start-line="177" selection-start-column="18" selection-end-line="177" selection-end-column="18" />
                 </state>
               </provider>
@@ -152,8 +150,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/test/indented_programs/skip.dna">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="15">
-                  <caret line="1" column="10" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
+                <state relative-caret-position="60">
+                  <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
                 </state>
               </provider>
             </entry>
@@ -171,14 +169,38 @@
               </provider>
             </entry>
           </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/symbol.c">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="9435">
+                  <caret line="629" column="5" selection-start-line="629" selection-start-column="5" selection-end-line="629" selection-end-column="5" />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ast.cpp">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2895">
-                  <caret line="397" column="35" selection-start-line="397" selection-start-column="35" selection-end-line="397" selection-end-column="35" />
-                  <folding>
-                    <element signature="e#0#18#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="119">
+                  <caret line="479" lean-forward="true" selection-start-line="479" selection-end-line="479" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file:///usr/include/llvm-3.9/llvm/IR/Instructions.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="159">
+                  <caret line="2494" selection-start-line="2494" selection-end-line="2494" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file:///usr/lib/llvm-3.9/include/llvm/IR/IRBuilder.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="159">
+                  <caret line="1539" column="30" selection-start-line="1539" selection-start-column="30" selection-end-line="1539" selection-end-column="30" />
                 </state>
               </provider>
             </entry>
@@ -186,7 +208,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/auxiliary.cpp">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="86">
+                <state relative-caret-position="3315">
                   <caret line="221" column="5" selection-start-line="221" selection-start-column="5" selection-end-line="221" selection-end-column="5" />
                 </state>
               </provider>
@@ -254,13 +276,13 @@
         <option value="$PROJECT_DIR$/ast.h" />
         <option value="$PROJECT_DIR$/parser_indent.y" />
         <option value="$PROJECT_DIR$/auxiliary.cpp" />
-        <option value="$PROJECT_DIR$/ast.cpp" />
         <option value="$PROJECT_DIR$/test/indented_programs/skip.dna" />
+        <option value="$PROJECT_DIR$/ast.cpp" />
       </list>
     </option>
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="-30" />
     <option name="width" value="1366" />
     <option name="height" value="798" />
@@ -275,12 +297,13 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../semantic/ast.c" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../minibasic" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RecentsManager">
@@ -353,11 +376,15 @@
       <workItem from="1562260576512" duration="2446000" />
       <workItem from="1562263076848" duration="81000" />
       <workItem from="1562343815254" duration="11109000" />
+      <workItem from="1563032258907" duration="306000" />
+      <workItem from="1563033571958" duration="3161000" />
+      <workItem from="1563037466735" duration="2408000" />
+      <workItem from="1563039965208" duration="5798000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="72983000" />
+    <option name="totallyTimeSpent" value="84656000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -369,7 +396,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-30" width="1366" height="798" extended-state="6" />
+    <frame x="51" y="25" width="1629" height="1025" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.20581304" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -377,12 +404,12 @@
       <window_info anchor="bottom" id="CMake" order="0" weight="0.32611832" />
       <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="2" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="3" visible="true" weight="0.5281385" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="3" visible="true" weight="0.2857143" />
       <window_info anchor="bottom" id="TeamCity" order="4" />
       <window_info anchor="bottom" id="Event Log" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="6" />
       <window_info anchor="bottom" id="Find" order="7" weight="0.32789558" />
-      <window_info anchor="bottom" id="Debug" order="8" weight="0.3997114" />
+      <window_info anchor="bottom" id="Debug" order="8" weight="0.3169643" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="11" weight="0.32789558" />
@@ -390,9 +417,9 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="1" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
-      <window_info anchor="right" id="Run" order="4" visible="true" weight="0.25151515" />
+      <window_info anchor="right" id="Run" order="4" visible="true" weight="0.33670247" />
       <window_info anchor="right" id="make" order="5" />
-      <window_info anchor="right" x="1366" y="30" width="1280" height="994" id="Messages" order="6" weight="0.022727273" />
+      <window_info anchor="right" x="1366" y="30" width="1280" height="994" id="Messages" order="6" weight="0.23689197" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -401,19 +428,11 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/cmake-build-debug/ast.h" />
     <entry file="file://$PROJECT_DIR$/sdffsf.h" />
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/parser.hpp">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/cmake-build-debug/parser.hpp" />
     <entry file="file://$PROJECT_DIR$/Makefile">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/parser.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="466">
-          <caret line="1158" selection-start-line="1158" selection-end-line="1158" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/cmake-build-debug/parser.cpp" />
     <entry file="file://$PROJECT_DIR$/general.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="344">
@@ -449,6 +468,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../llvm_example/ast.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file:///usr/lib/llvm-3.9/include/llvm/ADT/APFloat.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="905">
+          <caret line="200" column="11" selection-start-line="200" selection-start-column="11" selection-end-line="200" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/parser_indent.y">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2235">
+          <caret line="149" column="6" selection-start-line="149" selection-start-column="6" selection-end-line="149" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/parser_unindent.y">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2640">
@@ -463,10 +499,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lexer.l">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2655">
+          <caret line="177" column="18" selection-start-line="177" selection-start-column="18" selection-end-line="177" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
           <caret line="24" column="185" selection-start-line="24" selection-start-column="185" selection-end-line="24" selection-end-column="185" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/auxiliary.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3315">
+          <caret line="221" column="5" selection-start-line="221" selection-start-column="5" selection-end-line="221" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -491,66 +541,55 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/symbol.c">
+    <entry file="file://$PROJECT_DIR$/ast.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="466">
-          <caret line="586" column="30" selection-start-line="586" selection-start-column="30" selection-end-line="586" selection-end-column="30" />
+        <state relative-caret-position="495">
+          <caret line="33" column="31" selection-start-line="33" selection-start-column="31" selection-end-line="33" selection-end-column="31" />
+          <folding>
+            <element signature="e#50#68#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lexer.l">
+    <entry file="file://$PROJECT_DIR$/symbol.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-231">
-          <caret line="177" column="18" selection-start-line="177" selection-start-column="18" selection-end-line="177" selection-end-column="18" />
+        <state relative-caret-position="9435">
+          <caret line="629" column="5" selection-start-line="629" selection-start-column="5" selection-end-line="629" selection-end-column="5" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/symbol.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="77" column="26" selection-start-line="77" selection-start-column="26" selection-end-line="77" selection-end-column="26" />
+        <state relative-caret-position="649">
+          <caret line="191" column="22" selection-start-line="191" selection-start-column="22" selection-end-line="191" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ast.h">
+    <entry file="file:///usr/lib/llvm-3.9/include/llvm/IR/IRBuilder.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="43" column="2" selection-start-line="43" selection-start-column="2" selection-end-line="43" selection-end-column="2" />
-          <folding>
-            <element signature="e#50#68#0" expanded="true" />
-            <element signature="e#92#121#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="159">
+          <caret line="1539" column="30" selection-start-line="1539" selection-start-column="30" selection-end-line="1539" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/auxiliary.cpp">
+    <entry file="file:///usr/include/llvm-3.9/llvm/IR/Instructions.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="86">
-          <caret line="221" column="5" selection-start-line="221" selection-start-column="5" selection-end-line="221" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/parser_indent.y">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="136" selection-start-line="136" selection-end-line="136" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ast.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2895">
-          <caret line="397" column="35" selection-start-line="397" selection-start-column="35" selection-end-line="397" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="159">
+          <caret line="2494" selection-start-line="2494" selection-end-line="2494" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/indented_programs/skip.dna">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="10" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
+        <state relative-caret-position="60">
+          <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ast.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="479" lean-forward="true" selection-start-line="479" selection-end-line="479" />
         </state>
       </provider>
     </entry>

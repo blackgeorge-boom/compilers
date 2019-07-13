@@ -362,10 +362,12 @@ llvm::Value* ast_compile(ast t)
         }
         case CONST:
         {
+            t->type = typeInteger;
             return c32(t->num);
         }
         case CHAR:
         {
+            t->type = typeChar;
             return c8(t->num);
         }
         case PROC_CALL:
@@ -404,9 +406,104 @@ llvm::Value* ast_compile(ast t)
 
             return Builder.CreateCall(CalleeF, ArgsV, "calltmp");
         }
+        case IF:
+        {
+            llvm::Value* CondV = ast_compile(t->first);
+
+            if (!CondV)
+                return nullptr;
+
+            if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+                error("Condition must be Integer or Byte!");
+
+            // Convert condition to a bool by comparing non-equal to 0.0.
+            CondV = Builder.CreateICmpNE(
+                    CondV,
+                    c32(0), "ifcond");
+
+            llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
+
+            // Create blocks for the then and else cases.  Insert the 'then' block at the
+            // end of the function.
+            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "then", TheFunction); // ??
+            llvm::BasicBlock* ElifBB = llvm::BasicBlock::Create(TheContext, "elif");
+            llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "ifcont");
+
+            Builder.CreateCondBr(CondV, ThenBB, ElifBB);
+
+            // Emit then value.
+            Builder.SetInsertPoint(ThenBB);
+
+            // Generate code for "then" block
+            ast_compile(t->second);
+
+            Builder.CreateBr(MergeBB);
+
+            // Emit else block.
+            TheFunction->getBasicBlockList().push_back(ElifBB); // ??
+            Builder.SetInsertPoint(ElifBB);
+
+            // Generate code for "elif list" blocks
+            ast_compile(t->third);
+
+            Builder.CreateBr(MergeBB);
+
+            // Emit merge block.
+            TheFunction->getBasicBlockList().push_back(MergeBB); // ??
+            Builder.SetInsertPoint(MergeBB);
+
+            return nullptr;
+        }
+        case ELIF:
+        {
+            llvm::Value* CondV = ast_compile(t->first);
+
+            if (!CondV)
+                return nullptr;
+
+            if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+                error("Condition must be Integer or Byte!");
+
+            // Convert condition to a bool by comparing non-equal to 0.0.
+            CondV = Builder.CreateICmpNE(
+                    CondV,
+                    c32(0), "elifcond");
+
+            llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
+
+            // Create blocks for the then and else cases.  Insert the 'then' block at the
+            // end of the function.
+            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "elifthen", TheFunction); // ??
+            llvm::BasicBlock* ElifBB = llvm::BasicBlock::Create(TheContext, "elif");
+//            llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "elifcont");
+            llvm::BasicBlock* MergeBB = Builder.GetInsertBlock();
+
+            Builder.CreateCondBr(CondV, ThenBB, ElifBB);
+
+            // Emit then value.
+            Builder.SetInsertPoint(ThenBB);
+
+            // Generate code for "then" block
+            ast_compile(t->second);
+
+            Builder.CreateBr(MergeBB);
+
+            // Emit else block.
+            TheFunction->getBasicBlockList().push_back(ElifBB); // ??
+            Builder.SetInsertPoint(ElifBB);
+
+            // Generate code for "elif list" blocks
+            ast_compile(t->third);
+
+            Builder.CreateBr(MergeBB);
+
+            // Emit merge block.
+            TheFunction->getBasicBlockList().push_back(MergeBB); // ??
+            Builder.SetInsertPoint(MergeBB);
+
+            return nullptr;
+        }
         case FPAR_DEF:break;
-        case IF:break;
-        case ELIF:break;
         case IF_ELSE:break;
         case LOOP:break;
         case BREAK:break;
