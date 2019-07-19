@@ -104,6 +104,8 @@ typedef struct activation_record_tag* activation_record;
 struct loop_record_tag {
     char* id;
     char state;
+    llvm::BasicBlock* loop_block;
+    llvm::BasicBlock* after_block;
     struct loop_record_tag* previous;
 };
 
@@ -112,6 +114,7 @@ typedef struct loop_record_tag* loop_record;
 extern loop_record current_LR;
 
 void print_loop_list();
+
 int look_up_loop(char* s);
 
 /**

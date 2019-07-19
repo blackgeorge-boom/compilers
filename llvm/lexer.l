@@ -203,11 +203,9 @@ R[`~@#$^_\{\}\;?.]
 
 ({L})({L}|{D}|"_")*     { yylval.s = strdup(yytext); return T_id; }
 {D}+            { yylval.n = atoi(yytext); return T_const; }
-\'({D}|{L})\' { printf("Lexer 1 - %d\n",yytext[1]);	
-				yylval.n = yytext[1]; return T_char;}
+\'({D}|{L})\' { yylval.n = yytext[1]; return T_char; }
 
 \'("\\"[ntr0"\'""\"""\\"])\' { 
-                            printf("Lexer 2 \n");
                             char c = yytext[2];
                             if     ( c =='n')
                             	yylval.n = '\n'; 
@@ -224,10 +222,9 @@ R[`~@#$^_\{\}\;?.]
                             else {
                             	yylval.n = '\\';
                             }
-                            printf("Character - %c",yylval.n);
-                            return T_char;	
+                            return T_char;
                         }
-\'("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F]))\' { printf("Lexer 3 - \n");
+\'("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F]))\' {
                                                 int i, val,decimal = 0;;
                                                 for(i=3; i<5 ;i++){
                                                 	if(yytext[i]>='0' && yytext[i]<='9') {
@@ -248,7 +245,6 @@ R[`~@#$^_\{\}\;?.]
                                                       	decimal += val;
                                                       }
                                                 }
-                                                printf("decimal = %d\n", decimal);
                                                 yylval.n = decimal; return T_char; }
 \'[ ]\'		{ yylval.n = yytext[1]; return T_char; }
 \"(({S}|{Q}|{L}|{R}|{D}|("\\"{E})|("\\"{X})|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])|" "))+)\" {

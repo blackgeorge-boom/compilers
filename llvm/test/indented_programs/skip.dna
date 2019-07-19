@@ -1,7 +1,4 @@
 def hello
-    if 5:
-        hello
-    elif 7:
-        hello
-    else:
-        hello
+    loop:
+        loop:
+            hello

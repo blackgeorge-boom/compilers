@@ -559,8 +559,48 @@ llvm::Value* ast_compile(ast t)
 
             return nullptr;
         }
+        case LOOP:
+        {
+            if (t->id != nullptr)
+                if (look_up_loop(t->id)) {
+                    error("Loop identifier already exists!\n");
+                    exit(1);
+                }
+            auto new_LR = new struct loop_record_tag;
+            new_LR->id = t->id;
+            new_LR->previous = current_LR;
+
+            // Make the new basic block for the loop header, inserting after current
+            // block.
+            llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
+            llvm::BasicBlock* LoopBB =
+                    llvm::BasicBlock::Create(TheContext, "loop", TheFunction);
+            llvm::BasicBlock* AfterBB =
+                    llvm::BasicBlock::Create(TheContext, "afterloop");
+
+            // Start insertion in LoopBB.
+            Builder.SetInsertPoint(LoopBB);
+
+            new_LR->loop_block = LoopBB;
+            new_LR->after_block = AfterBB;
+            current_LR = new_LR;
+
+            // Emit the body of the loop.
+            ast_compile(t->first);
+
+            // Insert the unconditional branch into the end of LoopBB.
+            Builder.CreateBr(LoopBB);
+
+            TheFunction->getBasicBlockList().push_back(AfterBB);
+            // Any new code will be inserted in AfterBB.
+            Builder.SetInsertPoint(AfterBB);
+
+            current_LR = current_LR->previous;
+            free(new_LR);
+
+            return nullptr;
+        }
         case FPAR_DEF:break;
-        case LOOP:break;
         case BREAK:break;
         case CONTINUE:break;
         case BIT_NOT:break;
