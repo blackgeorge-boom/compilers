@@ -185,7 +185,7 @@ stmt:
   "skip" { $$ = NULL; }
 | l_value ":=" expr { $$ = ast_let($1, $3); }
 | proc_call { $$ = $1; }
-| "exit" { $$ = NULL; }
+| "exit" { $$ = ast_exit(); }
 | "return" ':' expr { $$ = ast_return($3); }
 | "if" cond ':' block elif_list { $$ = ast_if($2, $4, $5); }
 | "if" cond ':' block elif_list "else" ':' block { $$ = ast_if_else($2, $4, $5, $8); }
@@ -238,8 +238,8 @@ expr:
 | l_value { $$ = $1; }
 | '(' expr ')' { $$ = $2; }
 | func_call { $$ = $1; }
-| '+' expr { $$ = ast_op(ast_const(0), PLUS, $2); } %prec UPLUS
-| '-' expr { $$ = ast_op(ast_const(0), MINUS, $2); } %prec UMINUS
+| '+' expr { $$ = ast_op(ast_const(0), UN_PLUS, $2); } %prec UPLUS
+| '-' expr { $$ = ast_op(ast_const(0), UN_MINUS, $2); } %prec UMINUS
 | expr '+' expr { $$ = ast_op($1, PLUS, $3); } 
 | expr '-' expr { $$ = ast_op($1, MINUS, $3); }  
 | expr '*' expr { $$ = ast_op($1, TIMES, $3); } 

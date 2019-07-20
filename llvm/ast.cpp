@@ -178,6 +178,10 @@ ast ast_skip () {
     return ast_make(SKIP, nullptr, 0, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
+ast ast_exit () {
+    return ast_make(EXIT, nullptr, 0, nullptr, nullptr, nullptr, nullptr, nullptr);
+}
+
 // Global LLVM variables related to the LLVM suite.
 static llvm::LLVMContext TheContext;
 static llvm::IRBuilder<> Builder(TheContext);
@@ -338,6 +342,7 @@ llvm::Value* ast_compile(ast t)
         case SEQ:
         {
             ast_compile(t->first);
+            ast_compile(t->second);
             return nullptr;
         }
         case SKIP:
@@ -380,7 +385,7 @@ llvm::Value* ast_compile(ast t)
             // Look up the name in the global module table.
             llvm::Function* CalleeF = TheModule->getFunction(t->id);
             if (!CalleeF)
-                return LogErrorV("Unknown function referenced");
+                return LogErrorV("Unknown procedure referenced");
 
             std::vector<llvm::Value*> ArgsV;
 
@@ -398,13 +403,40 @@ llvm::Value* ast_compile(ast t)
                 param_list = param_list->second;
             }
 
-//            bool check = std::equal(CalleeF->arg_begin(), CalleeF->arg_end(), ArgsV.begin());
-//            if (!check) {
-//                std::cout << "Incorrect arguments LLVM" << std::endl;
-//                return nullptr;
-//            }
+            Builder.CreateCall(CalleeF, ArgsV, "pcalltmp");
 
-            return Builder.CreateCall(CalleeF, ArgsV, "calltmp");
+            return nullptr;
+        }
+        case FUNC_CALL:
+        {
+            SymbolEntry* func = lookup(t->id);
+            if (func->u.eFunction.resultType == typeVoid)
+                fatal("Function must have a return type\n");
+            check_parameters(func, t->first, t->second, "func");
+            t->type = func->u.eFunction.resultType;
+
+            // Look up the name in the global module table.
+            llvm::Function* CalleeF = TheModule->getFunction(t->id);
+            if (!CalleeF)
+                return LogErrorV("Unknown function referenced");
+
+            std::vector<llvm::Value*> ArgsV;
+
+            ast param = t->first;         // First is expr
+            ast param_list = t->second;
+
+            while (param != nullptr) {
+
+                ArgsV.push_back(ast_compile(param));
+
+                if (!param_list)
+                    break;
+
+                param = param_list->first;      // Now for the rest of paramams.
+                param_list = param_list->second;
+            }
+
+            return Builder.CreateCall(CalleeF, ArgsV, "fcalltmp");
         }
         case IF:
         {
@@ -413,8 +445,13 @@ llvm::Value* ast_compile(ast t)
             if (!CondV)
                 return nullptr;
 
-            if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+            Type expr_type = t->first->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                CondV = Builder.CreateIntCast(CondV, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
             CondV = Builder.CreateICmpNE(
@@ -461,8 +498,13 @@ llvm::Value* ast_compile(ast t)
             if (!CondV)
                 return nullptr;
 
-            if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+            Type expr_type = t->first->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                CondV = Builder.CreateIntCast(CondV, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
             CondV = Builder.CreateICmpNE(
@@ -510,8 +552,13 @@ llvm::Value* ast_compile(ast t)
             if (!CondV)
                 return nullptr;
 
-            if (!equalType(t->first->type, typeInteger) && !equalType(t->first->type, typeChar))
+            Type expr_type = t->first->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                CondV = Builder.CreateIntCast(CondV, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
             CondV = Builder.CreateICmpNE(
@@ -601,9 +648,130 @@ llvm::Value* ast_compile(ast t)
             return nullptr;
         }
         case FPAR_DEF:break;
-        case BREAK:break;
-        case CONTINUE:break;
-        case BIT_NOT:break;
+        case BREAK:
+        {
+            loop_record lr;
+            if (t->id != nullptr) {
+                lr = look_up_loop(t->id);
+                if (!lr) {
+                    error("Loop identifier does not exist!\n");
+                    exit(1);
+                }
+                Builder.CreateBr(lr->after_block);
+            }
+            else if (current_LR == nullptr)
+                error("No loop to break");
+            else
+                Builder.CreateBr(current_LR->after_block);
+            return nullptr;
+        }
+        case CONTINUE:
+        {
+            loop_record lr;
+            if (t->id != nullptr) {
+                lr = look_up_loop(t->id);
+                if (!lr) {
+                    error("Loop identifier does not exist!\n");
+                    exit(1);
+                }
+                Builder.CreateBr(lr->loop_block);
+            }
+            else if (current_LR == nullptr)
+                error("No loop to continue");
+            else
+                Builder.CreateBr(current_LR->loop_block);
+            return nullptr;
+        }
+        case EXIT:
+        {
+            SymbolEntry* curr_func = lookup(curr_func_name);
+            Type curr_func_type = curr_func->u.eFunction.resultType;
+            Type return_type = typeVoid;
+            check_result_type(curr_func_type, return_type, curr_func_name);
+            Builder.CreateRetVoid();
+            return nullptr;
+        }
+        case RETURN:
+        {
+            llvm::Value* RetV = ast_compile(t->first);
+            SymbolEntry* curr_func = lookup(curr_func_name);
+            Type curr_func_type = curr_func->u.eFunction.resultType;
+            Type return_type = t->first->type;
+            check_result_type(curr_func_type, return_type, curr_func_name);
+
+            // Cast byte to int if necessary
+            if (equalType(curr_func_type, typeInteger) && equalType(return_type, typeChar))
+                RetV = Builder.CreateIntCast(RetV, llvm_int, true);
+
+            Builder.CreateRet(RetV);
+            return nullptr;
+        }
+        case TRUE:
+        {
+            t->type = typeChar;
+            return c8(1);
+        }
+        case FALSE:
+        {
+            t->type = typeChar;
+            return c8(0);
+        }
+        case UN_PLUS:
+        {
+            llvm::Value* S = ast_compile(t->second);
+            // UN_PLUS operand must be integer
+            t->type = check_op_type(typeInteger, t->second->type, "unary +");
+            return Builder.CreateAdd(c32(0), S, "uaddtmp");
+        }
+        case UN_MINUS:
+        {
+            llvm::Value* S = ast_compile(t->second);
+            // UN_MINUS operand must be integer
+            t->type = check_op_type(typeInteger, t->second->type, "unary -");
+            return Builder.CreateSub(c32(0), S, "usubtmp");
+        }
+        case PLUS:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+            t->type = check_op_type(t->first->type, t->second->type, "+");
+            return Builder.CreateAdd(F, S, "addtmp");
+        }
+        case MINUS:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+            t->type = check_op_type(t->first->type, t->second->type, "-");
+            return Builder.CreateBinOp(llvm::Instruction::Sub, F, S, "subtmp");
+        }
+        case TIMES:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+            t->type = check_op_type(t->first->type, t->second->type, "*");
+            return Builder.CreateMul(F, S, "multmp");
+        }
+        case DIV:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+            t->type = check_op_type(t->first->type, t->second->type, "/");
+            return Builder.CreateSDiv(F, S, "divtmp");
+        }
+        case MOD:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+            t->type = check_op_type(t->first->type, t->second->type, "%");
+            return Builder.CreateSRem(F, S, "modtmp");
+        }
+        case BIT_NOT:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            check_op_type(t->first->type, typeChar, "!");
+            t->type = t->first->type;
+            return Builder.CreateNot(F, "not");
+        }
         case BIT_AND:break;
         case BIT_OR:break;
         case BOOL_NOT:break;
@@ -611,18 +779,11 @@ llvm::Value* ast_compile(ast t)
         case BOOL_OR:break;
         case INT_CONST_LIST:break;
         case STR:break;
-        case TRUE:break;
-        case FALSE:break;
         case L_VALUE:break;
         case ID_LIST:break;
         case LET:break;
         case FOR:break;
         case ID:break;
-        case PLUS:break;
-        case MINUS:break;
-        case TIMES:break;
-        case DIV:break;
-        case MOD:break;
         case LT:break;
         case GT:break;
         case LE:break;
@@ -632,8 +793,6 @@ llvm::Value* ast_compile(ast t)
         case AND:break;
         case OR:break;
         case VAR_DEF:break;
-        case FUNC_CALL:break;
-        case RETURN:break;
     }
 }
 
@@ -690,6 +849,7 @@ void ast_sem(ast t) {
             return;
         case BIT_NOT:
             ast_sem(t->first);
+            check_op_type(t->first->type, typeChar, "!");
             t->type = t->first->type;
             return;
         case BIT_AND:
@@ -715,6 +875,16 @@ void ast_sem(ast t) {
             ast_sem(t->first);
             ast_sem(t->second);
             t->type = check_op_type(t->first->type, t->second->type, "or");
+            return;
+        case UN_PLUS:
+            ast_sem(t->second);
+            // UN_PLUS operand must be integer
+            t->type = check_op_type(typeInteger, t->second->type, "unary +");
+            return;
+        case UN_MINUS:
+            ast_sem(t->second);
+            // UN_MINUS operand must be integer
+            t->type = check_op_type(typeInteger, t->second->type, "unary -");
             return;
         case PLUS:
             ast_sem(t->first);
@@ -887,8 +1057,8 @@ void ast_sem(ast t) {
             else if (current_LR == nullptr) error("No loop to continue");
             return;
 
-            // We need to iterate for every parameter definition (fpar_def)
-            // and for every parameter in each definition (T_id).
+        // We need to iterate for every parameter definition (fpar_def)
+        // and for every parameter in each definition (T_id).
         case HEADER: {
             Type func_type = typeVoid;
             if (t->type != nullptr) {
@@ -955,6 +1125,14 @@ void ast_sem(ast t) {
             SymbolEntry* curr_func = lookup(curr_func_name);
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = t->first->type;
+            check_result_type(curr_func_type, return_type, curr_func_name);
+            return;
+        }
+        case EXIT:
+        {
+            SymbolEntry* curr_func = lookup(curr_func_name);
+            Type curr_func_type = curr_func->u.eFunction.resultType;
+            Type return_type = typeVoid;
             check_result_type(curr_func_type, return_type, curr_func_name);
             return;
         }

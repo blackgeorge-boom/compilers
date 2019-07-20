@@ -37,7 +37,7 @@ typedef enum {
   TIMES, DIV, MOD, LT, GT,
   LE, GE, EQ, NE, AND,
   OR, VAR_DEF, FUNC_CALL, RETURN,
-  SKIP,
+  SKIP, EXIT, UN_PLUS, UN_MINUS
 } kind;
 
 typedef struct node {
@@ -88,6 +88,7 @@ ast ast_func_call(char* string, ast f, ast s);
 ast ast_program(ast f);
 ast ast_return(ast f);
 ast ast_skip();
+ast ast_exit();
 
 llvm::Type* to_llvm_type(Type type);
 

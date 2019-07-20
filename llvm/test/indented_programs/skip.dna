@@ -1,4 +1,4 @@
-def hello
-    loop:
-        loop:
-            hello
+def hello is int: x as int
+    if (1): skip
+    else: skip
+    return: 300-1

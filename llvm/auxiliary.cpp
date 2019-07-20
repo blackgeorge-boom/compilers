@@ -8,39 +8,40 @@ extern "C" {
 }
 
 #include <cstring>
+#include <iostream>
 #include "auxiliary.h"
 
-void print_loop_list () {
-
+void print_loop_list ()
+{
     loop_record t = current_LR;
 
-    printf("===== Loop Records : ======\n");
+    printf("===== Loop Records : =====\n");
 
     while (t != nullptr) {
         if (t->id == nullptr) printf("Unamed loop\n");
         else printf("%s\n", t->id);
+        std::cout << t->after_block << std::endl;
         t = t->previous;
     }
 
-    printf("==========\n");
+    printf("==========================\n");
 }
 
-int look_up_loop (char* s) {
-
+loop_record look_up_loop (char* s)
+{
     loop_record t = current_LR;
 
     while (t != nullptr) {
         if (t->id != nullptr)
-            if (strcmp(t->id, s) == 0) return 1;
+            if (strcmp(t->id, s) == 0) return t;
         t = t->previous;
     }
 
-    return 0;
+    return nullptr;
 }
 
-
-ast find_code (char* func_name) {
-
+ast find_code (char* func_name)
+{
     function_code_list temp = current_CL;
     while (temp != nullptr) { // TODO maybe optimize
         if (strcmp(temp->name, func_name) == 0) return temp->code;
@@ -183,37 +184,34 @@ ast l_value_type (ast f, int count)
     return l_value_type(f->first, count + 1);
 }
 
-Type check_op_type(Type first, Type second, std::string op) {
-
+/*
+ * Operands must be either both Integer or both Byte
+ */
+Type check_op_type(Type first, Type second, std::string op)
+{
     Type result = typeInteger;
 
-    if (equalType(first, typeInteger)) {
-        if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-            error("type mismatch in %s operator", op.c_str());
-        else
-            result = typeInteger;
-    }
-    else if (equalType(first, typeChar)) {
-        if (!equalType(second, typeInteger) && !equalType(second, typeChar))
-            error("type mismatch in %s operator", op.c_str());
-        else if (equalType(second, typeInteger))
-            result = typeInteger;
-        else
-            result = typeChar;
-    }
-    else
+    if (equalType(first, typeInteger) && !equalType(second, typeInteger))
         error("type mismatch in %s operator", op.c_str());
+    else if (equalType(first, typeChar) && !equalType(second, typeChar))
+        error("type mismatch in %s operator", op.c_str());
+    else if (!equalType(first, typeInteger) && !equalType(first, typeChar))
+        error("types must be Integer or Byte in %s operator", op.c_str());
 
-    return result;
+    return first;
 }
 
 void check_result_type (Type first, Type second, std::string func_name)
 {
-    // Check if the return was during a procedure
-    if (equalType(first, typeVoid)) {
+    // Check if "return" was during a procedure
+    if (equalType(first, typeVoid) && !equalType(second, typeVoid)) {
         fatal("Proc %s does not return value", func_name.c_str());
     }
-        // Check if an integer is returned as byte
+    // Check if "exit" was during a function
+    else if (!equalType(first, typeVoid) && equalType(second, typeVoid)) {
+        fatal("Function %s must return a value", func_name.c_str());
+    }
+    // Check if an integer is returned as byte (the reverse is allowed)
     else if (equalType(first, typeChar) && equalType(second, typeInteger)) {
         fatal("Result type must be a byte, not an integer in %s", func_name.c_str());
     }

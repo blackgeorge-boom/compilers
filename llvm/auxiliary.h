@@ -115,7 +115,7 @@ extern loop_record current_LR;
 
 void print_loop_list();
 
-int look_up_loop(char* s);
+loop_record look_up_loop(char* s);
 
 /**
  * Function code list
