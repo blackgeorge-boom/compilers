@@ -720,14 +720,14 @@ llvm::Value* ast_compile(ast t)
         {
             llvm::Value* S = ast_compile(t->second);
             // UN_PLUS operand must be integer
-            t->type = check_op_type(typeInteger, t->second->type, "unary +");
+            t->type = check_op_type(t->second->type, typeInteger, "unary +");
             return Builder.CreateAdd(c32(0), S, "uaddtmp");
         }
         case UN_MINUS:
         {
             llvm::Value* S = ast_compile(t->second);
             // UN_MINUS operand must be integer
-            t->type = check_op_type(typeInteger, t->second->type, "unary -");
+            t->type = check_op_type(t->second->type, typeInteger, "unary -");
             return Builder.CreateSub(c32(0), S, "usubtmp");
         }
         case PLUS:
@@ -770,10 +770,25 @@ llvm::Value* ast_compile(ast t)
             llvm::Value* F = ast_compile(t->first);
             check_op_type(t->first->type, typeChar, "!");
             t->type = t->first->type;
+//            return Builder.CreateSub(c8(255), F, "not");
             return Builder.CreateNot(F, "not");
         }
-        case BIT_AND:break;
-        case BIT_OR:break;
+        case BIT_AND:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+            check_op_type(t->first->type, typeChar, "&");
+            t->type = check_op_type(t->first->type, t->second->type, "&");
+            return Builder.CreateAnd(F, S, "bitand");
+        }
+        case BIT_OR:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+            check_op_type(t->first->type, typeChar, "|");
+            t->type = check_op_type(t->first->type, t->second->type, "|");
+            return Builder.CreateOr(F, S, "bitor");
+        }
         case BOOL_NOT:break;
         case BOOL_AND:break;
         case BOOL_OR:break;
@@ -855,11 +870,15 @@ void ast_sem(ast t) {
         case BIT_AND:
             ast_sem(t->first);
             ast_sem(t->second);
+            // Both must bytes
+            check_op_type(t->first->type, typeChar, "&");
             t->type = check_op_type(t->first->type, t->second->type, "&");
             return;
         case BIT_OR:
             ast_sem(t->first);
             ast_sem(t->second);
+            // Both must bytes
+            check_op_type(t->first->type, typeChar, "|");
             t->type = check_op_type(t->first->type, t->second->type, "|");
             return;
         case BOOL_NOT:

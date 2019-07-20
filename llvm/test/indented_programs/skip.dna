@@ -1,4 +1,4 @@
-def hello is int: x as int
+def hello is byte: x as int
     if (1): skip
     else: skip
-    return: 300-1
+    return: '\xf0' | '\xff'

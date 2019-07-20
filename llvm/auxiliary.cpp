@@ -212,8 +212,8 @@ void check_result_type (Type first, Type second, std::string func_name)
         fatal("Function %s must return a value", func_name.c_str());
     }
     // Check if an integer is returned as byte (the reverse is allowed)
-    else if (equalType(first, typeChar) && equalType(second, typeInteger)) {
-        fatal("Result type must be a byte, not an integer in %s", func_name.c_str());
+    else if (!equalType(first, second)) {
+        fatal("Result type must be same as function type in %s", func_name.c_str());
     }
 }
 
