@@ -189,6 +189,7 @@ static std::unique_ptr<llvm::Module> TheModule;
 static std::map<std::string, llvm::Value*> NamedValues;
 
 // Useful LLVM types.
+static llvm::Type* llvm_bit = llvm::IntegerType::get(TheContext, 1);
 static llvm::Type* llvm_byte = llvm::IntegerType::get(TheContext, 8);
 static llvm::Type* llvm_int = llvm::IntegerType::get(TheContext, 32);
 static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
@@ -770,8 +771,7 @@ llvm::Value* ast_compile(ast t)
             llvm::Value* F = ast_compile(t->first);
             check_op_type(t->first->type, typeChar, "!");
             t->type = t->first->type;
-//            return Builder.CreateSub(c8(255), F, "not");
-            return Builder.CreateNot(F, "not");
+            return Builder.CreateNot(F, "bitnot");
         }
         case BIT_AND:
         {
@@ -789,24 +789,264 @@ llvm::Value* ast_compile(ast t)
             t->type = check_op_type(t->first->type, t->second->type, "|");
             return Builder.CreateOr(F, S, "bitor");
         }
-        case BOOL_NOT:break;
-        case BOOL_AND:break;
-        case BOOL_OR:break;
+        case BOOL_NOT:
+        {
+            llvm::Value* CondV = ast_compile(t->first);
+
+            if (!CondV)
+                return nullptr;
+
+            Type expr_type = t->first->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
+                error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                CondV = Builder.CreateIntCast(CondV, llvm_int, true);
+
+            // Convert condition to a bool by comparing non-equal to 0.0.
+            CondV = Builder.CreateICmpNE(
+                    CondV,
+                    c32(0), "inttobit");
+
+            t->type = typeChar;
+
+            return Builder.CreateNot(CondV, "boolnot");
+        }
+        case BOOL_AND:
+        {
+            /*
+             * We compute the first operand.
+             * If it is zero, result is zero.
+             * Else result is (1 and second operand) = second operand.
+             */
+            llvm::Value* F = ast_compile(t->first);
+
+            if (!F)
+                return nullptr;
+
+            Type expr_type = t->first->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
+                error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                F = Builder.CreateIntCast(F, llvm_int, true);
+
+            // Convert condition to a bool by comparing non-equal to 0.0.
+            F = Builder.CreateICmpEQ(
+                    F,
+                    c32(0), "finttobit");
+
+            llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
+
+            // Create blocks for the then and else cases.  Insert the 'then' block at the
+            // end of the function.
+            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "andshortcircuit", TheFunction);
+            llvm::BasicBlock* ElseBB = llvm::BasicBlock::Create(TheContext, "andsecond");
+            llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "andcont");
+
+            Builder.CreateCondBr(F, ThenBB, ElseBB);
+
+            // Emit then value.
+            Builder.SetInsertPoint(ThenBB);
+
+            Builder.CreateBr(MergeBB);
+
+            // Codegen of 'Then' can change the current block, update ThenBB for the PHI.
+            ThenBB = Builder.GetInsertBlock(); // ??
+
+            // Emit else block.
+            TheFunction->getBasicBlockList().push_back(ElseBB);
+            Builder.SetInsertPoint(ElseBB);
+
+            llvm::Value* S = ast_compile(t->second);
+
+            if (!S)
+                return nullptr;
+
+            expr_type = t->second->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
+                error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                S = Builder.CreateIntCast(S, llvm_int, true);
+
+            // Convert condition to a bool by comparing non-equal to 0.0.
+            S = Builder.CreateICmpNE(
+                    S,
+                    c32(0), "sinttobit");
+
+            Builder.CreateBr(MergeBB);
+            // codegen of 'Else' can change the current block, update ElseBB for the PHI.
+            ElseBB = Builder.GetInsertBlock(); // ??
+
+            // Emit merge block.
+            TheFunction->getBasicBlockList().push_back(MergeBB);
+            Builder.SetInsertPoint(MergeBB);
+            llvm::PHINode* PN = Builder.CreatePHI(llvm_bit, 2, "andtmp");
+
+            PN->addIncoming(F, ThenBB);
+            PN->addIncoming(S, ElseBB);
+
+            t->type = typeChar;
+
+            return PN;
+        }
+        case BOOL_OR:
+        {
+            /*
+             * We compute the first operand.
+             * If it is one, result is one.
+             * Else result is (0 or second operand) = second operand.
+             */
+            llvm::Value* F = ast_compile(t->first);
+
+            if (!F)
+                return nullptr;
+
+            Type expr_type = t->first->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
+                error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                F = Builder.CreateIntCast(F, llvm_int, true);
+
+            // Convert condition to a bool by comparing non-equal to 0.0.
+            F = Builder.CreateICmpNE(
+                    F,
+                    c32(0), "finttobit");
+
+            llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
+
+            // Create blocks for the then and else cases.  Insert the 'then' block at the
+            // end of the function.
+            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "orshortcircuit", TheFunction);
+            llvm::BasicBlock* ElseBB = llvm::BasicBlock::Create(TheContext, "orsecond");
+            llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "orcont");
+
+            Builder.CreateCondBr(F, ThenBB, ElseBB);
+
+            // Emit then value.
+            Builder.SetInsertPoint(ThenBB);
+
+            Builder.CreateBr(MergeBB);
+
+            // Codegen of 'Then' can change the current block, update ThenBB for the PHI.
+            ThenBB = Builder.GetInsertBlock(); // ??
+
+            // Emit else block.
+            TheFunction->getBasicBlockList().push_back(ElseBB);
+            Builder.SetInsertPoint(ElseBB);
+
+            llvm::Value* S = ast_compile(t->second);
+
+            if (!S)
+                return nullptr;
+
+            expr_type = t->second->type;
+            if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
+                error("Condition must be Integer or Byte!");
+
+            // Cast byte to int if necessary
+            if (equalType(expr_type, typeChar))
+                S = Builder.CreateIntCast(S, llvm_int, true);
+
+            // Convert condition to a bool by comparing non-equal to 0.0.
+            S = Builder.CreateICmpNE(
+                    S,
+                    c32(0), "sinttobit");
+
+            Builder.CreateBr(MergeBB);
+            // codegen of 'Else' can change the current block, update ElseBB for the PHI.
+            ElseBB = Builder.GetInsertBlock(); // ??
+
+            // Emit merge block.
+            TheFunction->getBasicBlockList().push_back(MergeBB);
+            Builder.SetInsertPoint(MergeBB);
+            llvm::PHINode* PN = Builder.CreatePHI(llvm_bit, 2, "ortmp");
+
+            PN->addIncoming(F, ThenBB);
+            PN->addIncoming(S, ElseBB);
+
+            t->type = typeChar;
+
+            return PN;
+        }
+        case EQ:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+
+            check_op_type(t->first->type, t->second->type, "=");
+
+            t->type = typeChar;
+
+            return  Builder.CreateICmpEQ(F, S, "eq");
+        }
+        case NE:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+
+            check_op_type(t->first->type, t->second->type, "<>");
+
+            t->type = typeChar;
+
+            return  Builder.CreateICmpNE(F, S, "ne");
+        }
+        case LT:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+
+            check_op_type(t->first->type, t->second->type, "<");
+
+            t->type = typeChar;
+
+            return  Builder.CreateICmpULT(F, S, "lt");
+        }
+        case GT:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+
+            check_op_type(t->first->type, t->second->type, ">");
+
+            t->type = typeChar;
+
+            return  Builder.CreateICmpUGT(F, S, "gt");
+        }
+        case LE:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+
+            check_op_type(t->first->type, t->second->type, "<=");
+
+            t->type = typeChar;
+
+            return  Builder.CreateICmpULE(F, S, "le");
+        }
+        case GE:
+        {
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+
+            check_op_type(t->first->type, t->second->type, ">=");
+
+            t->type = typeChar;
+
+            return  Builder.CreateICmpUGE(F, S, "ge");
+        }
         case INT_CONST_LIST:break;
         case STR:break;
         case L_VALUE:break;
         case ID_LIST:break;
         case LET:break;
-        case FOR:break;
         case ID:break;
-        case LT:break;
-        case GT:break;
-        case LE:break;
-        case GE:break;
-        case EQ:break;
-        case NE:break;
-        case AND:break;
-        case OR:break;
         case VAR_DEF:break;
     }
 }
@@ -1155,10 +1395,7 @@ void ast_sem(ast t) {
             check_result_type(curr_func_type, return_type, curr_func_name);
             return;
         }
-        case FOR:break;
-        case AND:break;
-        case OR:break;
-        case SKIP:break;
+        case SKIP:return;
     }
 
 }

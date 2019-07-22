@@ -1,4 +1,4 @@
 def hello is byte: x as int
-    if (1): skip
+    if ('\x01'<='\xf/INT skip
     else: skip
-    return: '\xf0' | '\xff'
+    return: '2'
