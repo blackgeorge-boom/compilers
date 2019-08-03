@@ -186,7 +186,7 @@ ast ast_exit () {
 static llvm::LLVMContext TheContext;
 static llvm::IRBuilder<> Builder(TheContext);
 static std::unique_ptr<llvm::Module> TheModule;
-static std::map<std::string, llvm::Value*> NamedValues;
+static std::map<std::string, llvm::AllocaInst*> NamedValues;
 
 // Useful LLVM types.
 static llvm::Type* llvm_bit = llvm::IntegerType::get(TheContext, 1);
@@ -199,8 +199,21 @@ static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
 inline llvm::ConstantInt* c8(char c) {
   return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, false));
 }
+
 inline llvm::ConstantInt* c32(int n) {
   return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, false));
+}
+
+// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of
+// the function.  This is used for mutable variables etc.
+static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function* TheFunction,
+                                                const std::string& VarName,
+                                                llvm::Type* VarType)
+{
+    llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
+                           TheFunction->getEntryBlock().begin());
+
+    return TmpB.CreateAlloca(VarType, 0, VarName.c_str());
 }
 
 llvm::Value* ast_compile(ast t)
@@ -244,9 +257,16 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(BB);
 
             // Record the function arguments in the NamedValues map.
-            NamedValues.clear();
-            for (auto& Arg : TheFunction->args())
-                NamedValues[Arg.getName()] = &Arg;
+            NamedValues.clear(); // TODO: check
+            for (auto& Arg : TheFunction->args()) {
+                // Create an alloca for this variable.
+                llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName(), Arg.getType());
+
+                // Store the initial value into the alloca.
+                Builder.CreateStore(&Arg, Alloca);
+
+                NamedValues[Arg.getName()] = Alloca;
+            }
 
             llvm::Value* TheBody = ast_compile(t->third);
 
@@ -1046,7 +1066,25 @@ llvm::Value* ast_compile(ast t)
         case L_VALUE:break;
         case ID_LIST:break;
         case LET:break;
-        case ID:break;
+        case ID:
+        {
+            SymbolEntry* e = lookup(t->id);
+
+//            if (e == nullptr)
+//                error("ID - Undeclared variable : %s", t->id);
+
+            t->type = e->u.eVariable.type;
+//            t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
+//            t->offset = e->u.eVariable.offset;
+
+            // Look this variable up in the function.
+            llvm::Value *V = NamedValues[std::string(t->id)];
+            if (!V)
+                return LogErrorV("Unknown variable name");
+
+            // Load the value.
+            return Builder.CreateLoad(V, t->id);
+        }
         case VAR_DEF:break;
     }
 }

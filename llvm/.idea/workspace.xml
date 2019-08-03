@@ -24,8 +24,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="parser_i" />
       <config projectName="dana_llvm" targetName="parser_u" />
+      <config projectName="dana_llvm" targetName="parser_i" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -35,10 +35,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,205 +48,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <splitter split-orientation="horizontal" split-proportion="0.5">
-            <split-first>
-              <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-                <file pinned="false" current-in-tab="false">
-                  <entry file="file://$PROJECT_DIR$/ast.h">
-                    <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="495">
-                        <caret line="33" column="31" selection-start-line="33" selection-start-column="31" selection-end-line="33" selection-end-column="31" />
-                        <folding>
-                          <element signature="e#50#68#0" expanded="true" />
-                          <element signature="e#92#121#0" expanded="true" />
-                        </folding>
-                      </state>
-                    </provider>
-                  </entry>
-                </file>
-                <file pinned="false" current-in-tab="true">
-                  <entry file="file://$PROJECT_DIR$/auxiliary.h">
-                    <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="180">
-                        <caret line="106" column="26" selection-start-line="106" selection-start-column="26" selection-end-line="106" selection-end-column="26" />
-                      </state>
-                    </provider>
-                  </entry>
-                </file>
-                <file pinned="false" current-in-tab="false">
-                  <entry file="file://$PROJECT_DIR$/symbol.c">
-                    <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="8790">
-                        <caret line="586" column="30" selection-start-line="586" selection-start-column="30" selection-end-line="586" selection-end-column="30" />
-                      </state>
-                    </provider>
-                  </entry>
-                </file>
-                <file pinned="false" current-in-tab="false">
-                  <entry file="file://$PROJECT_DIR$/symbol.h">
-                    <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="2865">
-                        <caret line="191" column="22" selection-start-line="191" selection-start-column="22" selection-end-line="191" selection-end-column="22" />
-                      </state>
-                    </provider>
-                  </entry>
-                </file>
-              </leaf>
-            </split-first>
-            <split-second>
-              <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-                <file pinned="false" current-in-tab="true">
-                  <entry file="file://$PROJECT_DIR$/symbol.h">
-                    <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="604">
-                        <caret line="193" column="18" selection-start-line="193" selection-start-column="18" selection-end-line="193" selection-end-column="18" />
-                      </state>
-                    </provider>
-                  </entry>
-                </file>
-              </leaf>
-            </split-second>
-          </splitter>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
-  <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.23922232">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/parser_indent.y">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="341">
-                  <caret line="260" column="30" selection-start-line="260" selection-start-column="30" selection-end-line="260" selection-end-column="30" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/parser_unindent.y">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="86">
-                  <caret line="213" column="6" selection-start-line="213" selection-start-column="6" selection-end-line="213" selection-end-column="6" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/error.c">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="180">
-                  <caret line="12" column="34" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
-                  <folding>
-                    <element signature="e#953#971#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/test/indented_programs/skip.dna">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="15">
-                  <caret line="1" column="24" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ast.h">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="765">
-                  <caret line="51" column="6" selection-start-line="51" selection-start-column="6" selection-end-line="51" selection-end-column="6" />
-                  <folding>
-                    <element signature="e#50#68#0" expanded="true" />
-                    <element signature="e#92#121#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="360">
-                  <caret line="24" column="185" selection-start-line="24" selection-start-column="185" selection-end-line="24" selection-end-column="185" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/symbol.c">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="9435">
-                  <caret line="629" column="5" selection-start-line="629" selection-start-column="5" selection-end-line="629" selection-end-column="5" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/ast.cpp">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="120">
-                  <caret line="1048" column="21" selection-start-line="1048" selection-start-column="21" selection-end-line="1048" selection-end-column="21" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/auxiliary.cpp">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2066">
-                  <caret line="253" selection-start-line="253" selection-end-line="253" />
-                  <folding>
-                    <element signature="e#58#76#0" expanded="true" />
-                    <element signature="e#100#118#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/logger.cpp">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="270">
-                  <caret line="18" selection-start-line="18" selection-end-line="18" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/logger.h">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="180">
-                  <caret line="12" column="23" selection-start-line="12" selection-start-column="23" selection-end-line="12" selection-end-column="23" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/test/indented_programs/hanoi.dna">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="105">
-                  <caret line="7" column="15" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
-  </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>jj</find>
@@ -255,48 +57,8 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/ast.c" />
-        <option value="$PROJECT_DIR$/ast.hpp" />
-        <option value="$PROJECT_DIR$/error.c" />
-        <option value="$PROJECT_DIR$/general.hpp" />
-        <option value="$PROJECT_DIR$/general.cpp" />
-        <option value="$PROJECT_DIR$/symbol.cpp" />
-        <option value="$PROJECT_DIR$/general.c" />
-        <option value="$PROJECT_DIR$/symbol.h" />
-        <option value="$PROJECT_DIR$/general.h" />
-        <option value="$PROJECT_DIR$/test/indented_programs/hanoi.dna" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/logger.h" />
-        <option value="$PROJECT_DIR$/logger.cpp" />
-        <option value="$PROJECT_DIR$/symbol.c" />
-        <option value="$PROJECT_DIR$/lexer.l" />
-        <option value="$PROJECT_DIR$/auxiliary.h" />
-        <option value="$PROJECT_DIR$/ast.h" />
-        <option value="$PROJECT_DIR$/parser_unindent.y" />
-        <option value="$PROJECT_DIR$/auxiliary.cpp" />
-        <option value="$PROJECT_DIR$/parser_indent.y" />
-        <option value="$PROJECT_DIR$/ast.cpp" />
-        <option value="$PROJECT_DIR$/test/indented_programs/skip.dna" />
-      </list>
-    </option>
-  </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1075" />
-    <option name="y" value="25" />
-    <option name="width" value="1629" />
-    <option name="height" value="1025" />
-  </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes />
-  </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -352,6 +114,16 @@
       <item itemvalue="CMake Application.parser_u" />
     </list>
   </component>
+  <component name="ServiceViewManager">
+    <option name="allServicesViewState">
+      <serviceView>
+        <treeState>
+          <expand />
+          <select />
+        </treeState>
+      </serviceView>
+    </option>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -394,9 +166,6 @@
     </task>
     <servers />
   </component>
-  <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="121379000" />
-  </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
@@ -406,198 +175,18 @@
       <is-autoscroll-to-source value="true" />
     </todo-panel>
   </component>
-  <component name="ToolWindowManager">
-    <frame x="1075" y="25" width="1629" height="1025" extended-state="6" />
-    <editor active="true" />
-    <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.20530638" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="CMake" order="0" weight="0.32611832" />
-      <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="2" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="3" visible="true" weight="0.4419643" />
-      <window_info anchor="bottom" id="TeamCity" order="4" />
-      <window_info anchor="bottom" id="Event Log" order="5" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="6" />
-      <window_info anchor="bottom" id="Find" order="7" weight="0.32789558" />
-      <window_info anchor="bottom" x="1366" y="28" width="1360" height="740" id="Debug" maximized="true" order="8" type="WINDOWED" weight="0.3968254" />
-      <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="11" weight="0.32789558" />
-      <window_info anchor="right" id="Database" order="0" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="1" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
-      <window_info anchor="right" id="Run" order="4" visible="true" weight="0.36702463" />
-      <window_info anchor="right" id="make" order="5" />
-      <window_info anchor="right" x="1366" y="30" width="1280" height="994" id="Messages" order="6" weight="0.27668983" />
-    </layout>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/ast.h" />
-    <entry file="file://$PROJECT_DIR$/sdffsf.h" />
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/parser.hpp" />
-    <entry file="file://$PROJECT_DIR$/Makefile">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/parser.cpp" />
-    <entry file="file://$PROJECT_DIR$/general.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="26" selection-start-line="26" selection-end-line="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../semantic/ast.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="993" selection-start-line="993" selection-end-line="993" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/error.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" selection-start-line="23" selection-end-line="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/general.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../llvm_example/ast.cpp">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file:///usr/lib/llvm-3.9/include/llvm/ADT/APFloat.h" />
-    <entry file="file:///usr/lib/llvm-3.9/include/llvm/IR/IRBuilder.h" />
-    <entry file="file:///usr/include/llvm-3.9/llvm/IR/Instructions.h" />
-    <entry file="file:///usr/include/llvm-5.0/llvm/IR/Instructions.h" />
-    <entry file="file://$PROJECT_DIR$/error.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="34" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
-          <folding>
-            <element signature="e#953#971#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lexer.l">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2655">
-          <caret line="177" column="18" selection-start-line="177" selection-start-column="18" selection-end-line="177" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="185" selection-start-line="24" selection-start-column="185" selection-end-line="24" selection-end-column="185" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logger.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logger.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="23" selection-start-line="12" selection-start-column="23" selection-end-line="12" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/indented_programs/hanoi.dna">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="15" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/symbol.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9435">
-          <caret line="629" column="5" selection-start-line="629" selection-start-column="5" selection-end-line="629" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/auxiliary.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="106" column="26" selection-start-line="106" selection-start-column="26" selection-end-line="106" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/symbol.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2865">
-          <caret line="191" column="22" selection-start-line="191" selection-start-column="22" selection-end-line="191" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ast.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="51" column="6" selection-start-line="51" selection-start-column="6" selection-end-line="51" selection-end-column="6" />
-          <folding>
-            <element signature="e#50#68#0" expanded="true" />
-            <element signature="e#92#121#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/documents/thesis/code/parallel_packrat/bottom_up/parallel_packrats.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/parser_indent.y">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="260" column="30" selection-start-line="260" selection-start-column="30" selection-end-line="260" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/parser_unindent.y">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="86">
-          <caret line="213" column="6" selection-start-line="213" selection-start-column="6" selection-end-line="213" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/indented_programs/skip.dna">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="24" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/auxiliary.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2066">
-          <caret line="253" selection-start-line="253" selection-end-line="253" />
-          <folding>
-            <element signature="e#58#76#0" expanded="true" />
-            <element signature="e#100#118#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ast.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="1048" column="21" selection-start-line="1048" selection-start-column="21" selection-end-line="1048" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

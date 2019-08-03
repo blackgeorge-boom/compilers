@@ -1,4 +1,4 @@
-def hello is byte: x as int
-    if ('\x01'<='\xf/INT skip
+def hello is int: x as int[10]
+    if '3': skip
     else: skip
-    return: '2'
+    return: x[0] + 1
