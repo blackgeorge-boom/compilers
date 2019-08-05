@@ -1,4 +1,3 @@
-def hello is int: x as int[10]
-    if '3': skip
-    else: skip
-    return: x[0] + 1
+def hello is int: x as int
+    x := x+ 1
+    return: x

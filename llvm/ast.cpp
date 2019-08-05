@@ -1065,7 +1065,6 @@ llvm::Value* ast_compile(ast t)
         case STR:break;
         case L_VALUE:break;
         case ID_LIST:break;
-        case LET:break;
         case ID:
         {
             SymbolEntry* e = lookup(t->id);
@@ -1085,12 +1084,30 @@ llvm::Value* ast_compile(ast t)
             // Load the value.
             return Builder.CreateLoad(V, t->id);
         }
+        case LET:
+        {
+            ast_compile(t->first); // TODO: maybe check example
+            llvm::Value* LVal = NamedValues[std::string(t->first->id)];
+
+            llvm::Value* Expr = ast_compile(t->second);
+            if (!Expr) return nullptr;
+
+            if (!equalType(t->first->type, t->second->type))
+                error("Type mismatch in assignment");
+            t->nesting_diff = t->first->nesting_diff;
+            t->offset = t->first->offset;
+
+            Builder.CreateStore(Expr, LVal);
+
+            return nullptr;
+        }
         case VAR_DEF:break;
     }
 }
 
 void llvm_compile_and_dump(ast t)
 {
+//    ast_sem(t);
     TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
     ast_compile(t);
     TheModule->print(llvm::errs(), nullptr);
@@ -1102,9 +1119,7 @@ void ast_sem(ast t) {
         case LET: {
             ast_sem(t->first);
             ast_sem(t->second);
-            if (!equalType(t->first->type, t->second->type) &&
-                !(equalType(t->first->type, typeInteger) && equalType(t->second->type, typeChar))
-                    )
+            if (!equalType(t->first->type, t->second->type))
                 error("Type mismatch in assignment");
             t->nesting_diff = t->first->nesting_diff;
             t->offset = t->first->offset;

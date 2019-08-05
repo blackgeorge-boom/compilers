@@ -24,8 +24,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="parser_u" />
       <config projectName="dana_llvm" targetName="parser_i" />
+      <config projectName="dana_llvm" targetName="parser_u" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -37,6 +37,7 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.h" beforeDir="false" afterPath="$PROJECT_DIR$/ast.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -49,15 +50,11 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>jj</find>
-    </findStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectId" id="1P0phsqog4qVGsZq4wUT2bxPvpv" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -163,6 +160,8 @@
       <workItem from="1563553244244" duration="2908000" />
       <workItem from="1563556753045" duration="3148000" />
       <workItem from="1563628868005" duration="1834000" />
+      <workItem from="1565020992117" duration="4743000" />
+      <workItem from="1565027244313" duration="2820000" />
     </task>
     <servers />
   </component>
@@ -183,7 +182,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
