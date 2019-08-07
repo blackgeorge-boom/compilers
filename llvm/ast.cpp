@@ -226,6 +226,7 @@ llvm::Value* ast_compile(ast t)
         case PROGRAM:
         {
             openScope();
+            NamedValues.clear(); // TODO: check
             llvm::Value* V = ast_compile(t->first);
             closeScope();
             return V;
@@ -250,14 +251,11 @@ llvm::Value* ast_compile(ast t)
             if (!TheFunction->empty())
                 return (llvm::Function*)LogErrorV("Function cannot be redefined.") ;
 
-            llvm::Value* VS = ast_compile(t->second);
-
             // Create a new basic block to start insertion into.
             llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", TheFunction);
             Builder.SetInsertPoint(BB);
 
             // Record the function arguments in the NamedValues map.
-            NamedValues.clear(); // TODO: check
             for (auto& Arg : TheFunction->args()) {
                 // Create an alloca for this variable.
                 llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName(), Arg.getType());
@@ -267,6 +265,13 @@ llvm::Value* ast_compile(ast t)
 
                 NamedValues[Arg.getName()] = Alloca;
             }
+
+            llvm::Value* VS = ast_compile(t->second);
+
+            // Reset
+            curr_func_name = t->first->id;
+
+            Builder.SetInsertPoint(BB);
 
             llvm::Value* TheBody = ast_compile(t->third);
 
