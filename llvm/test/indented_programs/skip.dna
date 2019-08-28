@@ -1,4 +1,4 @@
-def hello is int: x as int
+def hello is int: x as int, y as int
     def hello2: x as int
-        x := x + x
+        x := y
     return: x
