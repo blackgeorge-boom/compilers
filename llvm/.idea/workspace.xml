@@ -24,8 +24,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="parser_u" />
       <config projectName="dana_llvm" targetName="parser_i" />
+      <config projectName="dana_llvm" targetName="parser_u" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -35,10 +35,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/ast_sem.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ast_sem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
@@ -71,7 +69,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -167,6 +165,8 @@
       <workItem from="1565202209852" duration="5402000" />
       <workItem from="1565282363129" duration="4560000" />
       <workItem from="1565286974120" duration="793000" />
+      <workItem from="1567094017661" duration="7882000" />
+      <workItem from="1567102527525" duration="331000" />
     </task>
     <servers />
   </component>
@@ -194,5 +194,14 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="NamedValues" language="ObjectiveC" />
+        <watch expression="FunctionVariables" language="ObjectiveC" />
+        <watch expression="ShadowedVariables" language="ObjectiveC" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

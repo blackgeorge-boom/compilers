@@ -187,7 +187,8 @@ static llvm::LLVMContext TheContext;
 static llvm::IRBuilder<> Builder(TheContext);
 static std::unique_ptr<llvm::Module> TheModule;
 static std::map<std::string, llvm::AllocaInst*> NamedValues;
-static std::vector<std::map<std::string, llvm::AllocaInst*>> OldBindings;
+static std::vector<std::map<std::string, llvm::AllocaInst*>> FunctionVariables;
+static std::vector<std::map<std::string, llvm::AllocaInst*>> ShadowedVariables;
 
 // Useful LLVM types.
 static llvm::Type* llvm_bit = llvm::IntegerType::get(TheContext, 1);
@@ -256,20 +257,36 @@ llvm::Value* ast_compile(ast t)
             llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", TheFunction);
             Builder.SetInsertPoint(BB);
 
-            std::map<std::string, llvm::AllocaInst*> AllocasToSave;
+            // All of parameters and local variables of the function
+            std::map<std::string, llvm::AllocaInst*> CurFunctionVars;
+            // Parameters and local variables of the function that shadow some other variables
+            std::map<std::string, llvm::AllocaInst*> CurShadowedVars;
 
             // Record the function arguments in the NamedValues map.
             for (auto& Arg : TheFunction->args()) {
+
+                std::string ArgName(Arg.getName());
+
                 // Create an alloca for this variable.
-                llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName(), Arg.getType());
+                llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, ArgName, Arg.getType());
 
                 // Store the initial value into the alloca.
                 Builder.CreateStore(&Arg, Alloca);
 
-                AllocasToSave[Arg.getName()] = NamedValues[Arg.getName()];
-                NamedValues[Arg.getName()] = Alloca;
+                // If variable already exists, shadow it and keep the old value
+                if (NamedValues.count(ArgName))
+                    CurShadowedVars[ArgName] = NamedValues[ArgName];
+
+                // Store the new variable globally
+                NamedValues[ArgName] = Alloca;
+                //  Store the new variable locally to the function
+                CurFunctionVars[ArgName] = NamedValues[ArgName];
             }
 
+            ShadowedVariables.push_back(CurShadowedVars);
+            FunctionVariables.push_back(CurFunctionVars);
+
+            // Local def lists
             llvm::Value* VS = ast_compile(t->second);
 
             // Reset
@@ -288,6 +305,18 @@ llvm::Value* ast_compile(ast t)
 
                 // Validate the generated code, checking for consistency.
                 llvm::verifyFunction(*TheFunction);
+
+                // Pop variables
+                auto vars = FunctionVariables.back();
+                for (auto& v : vars)
+                    NamedValues.erase(v.first);
+                FunctionVariables.pop_back();
+
+                // Pop shadow variables
+                auto shadows = ShadowedVariables.back();
+                for (auto& s : shadows)
+                    NamedValues[s.first] = s.second;
+                ShadowedVariables.pop_back();
 
                 closeScope();
                 return TheFunction;
@@ -1112,14 +1141,44 @@ llvm::Value* ast_compile(ast t)
         }
         case VAR_DEF:
         {
-            ast_compile(t->second);
-            insert(t->id, t->second->type);
+            llvm::Value* LocalVar = ast_compile(t->second);
+            auto var_type = t->second->type;
+            auto llvm_var_type = to_llvm_type(var_type);
+            insert(t->id, var_type);
+
+            llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
+
+            // Create an alloca for this variable.
+            llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, std::string(t->id), llvm_var_type);
+
+            auto InitVal = c8(0);
+
+            // All of parameters and local variables of the function
+            auto CurFunctionVars = FunctionVariables.back();
+            // Parameters and local variables of the function that shadow some other variables
+            auto CurShadowedVars = ShadowedVariables.back();
+
+            // TODO: check c8/c32
+            // Store the initial value into the alloca.
+            Builder.CreateStore(InitVal, Alloca);
 
             ast temp = t->first;
             while (temp != nullptr) {
                 insert(temp->id, t->second->type);
                 temp = temp->first;
+                // If variable already exists, shadow it and keep the old value
+                if (NamedValues.count(temp->id))
+                    CurShadowedVars[temp->id] = NamedValues[temp->id];
+
+                // Store the new variable globally
+                NamedValues[temp->id] = Alloca;
+                //  Store the new variable locally to the function
+                CurFunctionVars[temp->id] = NamedValues[temp->id];
             }
+
+            ShadowedVariables.push_back(CurShadowedVars);
+            FunctionVariables.push_back(CurFunctionVars);
+
             return nullptr;
         }
     }
