@@ -206,6 +206,10 @@ inline llvm::ConstantInt* c32(int n) {
   return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, false));
 }
 
+inline llvm::ConstantPointerNull* llvm_null(llvm::PointerType* llvm_type) {
+    return llvm::ConstantPointerNull::get(llvm_type);
+}
+
 // CreateEntryBlockAlloca - Create an alloca instruction in the entry block of
 // the function.  This is used for mutable variables etc.
 static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function* TheFunction,
@@ -1144,27 +1148,52 @@ llvm::Value* ast_compile(ast t)
             llvm::Value* LocalVar = ast_compile(t->second);
             auto var_type = t->second->type;
             auto llvm_var_type = to_llvm_type(var_type);
-            insert(t->id, var_type);
 
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
 
             // Create an alloca for this variable.
             llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, std::string(t->id), llvm_var_type);
 
-            auto InitVal = c8(0);
+            switch(var_type->kind) {
+                case Type_tag::TYPE_INTEGER: {
+                    auto InitVal = c32(0);
+                    Builder.CreateStore(InitVal, Alloca);
+                    break;
+                }
+                case Type_tag::TYPE_CHAR: {
+                    auto InitVal = c8(0);
+                    Builder.CreateStore(InitVal, Alloca);
+                    break;
+                }
+                case Type_tag::TYPE_ARRAY: {
+                    auto InitVal = llvm_null(static_cast<llvm::PointerType*>(llvm_var_type));
+                    Builder.CreateStore(InitVal, Alloca);
+                    break;
+                }
+                default: {
+                    return nullptr;
+                }
+            }
 
             // All of parameters and local variables of the function
             auto CurFunctionVars = FunctionVariables.back();
             // Parameters and local variables of the function that shadow some other variables
             auto CurShadowedVars = ShadowedVariables.back();
 
-            // TODO: check c8/c32
-            // Store the initial value into the alloca.
-            Builder.CreateStore(InitVal, Alloca);
+            insert(t->id, var_type);
+
+            // If variable already exists, shadow it and keep the old value
+            if (NamedValues.count(t->id))
+                CurShadowedVars[t->id] = NamedValues[t->id];
+
+            // Store the new variable globally
+            NamedValues[t->id] = Alloca;
+            //  Store the new variable locally to the function
+            CurFunctionVars[t->id] = NamedValues[t->id];
 
             ast temp = t->first;
             while (temp != nullptr) {
-                insert(temp->id, t->second->type);
+                insert(temp->id, var_type);
                 temp = temp->first;
                 // If variable already exists, shadow it and keep the old value
                 if (NamedValues.count(temp->id))

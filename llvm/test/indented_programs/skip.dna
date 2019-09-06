@@ -1,6 +1,4 @@
-def hello is int: x as int, y as int
-    def hello2: x as int
-        def hello3: x as int, y as byte
-            skip
-        x := y
-    return: x
+def hello is int: x as int
+    var z is int[10]
+
+    return: 1
