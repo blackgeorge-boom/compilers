@@ -1,4 +1,2 @@
-def hello is int: x as int
-    var z is int[10]
-
-    return: 1
+def hello is int: x as int[10]
+    return: x[1]

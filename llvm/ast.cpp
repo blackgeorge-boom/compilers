@@ -1105,7 +1105,6 @@ llvm::Value* ast_compile(ast t)
         }
         case INT_CONST_LIST:break;
         case STR:break;
-        case L_VALUE:break;
         case ID_LIST:break;
         case ID:
         {
@@ -1210,6 +1209,18 @@ llvm::Value* ast_compile(ast t)
 
             return nullptr;
         }
+        case L_VALUE:
+        {
+            ast p = l_value_type(t, 0);
+            t->type = p->type;
+            free(p);
+
+            llvm::Type* TempType = to_llvm_type(t->type);
+            llvm::Value* Id = NamedValues[t->first->id];
+            llvm::Value* SecondVal = ast_compile(t->second);
+            llvm::Value* Pointer = Builder.CreateGEP(TempType, Id, llvm::ArrayRef<llvm::Value>{c32(0), c32(0)});
+            return Builder.CreateLoad(Pointer, t->id);
+        };
     }
 }
 
