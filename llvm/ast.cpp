@@ -1127,8 +1127,7 @@ llvm::Value* ast_compile(ast t)
         }
         case LET:
         {
-            ast_compile(t->first); // TODO: maybe check example
-            llvm::Value* LVal = NamedValues[std::string(t->first->id)];
+            llvm::Value* LVal = ast_compile(t->first);
 
             llvm::Value* Expr = ast_compile(t->second);
             if (!Expr) return nullptr;
@@ -1215,11 +1214,21 @@ llvm::Value* ast_compile(ast t)
             t->type = p->type;
             free(p);
 
-            llvm::Type* TempType = to_llvm_type(t->type);
-            llvm::Value* Id = NamedValues[t->first->id];
-            llvm::Value* SecondVal = ast_compile(t->second);
-            llvm::Value* Pointer = Builder.CreateGEP(TempType, Id, llvm::ArrayRef<llvm::Value>{c32(0), c32(0)});
-            return Builder.CreateLoad(Pointer, t->id);
+            std::vector<llvm::Value*> indexList;
+            ast ast_iter = t;
+            while (ast_iter->first != nullptr) {
+                indexList.push_back(ast_compile(ast_iter->second));
+                ast_iter = ast_iter->first;
+            }
+            indexList.push_back(c32(0));
+            std::reverse(indexList.begin(), indexList.end());
+
+            llvm::Value* Id = NamedValues[ast_iter->id];
+            llvm::Type* PointeeType = Id->getType()->getPointerElementType();
+
+            // TODO: return Pointer
+            llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
+            return Builder.CreateLoad(Pointer, strcat(ast_iter->id, "_elem"));
         };
     }
 }

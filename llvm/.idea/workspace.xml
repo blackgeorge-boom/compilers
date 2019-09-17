@@ -24,8 +24,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="parser_u" />
       <config projectName="dana_llvm" targetName="parser_i" />
+      <config projectName="dana_llvm" targetName="parser_u" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -169,7 +169,8 @@
       <workItem from="1567109108814" duration="328000" />
       <workItem from="1567786525923" duration="5994000" />
       <workItem from="1568025287374" duration="61000" />
-      <workItem from="1568650761840" duration="10000000" />
+      <workItem from="1568650761840" duration="10624000" />
+      <workItem from="1568735846688" duration="7881000" />
     </task>
     <servers />
   </component>
@@ -199,6 +200,15 @@
     </option>
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>1129</line>
+          <option name="timeStamp" value="68" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
         <watch expression="NamedValues" language="ObjectiveC" />
