@@ -247,7 +247,7 @@ l_value:
 expr:
   T_char  { $$ = ast_char($1); }
 | T_const { $$ = ast_const($1); }
-| l_value { $$ = $1; }
+| l_value { $$ = ast_r_value($1); }
 | '(' expr ')' { $$ = $2; }
 | func_call { $$ = $1; }
 | '+' expr { $$ = ast_op(ast_const(0), UN_PLUS, $2); } %prec UPLUS

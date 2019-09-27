@@ -188,6 +188,12 @@ void ast_sem(ast t) {
             free(p);
             return;
         }
+        case R_VALUE:
+        {
+            ast_sem(t->first);
+            t->type = t->first->type;
+            return;
+        }
         case TYPE:
             t->type = var_def_type(t->type, t->first);
             return;

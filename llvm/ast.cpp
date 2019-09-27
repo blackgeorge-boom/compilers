@@ -117,6 +117,10 @@ ast ast_l_value (ast f, ast s) {
     return ast_make(L_VALUE, nullptr, 0, f, s, nullptr, nullptr, nullptr);
 }
 
+ast ast_r_value (ast f) {
+    return ast_make(R_VALUE, nullptr, 0, f, nullptr, nullptr, nullptr, nullptr);
+}
+
 ast ast_if (ast f, ast s, ast t) {
     return ast_make(IF, nullptr, 0, f, s, t, nullptr, nullptr);
 }
@@ -1104,27 +1108,7 @@ llvm::Value* ast_compile(ast t)
             return  Builder.CreateICmpUGE(F, S, "ge");
         }
         case INT_CONST_LIST:break;
-        case STR:break;
         case ID_LIST:break;
-        case ID:
-        {
-            SymbolEntry* e = lookup(t->id);
-
-//            if (e == nullptr)
-//                error("ID - Undeclared variable : %s", t->id);
-
-            t->type = e->u.eVariable.type;
-//            t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
-//            t->offset = e->u.eVariable.offset;
-
-            // Look this variable up in the function.
-            llvm::Value *V = NamedValues[std::string(t->id)];
-            if (!V)
-                return LogErrorV("Unknown variable name");
-
-            // Load the value.
-            return Builder.CreateLoad(V, t->id);
-        }
         case LET:
         {
             llvm::Value* LVal = ast_compile(t->first);
@@ -1132,6 +1116,7 @@ llvm::Value* ast_compile(ast t)
             llvm::Value* Expr = ast_compile(t->second);
             if (!Expr) return nullptr;
 
+            // TODO: maybe "and not array"
             if (!equalType(t->first->type, t->second->type))
                 error("Type mismatch in assignment");
             t->nesting_diff = t->first->nesting_diff;
@@ -1208,6 +1193,34 @@ llvm::Value* ast_compile(ast t)
 
             return nullptr;
         }
+        case ID:
+        {
+            SymbolEntry* e = lookup(t->id);
+
+//            if (e == nullptr)
+//                error("ID - Undeclared variable : %s", t->id);
+
+            t->type = e->u.eVariable.type;
+//            t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
+//            t->offset = e->u.eVariable.offset;
+
+            // Look this variable up in the function.
+            llvm::Value *Id = NamedValues[std::string(t->id)];
+            if (!Id)
+                return LogErrorV("Unknown variable name");
+
+            return Id;
+        }
+        case STR:
+        {
+            std::string s(t->id);
+            std::vector<unsigned int> StringVector;
+            for (char c : s)
+                StringVector.push_back(c);
+            StringVector.push_back(0);
+
+            return Builder.CreateGlobalString(s, "str");
+        }
         case L_VALUE:
         {
             ast p = l_value_type(t, 0);
@@ -1223,13 +1236,18 @@ llvm::Value* ast_compile(ast t)
             indexList.push_back(c32(0));
             std::reverse(indexList.begin(), indexList.end());
 
-            llvm::Value* Id = NamedValues[ast_iter->id];
+            llvm::Value* Id = ast_compile(ast_iter);
             llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
-            // TODO: return Pointer
             llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
-            return Builder.CreateLoad(Pointer, strcat(ast_iter->id, "_elem"));
+            return Pointer;
         };
+        case R_VALUE:
+        {
+            llvm::Value* RValuePointer = ast_compile(t->first);
+            t->type = t->first->type;
+            return Builder.CreateLoad(RValuePointer, "rvalue");
+        }
     }
 }
 

@@ -1,3 +1,2 @@
-def hello is int: x as int[10][5], y as int
-    y := 3
-    return: 5
+def hello: x as byte
+    x := 'a' + "mm"[2]

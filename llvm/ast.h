@@ -37,7 +37,7 @@ typedef enum {
   TIMES, DIV, MOD, LT, GT,
   LE, GE, EQ, NE,
   VAR_DEF, FUNC_CALL, RETURN,
-  SKIP, EXIT, UN_PLUS, UN_MINUS
+  SKIP, EXIT, UN_PLUS, UN_MINUS, R_VALUE
 } kind;
 
 typedef struct node {
@@ -65,6 +65,7 @@ ast ast_func_def (ast f, ast s, ast t);
 ast ast_func_decl (ast f);
 ast ast_id_list (char* s, ast f);
 ast ast_l_value (ast f, ast s);
+ast ast_r_value (ast f);
 ast ast_type (Type t, ast f);
 ast ast_int_const_list (int n, ast f);
 ast ast_bool_not (ast f);
