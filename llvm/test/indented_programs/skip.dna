@@ -1,2 +1,13 @@
-def hello: x as byte
-    x := 'a' + "mm"[2]
+def main
+    decl writeInteger: n as int
+    decl writeChar: b as byte
+    decl writeString: s as byte[8]
+    def hello: x as int
+        if x > 1:
+            writeInteger: x
+        else:
+            writeInteger: 666
+            exit
+    hello: 3
+    writeChar: '\n'
+    hello: 0

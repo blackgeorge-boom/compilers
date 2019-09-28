@@ -9,6 +9,7 @@
 
 loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
+std::vector<char*> func_names;
 char* curr_func_name;
 
 static ast ast_make (kind k, char* s, int n,
@@ -237,6 +238,7 @@ llvm::Value* ast_compile(ast t)
         {
             openScope();
             NamedValues.clear(); // TODO: check
+
             llvm::Value* V = ast_compile(t->first);
             closeScope();
             return V;
@@ -250,6 +252,7 @@ llvm::Value* ast_compile(ast t)
         case FUNC_DEF:
         {
             curr_func_name = t->first->id;
+            func_names.push_back(curr_func_name);
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
 
             if (!TheFunction)
@@ -260,6 +263,8 @@ llvm::Value* ast_compile(ast t)
 
             if (!TheFunction->empty())
                 return (llvm::Function*)LogErrorV("Function cannot be redefined.") ;
+
+            llvm::BasicBlock* OldBB = Builder.GetInsertBlock();
 
             // Create a new basic block to start insertion into.
             llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", TheFunction);
@@ -297,9 +302,6 @@ llvm::Value* ast_compile(ast t)
             // Local def lists
             llvm::Value* VS = ast_compile(t->second);
 
-            // Reset
-            curr_func_name = t->first->id;
-
             Builder.SetInsertPoint(BB);
 
             llvm::Value* TheBody = ast_compile(t->third);
@@ -327,6 +329,8 @@ llvm::Value* ast_compile(ast t)
                 ShadowedVariables.pop_back();
 
                 closeScope();
+                if(OldBB)
+                    Builder.SetInsertPoint(OldBB);
                 return TheFunction;
             }
 
@@ -470,7 +474,7 @@ llvm::Value* ast_compile(ast t)
                 param_list = param_list->second;
             }
 
-            Builder.CreateCall(CalleeF, ArgsV, "pcalltmp");
+            Builder.CreateCall(CalleeF, ArgsV, "");
 
             return nullptr;
         }
@@ -756,6 +760,9 @@ llvm::Value* ast_compile(ast t)
             Type return_type = typeVoid;
             check_result_type(curr_func_type, return_type, curr_func_name);
             Builder.CreateRetVoid();
+            // Reset curr func name
+            func_names.pop_back();
+            curr_func_name = func_names.back();
             return nullptr;
         }
         case RETURN:
@@ -771,6 +778,10 @@ llvm::Value* ast_compile(ast t)
                 RetV = Builder.CreateIntCast(RetV, llvm_int, true);
 
             Builder.CreateRet(RetV);
+
+            // Reset curr func name
+            func_names.pop_back();
+            curr_func_name = func_names.back();
             return nullptr;
         }
         case TRUE:
@@ -1133,6 +1144,9 @@ llvm::Value* ast_compile(ast t)
             auto llvm_var_type = to_llvm_type(var_type);
 
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
+            //Builder.SetInsertPoint(TheFunction->getEntryBlock().back());
+//            llvm::BasicBlock* VarBB = llvm::BasicBlock::Create(TheContext, "var", );
+//            TheFunction->getBasicBlockList().push_back(VarBB);
 
             // Create an alloca for this variable.
             llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, std::string(t->id), llvm_var_type);
@@ -1254,8 +1268,31 @@ llvm::Value* ast_compile(ast t)
 void llvm_compile_and_dump(ast t)
 {
 //    ast_sem(t);
+
     TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
+
+    // Define and start the main function.
+//    std::vector<llvm::Type*> Params;
+//    llvm::FunctionType* FT =
+//            llvm::FunctionType::get(llvm_int, Params, false);
+//    llvm::Constant* c = TheModule->getOrInsertFunction("main", llvm_int, nullptr);
+//    llvm::Function* main = llvm::cast<llvm::Function>(c);
+//    llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", main);
+//    Builder.SetInsertPoint(BB);
+
     ast_compile(t);
+
+//    Builder.CreateRet(c32(0));
+
+//     Verify and optimize the main function.
+    bool bad = verifyModule(*TheModule, &llvm::errs());
+    if (bad) {
+        fprintf(stderr, "The faulty IR is:\n");
+        fprintf(stderr, "------------------------------------------------\n\n");
+        TheModule->print(llvm::outs(), nullptr);
+        return;
+    }
+
     TheModule->print(llvm::errs(), nullptr);
 }
 
