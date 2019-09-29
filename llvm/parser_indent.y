@@ -20,7 +20,7 @@ extern int boom;
 ast tree;
 
 struct stack_t {      
-  int top, flag;      
+  int top, flag;
   struct stack_t *next;
 };
 typedef struct stack_t *stack;
@@ -104,7 +104,7 @@ extern int indent_level;
 %type<a> cond
 %type<a> x_cond
 
-%expect 2
+%expect 3
 
 %%
 
@@ -203,7 +203,8 @@ stmt:
 
 elif_list:
   /* nothing */ { $$ = NULL; }
-| elif_list "elif" cond ':' block { $$ = ast_elif($3, $5, $1); }
+| "elif" cond ':' block elif_list { $$ = ast_elif($2, $4, $5); }
+//| elif_list "elif" cond ':' block { $$ = ast_elif($3, $5, $1); }
 ;
 
 /*

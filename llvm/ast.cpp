@@ -11,6 +11,7 @@ loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
 std::vector<char*> func_names;
 char* curr_func_name;
+std::vector<llvm::BasicBlock*> merge_blocks;
 
 static ast ast_make (kind k, char* s, int n,
                      ast first, ast second, ast third, ast last, Type t) {
@@ -537,6 +538,8 @@ llvm::Value* ast_compile(ast t)
             llvm::BasicBlock* ElifBB = llvm::BasicBlock::Create(TheContext, "elif");
             llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "ifcont");
 
+            merge_blocks.push_back(MergeBB);
+
             Builder.CreateCondBr(CondV, ThenBB, ElifBB);
 
             // Emit then value.
@@ -560,6 +563,7 @@ llvm::Value* ast_compile(ast t)
             TheFunction->getBasicBlockList().push_back(MergeBB); // ??
             Builder.SetInsertPoint(MergeBB);
 
+            merge_blocks.pop_back();
             return nullptr;
         }
         case ELIF:
@@ -599,7 +603,7 @@ llvm::Value* ast_compile(ast t)
             // Generate code for "then" block
             ast_compile(t->second);
 
-            Builder.CreateBr(MergeBB);
+            Builder.CreateBr(merge_blocks.back());
 
             // Emit else block.
             TheFunction->getBasicBlockList().push_back(ElifBB); // ??
@@ -645,6 +649,8 @@ llvm::Value* ast_compile(ast t)
             llvm::BasicBlock* ElseBB = llvm::BasicBlock::Create(TheContext, "else");
             llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "ifcont");
 
+            merge_blocks.push_back(MergeBB);
+
             Builder.CreateCondBr(CondV, ThenBB, ElifBB);
 
             // Emit then value.
@@ -653,6 +659,7 @@ llvm::Value* ast_compile(ast t)
             // Generate code for "then" block
             ast_compile(t->second);
 
+            // Create branch to "ifcont"
             Builder.CreateBr(MergeBB);
 
             // Emit elif block.
@@ -668,13 +675,17 @@ llvm::Value* ast_compile(ast t)
             TheFunction->getBasicBlockList().push_back(ElseBB); // ??
             Builder.SetInsertPoint(ElseBB);
 
-            // Generate code for "elif list" blocks
+            // Generate code for "else" block
             ast_compile(t->last);
+
+            // Create branch to "ifcont"
+            Builder.CreateBr(MergeBB);
 
             // Emit merge block.
             TheFunction->getBasicBlockList().push_back(MergeBB); // ??
             Builder.SetInsertPoint(MergeBB);
 
+            merge_blocks.pop_back();
             return nullptr;
         }
         case LOOP:
@@ -1083,7 +1094,10 @@ llvm::Value* ast_compile(ast t)
 
             t->type = typeChar;
 
-            return  Builder.CreateICmpULT(F, S, "lt");
+            if (t->first->type == typeChar)
+                return  Builder.CreateICmpULT(F, S, "lt");
+            else
+                return  Builder.CreateICmpSLT(F, S, "lt");
         }
         case GT:
         {
@@ -1094,7 +1108,10 @@ llvm::Value* ast_compile(ast t)
 
             t->type = typeChar;
 
-            return  Builder.CreateICmpUGT(F, S, "gt");
+            if (t->first->type == typeChar)
+                return  Builder.CreateICmpUGT(F, S, "gt");
+            else
+                return  Builder.CreateICmpSGT(F, S, "gt");
         }
         case LE:
         {
@@ -1105,7 +1122,10 @@ llvm::Value* ast_compile(ast t)
 
             t->type = typeChar;
 
-            return  Builder.CreateICmpULE(F, S, "le");
+            if (t->first->type == typeChar)
+                return  Builder.CreateICmpULE(F, S, "le");
+            else
+                return  Builder.CreateICmpSLE(F, S, "le");
         }
         case GE:
         {
@@ -1116,7 +1136,10 @@ llvm::Value* ast_compile(ast t)
 
             t->type = typeChar;
 
-            return  Builder.CreateICmpUGE(F, S, "ge");
+            if (t->first->type == typeChar)
+                return  Builder.CreateICmpUGE(F, S, "ge");
+            else
+                return  Builder.CreateICmpSGE(F, S, "ge");
         }
         case INT_CONST_LIST:break;
         case ID_LIST:break;
@@ -1271,20 +1294,11 @@ void llvm_compile_and_dump(ast t)
 
     TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
 
-    // Define and start the main function.
-//    std::vector<llvm::Type*> Params;
-//    llvm::FunctionType* FT =
-//            llvm::FunctionType::get(llvm_int, Params, false);
-//    llvm::Constant* c = TheModule->getOrInsertFunction("main", llvm_int, nullptr);
-//    llvm::Function* main = llvm::cast<llvm::Function>(c);
-//    llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", main);
-//    Builder.SetInsertPoint(BB);
+    declare_dana_libs();
 
     ast_compile(t);
 
-//    Builder.CreateRet(c32(0));
-
-//     Verify and optimize the main function.
+    // Verify and optimize the main function.
     bool bad = verifyModule(*TheModule, &llvm::errs());
     if (bad) {
         fprintf(stderr, "The faulty IR is:\n");
@@ -1315,6 +1329,25 @@ llvm::Type* to_llvm_type(Type type) {
     }
 }
 
-// TODO : Function, Func_call, Local def list, Var def, simple scope,
+static llvm::Function* TheWriteInteger;
+static llvm::Function* TheWriteString;
 
+void declare_dana_libs()
+{
+    // declare void @writeInteger(i32)
+    llvm::FunctionType *writeInteger_type =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
+                              std::vector<llvm::Type*>{ llvm_int }, false);
+    TheWriteInteger =
+            llvm::Function::Create(writeInteger_type, llvm::Function::ExternalLinkage,
+                             "writeInteger", TheModule.get());
+
+    // declare void @writeString(i8*)
+    llvm::FunctionType *writeString_type =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
+                              std::vector<llvm::Type *>{ llvm::PointerType::get(llvm_byte, 0) }, false);
+    TheWriteString =
+            llvm::Function::Create(writeString_type, llvm::Function::ExternalLinkage,
+                             "writeString", TheModule.get());
+}
 

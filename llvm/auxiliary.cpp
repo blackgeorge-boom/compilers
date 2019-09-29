@@ -251,3 +251,4 @@ void check_parameters (SymbolEntry* f, ast first, ast second, std::string call_t
         fatal("Incorrect number of parameters at %s call", call_type.c_str());
 }
 
+

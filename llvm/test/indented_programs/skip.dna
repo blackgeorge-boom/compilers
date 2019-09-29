@@ -3,11 +3,11 @@ def main
     decl writeChar: b as byte
     decl writeString: s as byte[8]
     def hello: x as int
-        if x > 1:
-            writeInteger: x
+        writeInteger: x
+        if x = -1:
+            writeChar: "abc\n"[3]
         else:
-            writeInteger: 666
-            exit
-    hello: 3
-    writeChar: '\n'
-    hello: 0
+            writeChar: 'c'
+    hello: 2
+    hello: -1
+    hello: 1

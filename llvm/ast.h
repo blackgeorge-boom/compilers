@@ -96,6 +96,7 @@ llvm::Type* to_llvm_type(Type type);
 void ast_sem(ast t);
 llvm::Value* ast_compile(ast t);
 void llvm_compile_and_dump(ast t);
+void declare_dana_libs();
 
 //int ast_run(ast t);
 
