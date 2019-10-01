@@ -223,6 +223,7 @@ void check_parameters (SymbolEntry* f, ast first, ast second, std::string call_t
     ast real_param_list = second;
     SymbolEntry* func_param = f->u.eFunction.firstArgument;
 
+    // TODO: fix sem
     while (real_param != nullptr && func_param != nullptr) {
         ast_sem(real_param);
         Type real_param_type = real_param->type;

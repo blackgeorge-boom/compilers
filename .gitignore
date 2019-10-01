@@ -119,3 +119,6 @@ Session.vim
 tags
 # Persistent undo
 [._]*.un~
+
+##################
+llvm/llc_test/parser_i

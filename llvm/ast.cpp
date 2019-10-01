@@ -305,41 +305,40 @@ llvm::Value* ast_compile(ast t)
 
             Builder.SetInsertPoint(BB);
 
+            // TheBody should normally be nullptr after ast_compile()
             llvm::Value* TheBody = ast_compile(t->third);
 
             if (!TheBody) {
-
                 if (TheFunction->getReturnType() == llvm_void) {
+
                     // Finish off the proc.
                     Builder.CreateRetVoid();
                 }
-
-                // Validate the generated code, checking for consistency.
-                llvm::verifyFunction(*TheFunction);
-
-                // Pop variables
-                auto vars = FunctionVariables.back();
-                for (auto& v : vars)
-                    NamedValues.erase(v.first);
-                FunctionVariables.pop_back();
-
-                // Pop shadow variables
-                auto shadows = ShadowedVariables.back();
-                for (auto& s : shadows)
-                    NamedValues[s.first] = s.second;
-                ShadowedVariables.pop_back();
-
-                closeScope();
-                if(OldBB)
-                    Builder.SetInsertPoint(OldBB);
-                return TheFunction;
             }
 
-            // Error reading body, remove function.
-            TheFunction->eraseFromParent();
+            // Reset curr func name
+            func_names.pop_back();
+            curr_func_name = func_names.back();
+
+            // Validate the generated code, checking for consistency.
+            llvm::verifyFunction(*TheFunction);
+
+            // Pop variables
+            auto vars = FunctionVariables.back();
+            for (auto& v : vars)
+                NamedValues.erase(v.first);
+            FunctionVariables.pop_back();
+
+            // Pop shadow variables
+            auto shadows = ShadowedVariables.back();
+            for (auto& s : shadows)
+                NamedValues[s.first] = s.second;
+            ShadowedVariables.pop_back();
 
             closeScope();
-            return nullptr;
+            if(OldBB)
+                Builder.SetInsertPoint(OldBB);
+            return TheFunction;
         }
         case HEADER:
         {
@@ -413,9 +412,13 @@ llvm::Value* ast_compile(ast t)
         }
         case SEQ:
         {
-            ast_compile(t->first);
-            ast_compile(t->second);
-            return nullptr;
+            llvm::Value* F = ast_compile(t->first);
+            llvm::Value* S = ast_compile(t->second);
+
+            if (t->second == nullptr)
+                return F;
+            else
+                return S;
         }
         case SKIP:
         {
@@ -452,6 +455,8 @@ llvm::Value* ast_compile(ast t)
             SymbolEntry* proc = lookup(t->id);
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
+            ast_compile(t->first);
+            ast_compile(t->second);
             check_parameters(proc, t->first, t->second, "proc");
 
             // Look up the name in the global module table.
@@ -510,6 +515,7 @@ llvm::Value* ast_compile(ast t)
 
             return Builder.CreateCall(CalleeF, ArgsV, "fcalltmp");
         }
+        // TODO: check if works
         case IF:
         {
             llvm::Value* CondV = ast_compile(t->first);
@@ -546,9 +552,10 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ThenBB);
 
             // Generate code for "then" block
-            ast_compile(t->second);
+            llvm::Value* ExitStmt = ast_compile(t->second);
 
-            Builder.CreateBr(MergeBB);
+            if (!ExitStmt)
+                Builder.CreateBr(MergeBB);
 
             // Emit elif block.
             TheFunction->getBasicBlockList().push_back(ElifBB); // ??
@@ -600,10 +607,11 @@ llvm::Value* ast_compile(ast t)
             // Emit then value.
             Builder.SetInsertPoint(ThenBB);
 
-            // Generate code for "then" block
-            ast_compile(t->second);
+            // Generate code for "elifthen" block
+            llvm::Value* ExitStmt = ast_compile(t->second);
 
-            Builder.CreateBr(merge_blocks.back());
+            if (!ExitStmt)
+                Builder.CreateBr(merge_blocks.back());
 
             // Emit else block.
             TheFunction->getBasicBlockList().push_back(ElifBB); // ??
@@ -657,10 +665,11 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ThenBB);
 
             // Generate code for "then" block
-            ast_compile(t->second);
+            llvm::Value* ExitStmt = ast_compile(t->second);
 
-            // Create branch to "ifcont"
-            Builder.CreateBr(MergeBB);
+            if (!ExitStmt)
+                // Create branch to "ifcont"
+                Builder.CreateBr(MergeBB);
 
             // Emit elif block.
             TheFunction->getBasicBlockList().push_back(ElifBB); // ??
@@ -676,12 +685,13 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ElseBB);
 
             // Generate code for "else" block
-            ast_compile(t->last);
+            ExitStmt = ast_compile(t->last);
 
-            // Create branch to "ifcont"
-            Builder.CreateBr(MergeBB);
+            if (!ExitStmt)
+                // Create branch to "ifcont"
+                Builder.CreateBr(MergeBB);
 
-            // Emit merge block.
+           // Emit merge block.
             TheFunction->getBasicBlockList().push_back(MergeBB); // ??
             Builder.SetInsertPoint(MergeBB);
 
@@ -770,11 +780,8 @@ llvm::Value* ast_compile(ast t)
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = typeVoid;
             check_result_type(curr_func_type, return_type, curr_func_name);
-            Builder.CreateRetVoid();
-            // Reset curr func name
-            func_names.pop_back();
-            curr_func_name = func_names.back();
-            return nullptr;
+
+            return Builder.CreateRetVoid();
         }
         case RETURN:
         {
@@ -788,12 +795,7 @@ llvm::Value* ast_compile(ast t)
             if (equalType(curr_func_type, typeInteger) && equalType(return_type, typeChar))
                 RetV = Builder.CreateIntCast(RetV, llvm_int, true);
 
-            Builder.CreateRet(RetV);
-
-            // Reset curr func name
-            func_names.pop_back();
-            curr_func_name = func_names.back();
-            return nullptr;
+            return Builder.CreateRet(RetV);
         }
         case TRUE:
         {
@@ -1167,9 +1169,6 @@ llvm::Value* ast_compile(ast t)
             auto llvm_var_type = to_llvm_type(var_type);
 
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
-            //Builder.SetInsertPoint(TheFunction->getEntryBlock().back());
-//            llvm::BasicBlock* VarBB = llvm::BasicBlock::Create(TheContext, "var", );
-//            TheFunction->getBasicBlockList().push_back(VarBB);
 
             // Create an alloca for this variable.
             llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, std::string(t->id), llvm_var_type);
@@ -1187,7 +1186,7 @@ llvm::Value* ast_compile(ast t)
                 }
                 case Type_tag::TYPE_ARRAY: {
                     auto InitVal = llvm_null(static_cast<llvm::PointerType*>(llvm_var_type));
-                    Builder.CreateStore(InitVal, Alloca);
+//                    Builder.CreateStore(InitVal, Alloca);
                     break;
                 }
                 default: {
