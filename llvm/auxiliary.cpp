@@ -217,15 +217,13 @@ void check_result_type (Type first, Type second, std::string func_name)
     }
 }
 
-void check_parameters (SymbolEntry* f, ast first, ast second, std::string call_type) {
+void check_parameters (SymbolEntry* f, ast first, ast second, const std::string& call_type) {
 
     ast real_param = first;
     ast real_param_list = second;
     SymbolEntry* func_param = f->u.eFunction.firstArgument;
 
-    // TODO: fix sem
     while (real_param != nullptr && func_param != nullptr) {
-        ast_sem(real_param);
         Type real_param_type = real_param->type;
         Type func_param_type = func_param->u.eParameter.type;
 

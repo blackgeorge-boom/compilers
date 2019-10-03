@@ -9,12 +9,12 @@ main:                                   # @main
 	subq	$40, %rsp
 .Lcfi0:
 	.cfi_def_cfa_offset 48
-	movl	$2, (%rsp)
+	movl	$2, 4(%rsp)
 	movl	$2, %edi
 	callq	writeInteger
 	movq	%rsp, %rdi
 	callq	hello
-	movl	(%rsp), %edi
+	movl	4(%rsp), %edi
 	callq	writeInteger
 	addq	$40, %rsp
 	retq
@@ -28,7 +28,7 @@ main:                                   # @main
 hello:                                  # @hello
 	.cfi_startproc
 # BB#0:                                 # %entry
-	movl	$1, (%rdi)
+	movl	$1, 4(%rdi)
 	retq
 .Lfunc_end1:
 	.size	hello, .Lfunc_end1-hello

@@ -81,7 +81,7 @@ void check_result_type(Type first, Type second, std::string func_name);
  * second : list with the rest real parameters
  * call_type : "func" or "proc", to help messages
  */
-void check_parameters(SymbolEntry* f, ast first, ast second, std::string call_type);
+void check_parameters(SymbolEntry* f, ast first, ast second, const std::string& call_type);
 
 /**
  * Activation record

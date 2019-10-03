@@ -1,5 +1,10 @@
 def main
-    def hello: x as ref int
-        x := 1
-    var y is int
+    decl writeInteger: b as int
+    def hello: x as int[]
+        skip
+        #x[0]:= 1
+    var y is int[10]
+    y[1] := 2
+#    writeInteger: y[1]
     hello: y
+#    writeInteger: y[1]

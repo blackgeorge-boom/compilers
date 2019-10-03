@@ -5,6 +5,7 @@
 #include "ast.h"
 #include "auxiliary.h"
 #include "logger.h"
+#include "symbol.h"
 
 
 loop_record current_LR = nullptr;
@@ -276,23 +277,45 @@ llvm::Value* ast_compile(ast t)
             // Parameters and local variables of the function that shadow some other variables
             std::map<std::string, llvm::AllocaInst*> CurShadowedVars;
 
+            bool acceptByReference;
+
             // Record the function arguments in the NamedValues map.
             for (auto& Arg : TheFunction->args()) {
 
                 std::string ArgName(Arg.getName());
 
-                // Create an alloca for this variable.
-                llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, ArgName, Arg.getType());
+                char var_id[ArgName.size() + 1];
+                strcpy(var_id, ArgName.c_str()); // ArgName is const
+                SymbolEntry* se = lookup(var_id);
 
-                // Store the initial value into the alloca.
-                Builder.CreateStore(&Arg, Alloca);
+                llvm::AllocaInst* Alloca = nullptr;
+
+                acceptByReference = se->u.eParameter.mode == PASS_BY_REFERENCE ||
+                                    se->u.eParameter.type->kind == Type_tag::TYPE_ARRAY ||
+                                    se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY;
+
+                if (!acceptByReference) {
+                    // Create an alloca for this variable.
+                    Alloca = CreateEntryBlockAlloca(TheFunction, ArgName, Arg.getType());
+
+                    // Store the initial value into the alloca.
+                    Builder.CreateStore(&Arg, Alloca);
+                }
 
                 // If variable already exists, shadow it and keep the old value
                 if (NamedValues.count(ArgName))
                     CurShadowedVars[ArgName] = NamedValues[ArgName];
 
                 // Store the new variable globally
-                NamedValues[ArgName] = Alloca;
+                if (!acceptByReference)
+                    NamedValues[ArgName] = Alloca;
+                else if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
+                    auto Tmp = Builder.CreateLoad(&Arg, "iarray");
+                    NamedValues[ArgName] = reinterpret_cast<llvm::AllocaInst *>(Tmp);
+                }
+                else
+                    NamedValues[ArgName] = reinterpret_cast<llvm::AllocaInst *>(&Arg);
+
                 //  Store the new variable locally to the function
                 CurFunctionVars[ArgName] = NamedValues[ArgName];
             }
@@ -375,6 +398,11 @@ llvm::Value* ast_compile(ast t)
                 par_type = par_def->second->type;
                 llvm_par_ty = to_llvm_type(par_type);   // Get corresponding llvm type
 
+                if (par_type->kind == Type_tag::TYPE_ARRAY)
+                    llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
+                else if (par_type->kind == Type_tag::TYPE_IARRAY)
+                    llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
+
                 insertParameter(par_def->id, par_type, f);    // Insert first parameter
 
                 Params.push_back(llvm_par_ty);
@@ -450,40 +478,7 @@ llvm::Value* ast_compile(ast t)
             t->type = typeChar;
             return c8(t->num);
         }
-        case PROC_CALL:
-        {
-            SymbolEntry* proc = lookup(t->id);
-            if (proc->u.eFunction.resultType != typeVoid)
-                fatal("Cannot call function as a procedure\n");
-            ast_compile(t->first);
-            ast_compile(t->second);
-            check_parameters(proc, t->first, t->second, "proc");
 
-            // Look up the name in the global module table.
-            llvm::Function* CalleeF = TheModule->getFunction(t->id);
-            if (!CalleeF)
-                return LogErrorV("Unknown procedure referenced");
-
-            std::vector<llvm::Value*> ArgsV;
-
-            ast param = t->first;         // First is expr
-            ast param_list = t->second;
-
-            while (param != nullptr) {
-
-                ArgsV.push_back(ast_compile(param));
-
-                if (!param_list)
-                    break;
-
-                param = param_list->first;        // Now for the rest of paramams.
-                param_list = param_list->second;
-            }
-
-            Builder.CreateCall(CalleeF, ArgsV, "");
-
-            return nullptr;
-        }
         case FUNC_CALL:
         {
             SymbolEntry* func = lookup(t->id);
@@ -1229,6 +1224,62 @@ llvm::Value* ast_compile(ast t)
 
             return nullptr;
         }
+        case PROC_CALL:
+        {
+            SymbolEntry* proc = lookup(t->id);
+            if (proc->u.eFunction.resultType != typeVoid)
+                fatal("Cannot call function as a procedure\n");
+            // TODO: check
+            ast_sem(t->first);
+            ast_sem(t->second);
+            check_parameters(proc, t->first, t->second, "proc");
+
+            // Look up the name in the global module table.
+            llvm::Function* CalleeF = TheModule->getFunction(t->id);
+            if (!CalleeF)
+                return LogErrorV("Unknown procedure referenced");
+
+            std::vector<llvm::Value*> ArgsV;
+
+            ast param = t->first;         // First is expr
+            ast param_list = t->second;
+
+            SymbolEntry* func_param = proc->u.eFunction.firstArgument;
+            bool passByReference;
+
+            while (param != nullptr) {
+
+                passByReference = func_param->u.eParameter.mode == PASS_BY_REFERENCE ||
+                                  func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
+
+                if (passByReference)
+                    ArgsV.push_back(NamedValues[param->first->id]);
+                else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
+
+                    std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
+                    llvm::Value* Id = NamedValues[param->first->id];
+                    llvm::Type* PointeeType = Id->getType()->getPointerElementType();
+
+                    llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
+                    ArgsV.push_back(Pointer);
+                }
+                else {
+                    ArgsV.push_back(ast_compile(param));
+                }
+
+                if (!param_list)
+                    break;
+
+                param = param_list->first;        // Now for the rest of paramams.
+                param_list = param_list->second;
+
+                func_param = func_param->u.eParameter.next;
+            }
+
+            Builder.CreateCall(CalleeF, ArgsV, "");
+
+            return nullptr;
+        }
         case ID:
         {
             SymbolEntry* e = lookup(t->id);
@@ -1241,7 +1292,7 @@ llvm::Value* ast_compile(ast t)
 //            t->offset = e->u.eVariable.offset;
 
             // Look this variable up in the function.
-            llvm::Value *Id = NamedValues[std::string(t->id)];
+            llvm::Value* Id = NamedValues[std::string(t->id)];
             if (!Id)
                 return LogErrorV("Unknown variable name");
 
@@ -1322,7 +1373,7 @@ llvm::Type* to_llvm_type(Type type) {
         case Type_tag::TYPE_ARRAY:
             return llvm::ArrayType::get(to_llvm_type(type->refType),type->size);
         case Type_tag::TYPE_IARRAY:
-            return llvm::PointerType::get(to_llvm_type(type->refType), 0);
+            return llvm::ArrayType::get(to_llvm_type(type->refType), 1);
         default:
             return nullptr;
     }
