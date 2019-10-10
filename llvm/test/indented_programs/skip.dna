@@ -1,10 +1,12 @@
 def main
     decl writeInteger: b as int
-    def hello: x as int[]
+    decl writeChar: b as byte
+    decl writeString: s as byte[]
+    def hello: x as int[][20]
         skip
-        #x[0]:= 1
-    var y is int[10]
-    y[1] := 2
-#    writeInteger: y[1]
+        x[1][10] := 1
+    var y is int[10][20]
+    y[1][10] := 2
+    writeInteger: y[1][10]
     hello: y
-#    writeInteger: y[1]
+    writeChar: "makaris"[2]

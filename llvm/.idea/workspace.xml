@@ -32,8 +32,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="parser_i" />
       <config projectName="dana_llvm" targetName="parser_u" />
+      <config projectName="dana_llvm" targetName="parser_i" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -45,8 +45,6 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.h" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/llc_test/a.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.ll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
@@ -80,7 +78,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -193,7 +191,9 @@
       <workItem from="1570020247441" duration="68000" />
       <workItem from="1570031792149" duration="8625000" />
       <workItem from="1570052308859" duration="602000" />
-      <workItem from="1570118092260" duration="13278000" />
+      <workItem from="1570118092260" duration="14315000" />
+      <workItem from="1570284308697" duration="59000" />
+      <workItem from="1570724785900" duration="6934000" />
     </task>
     <servers />
   </component>
@@ -218,7 +218,7 @@
       <breakpoints>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>776</line>
+          <line>782</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
@@ -233,52 +233,22 @@
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>1282</line>
-          <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>1292</line>
-          <option name="timeStamp" value="28" />
-        </line-breakpoint>
-        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>388</line>
+          <line>392</line>
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>423</line>
+          <line>429</line>
           <option name="timeStamp" value="38" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>1324</line>
-          <option name="timeStamp" value="80" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>1325</line>
-          <option name="timeStamp" value="81" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>313</line>
+          <line>317</line>
           <option name="timeStamp" value="83" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>1323</line>
-          <option name="timeStamp" value="84" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>314</line>
-          <option name="timeStamp" value="85" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>317</line>
+          <line>321</line>
           <option name="timeStamp" value="87" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
@@ -288,13 +258,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>399</line>
+          <line>403</line>
           <option name="timeStamp" value="90" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>402</line>
+          <line>406</line>
           <option name="timeStamp" value="91" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>314</line>
+          <option name="timeStamp" value="92" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>313</line>
+          <option name="timeStamp" value="93" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

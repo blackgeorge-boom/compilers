@@ -310,7 +310,11 @@ llvm::Value* ast_compile(ast t)
                 if (!acceptByReference)
                     NamedValues[ArgName] = Alloca;
                 else if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
-                    auto Tmp = Builder.CreateLoad(&Arg, "iarray");
+//                    auto Tmp = Builder.CreateLoad(&Arg, "iarray");
+                    auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
+                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
+
+//                    llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, &Arg, llvm::ArrayRef<llvm::Value*>(std::vector<llvm::Value*>{c32(0)}), "makaris", Builder.GetInsertBlock());
                     NamedValues[ArgName] = reinterpret_cast<llvm::AllocaInst *>(Tmp);
                 }
                 else
@@ -400,8 +404,8 @@ llvm::Value* ast_compile(ast t)
 
                 if (par_type->kind == Type_tag::TYPE_ARRAY)
                     llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
-                else if (par_type->kind == Type_tag::TYPE_IARRAY)
-                    llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
+//                else if (par_type->kind == Type_tag::TYPE_IARRAY)
+//                    llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
 
                 insertParameter(par_def->id, par_type, f);    // Insert first parameter
 
@@ -1373,7 +1377,8 @@ llvm::Type* to_llvm_type(Type type) {
         case Type_tag::TYPE_ARRAY:
             return llvm::ArrayType::get(to_llvm_type(type->refType),type->size);
         case Type_tag::TYPE_IARRAY:
-            return llvm::ArrayType::get(to_llvm_type(type->refType), 1);
+            return llvm::PointerType::get(to_llvm_type(type->refType),0);
+//            return llvm::ArrayType::get(to_llvm_type(type->refType), 1);
         default:
             return nullptr;
     }
