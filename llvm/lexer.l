@@ -205,7 +205,7 @@ R[`~@#$^_\{\}\;?.]
 {D}+            { yylval.n = atoi(yytext); return T_const; }
 \'({D}|{L})\' { yylval.n = yytext[1]; return T_char; }
 
-\'("\\"[ntr0"\'""\"""\\"])\' { 
+\'("\\"[ntr0"\"\'""""\\"])\' {
                             char c = yytext[2];
                             if     ( c =='n')
                             	yylval.n = '\n'; 

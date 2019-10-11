@@ -483,37 +483,6 @@ llvm::Value* ast_compile(ast t)
             return c8(t->num);
         }
 
-        case FUNC_CALL:
-        {
-            SymbolEntry* func = lookup(t->id);
-            if (func->u.eFunction.resultType == typeVoid)
-                fatal("Function must have a return type\n");
-            check_parameters(func, t->first, t->second, "func");
-            t->type = func->u.eFunction.resultType;
-
-            // Look up the name in the global module table.
-            llvm::Function* CalleeF = TheModule->getFunction(t->id);
-            if (!CalleeF)
-                return LogErrorV("Unknown function referenced");
-
-            std::vector<llvm::Value*> ArgsV;
-
-            ast param = t->first;         // First is expr
-            ast param_list = t->second;
-
-            while (param != nullptr) {
-
-                ArgsV.push_back(ast_compile(param));
-
-                if (!param_list)
-                    break;
-
-                param = param_list->first;      // Now for the rest of paramams.
-                param_list = param_list->second;
-            }
-
-            return Builder.CreateCall(CalleeF, ArgsV, "fcalltmp");
-        }
         // TODO: check if works
         case IF:
         {
@@ -716,6 +685,8 @@ llvm::Value* ast_compile(ast t)
             llvm::BasicBlock* AfterBB =
                     llvm::BasicBlock::Create(TheContext, "afterloop");
 
+            Builder.CreateBr(LoopBB);
+
             // Start insertion in LoopBB.
             Builder.SetInsertPoint(LoopBB);
 
@@ -724,10 +695,12 @@ llvm::Value* ast_compile(ast t)
             current_LR = new_LR;
 
             // Emit the body of the loop.
-            ast_compile(t->first);
+            auto ExitStmt = ast_compile(t->first);
 
-            // Insert the unconditional branch into the end of LoopBB.
-            Builder.CreateBr(LoopBB);
+            if (!ExitStmt) {
+                // Insert the unconditional branch into the end of LoopBB.
+                Builder.CreateBr(LoopBB);
+            }
 
             TheFunction->getBasicBlockList().push_back(AfterBB);
             // Any new code will be inserted in AfterBB.
@@ -748,13 +721,12 @@ llvm::Value* ast_compile(ast t)
                     error("Loop identifier does not exist!\n");
                     exit(1);
                 }
-                Builder.CreateBr(lr->after_block);
+                return Builder.CreateBr(lr->after_block);
             }
             else if (current_LR == nullptr)
                 error("No loop to break");
             else
-                Builder.CreateBr(current_LR->after_block);
-            return nullptr;
+                return Builder.CreateBr(current_LR->after_block);
         }
         case CONTINUE:
         {
@@ -765,13 +737,12 @@ llvm::Value* ast_compile(ast t)
                     error("Loop identifier does not exist!\n");
                     exit(1);
                 }
-                Builder.CreateBr(lr->loop_block);
+                return Builder.CreateBr(lr->loop_block);
             }
             else if (current_LR == nullptr)
                 error("No loop to continue");
             else
-                Builder.CreateBr(current_LR->loop_block);
-            return nullptr;
+                return Builder.CreateBr(current_LR->loop_block);
         }
         case EXIT:
         {
@@ -963,9 +934,7 @@ llvm::Value* ast_compile(ast t)
                 S = Builder.CreateIntCast(S, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
-            S = Builder.CreateICmpNE(
-                    S,
-                    c32(0), "sinttobit");
+            S = Builder.CreateICmpNE(S, c32(0), "sinttobit");
 
             Builder.CreateBr(MergeBB);
             // codegen of 'Else' can change the current block, update ElseBB for the PHI.
@@ -1004,9 +973,7 @@ llvm::Value* ast_compile(ast t)
                 F = Builder.CreateIntCast(F, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
-            F = Builder.CreateICmpNE(
-                    F,
-                    c32(0), "finttobit");
+            F = Builder.CreateICmpNE(F, c32(0), "finttobit");
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -1044,9 +1011,7 @@ llvm::Value* ast_compile(ast t)
                 S = Builder.CreateIntCast(S, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
-            S = Builder.CreateICmpNE(
-                    S,
-                    c32(0), "sinttobit");
+            S = Builder.CreateICmpNE(S,c32(0), "sinttobit");
 
             Builder.CreateBr(MergeBB);
             // codegen of 'Else' can change the current block, update ElseBB for the PHI.
@@ -1163,7 +1128,7 @@ llvm::Value* ast_compile(ast t)
         }
         case VAR_DEF:
         {
-            llvm::Value* LocalVar = ast_compile(t->second);
+            ast_compile(t->second);
             auto var_type = t->second->type;
             auto llvm_var_type = to_llvm_type(var_type);
 
@@ -1184,8 +1149,6 @@ llvm::Value* ast_compile(ast t)
                     break;
                 }
                 case Type_tag::TYPE_ARRAY: {
-                    auto InitVal = llvm_null(static_cast<llvm::PointerType*>(llvm_var_type));
-//                    Builder.CreateStore(InitVal, Alloca);
                     break;
                 }
                 default: {
@@ -1212,15 +1175,18 @@ llvm::Value* ast_compile(ast t)
             ast temp = t->first;
             while (temp != nullptr) {
                 insert(temp->id, var_type);
-                temp = temp->first;
                 // If variable already exists, shadow it and keep the old value
                 if (NamedValues.count(temp->id))
                     CurShadowedVars[temp->id] = NamedValues[temp->id];
+
+                Alloca = CreateEntryBlockAlloca(TheFunction, std::string(temp->id), llvm_var_type);
 
                 // Store the new variable globally
                 NamedValues[temp->id] = Alloca;
                 //  Store the new variable locally to the function
                 CurFunctionVars[temp->id] = NamedValues[temp->id];
+
+                temp = temp->first;
             }
 
             ShadowedVariables.push_back(CurShadowedVars);
@@ -1233,7 +1199,8 @@ llvm::Value* ast_compile(ast t)
             SymbolEntry* proc = lookup(t->id);
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
-            // TODO: check
+
+            // TODO: check if necessary
             ast_sem(t->first);
             ast_sem(t->second);
             check_parameters(proc, t->first, t->second, "proc");
@@ -1258,18 +1225,18 @@ llvm::Value* ast_compile(ast t)
 
                 if (passByReference)
                     ArgsV.push_back(NamedValues[param->first->id]);
-                else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
+                else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
 
+                    llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
                     llvm::Value* Id = NamedValues[param->first->id];
                     llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
-                    llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
+                    Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
                     ArgsV.push_back(Pointer);
                 }
-                else {
+                else
                     ArgsV.push_back(ast_compile(param));
-                }
 
                 if (!param_list)
                     break;
@@ -1283,6 +1250,60 @@ llvm::Value* ast_compile(ast t)
             Builder.CreateCall(CalleeF, ArgsV, "");
 
             return nullptr;
+        }
+        case FUNC_CALL:
+        {
+            SymbolEntry* func = lookup(t->id);
+            if (func->u.eFunction.resultType == typeVoid)
+                fatal("Function must have a return type\n");
+            ast_sem(t->first);
+            ast_sem(t->second);
+            check_parameters(func, t->first, t->second, "func");
+            t->type = func->u.eFunction.resultType;
+
+            // Look up the name in the global module table.
+            llvm::Function* CalleeF = TheModule->getFunction(t->id);
+            if (!CalleeF)
+                return LogErrorV("Unknown function referenced");
+
+            std::vector<llvm::Value*> ArgsV;
+
+            ast param = t->first;         // First is expr
+            ast param_list = t->second;
+
+            SymbolEntry* func_param = func->u.eFunction.firstArgument;
+            bool passByReference;
+
+            while (param != nullptr) {
+
+                passByReference = func_param->u.eParameter.mode == PASS_BY_REFERENCE ||
+                                  func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
+
+                if (passByReference)
+                    ArgsV.push_back(NamedValues[param->first->id]);
+                else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
+
+                    llvm::Value* Pointer;
+                    std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
+                    llvm::Value* Id = NamedValues[param->first->id];
+                    llvm::Type* PointeeType = Id->getType()->getPointerElementType();
+
+                    Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
+                    ArgsV.push_back(Pointer);
+                }
+                else
+                    ArgsV.push_back(ast_compile(param));
+
+                if (!param_list)
+                    break;
+
+                param = param_list->first;        // Now for the rest of paramams.
+                param_list = param_list->second;
+
+                func_param = func_param->u.eParameter.next;
+            }
+
+            return Builder.CreateCall(CalleeF, ArgsV, "fcalltmp");
         }
         case ID:
         {
@@ -1310,7 +1331,7 @@ llvm::Value* ast_compile(ast t)
                 StringVector.push_back(c);
             StringVector.push_back(0);
 
-            return Builder.CreateGlobalString(s, "str");
+            return Builder.CreateGlobalStringPtr(s, "str");
         }
         case L_VALUE:
         {
@@ -1337,7 +1358,11 @@ llvm::Value* ast_compile(ast t)
         {
             llvm::Value* RValuePointer = ast_compile(t->first);
             t->type = t->first->type;
-            return Builder.CreateLoad(RValuePointer, "rvalue");
+
+            if (t->first->k == STR)     // String as rvalue does not need to create a load. Just return the pointer
+                return RValuePointer;
+            else
+                return Builder.CreateLoad(RValuePointer, "rvalue");
         }
     }
 }

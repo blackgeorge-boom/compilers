@@ -32,8 +32,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="parser_u" />
       <config projectName="dana_llvm" targetName="parser_i" />
+      <config projectName="dana_llvm" targetName="parser_u" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -45,8 +45,11 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast_sem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast_sem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer.l" beforeDir="false" afterPath="$PROJECT_DIR$/lexer.l" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/llc_test/a.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.ll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/length.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/length.dna" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -105,7 +108,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="parser_i" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented_programs/skip.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="parser_i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="parser_i">
+    <configuration name="parser_i" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented_programs/prwtoi.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="parser_i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="parser_i">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -194,6 +197,8 @@
       <workItem from="1570118092260" duration="14315000" />
       <workItem from="1570284308697" duration="59000" />
       <workItem from="1570724785900" duration="6934000" />
+      <workItem from="1570731814172" duration="466000" />
+      <workItem from="1570808052693" duration="12427000" />
     </task>
     <servers />
   </component>
@@ -215,68 +220,13 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>782</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/auxiliary.cpp</url>
-          <line>225</line>
-          <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/auxiliary.cpp</url>
-          <line>228</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>392</line>
-          <option name="timeStamp" value="37" />
-        </line-breakpoint>
-        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>429</line>
-          <option name="timeStamp" value="38" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>317</line>
-          <option name="timeStamp" value="83" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>321</line>
-          <option name="timeStamp" value="87" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>307</line>
-          <option name="timeStamp" value="88" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>403</line>
-          <option name="timeStamp" value="90" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>406</line>
-          <option name="timeStamp" value="91" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>314</line>
-          <option name="timeStamp" value="92" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>313</line>
-          <option name="timeStamp" value="93" />
-        </line-breakpoint>
-      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">

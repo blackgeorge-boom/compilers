@@ -310,6 +310,8 @@ void ast_sem(ast t) {
             SymbolEntry* proc = lookup(t->id);
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
+            ast_sem(t->first);
+            ast_sem(t->second);
             check_parameters(proc, t->first, t->second, "proc");
             return;
         }
@@ -318,6 +320,8 @@ void ast_sem(ast t) {
             SymbolEntry* func = lookup(t->id);
             if (func->u.eFunction.resultType == typeVoid)
                 fatal("Function must have a return type\n");
+            ast_sem(t->first);
+            ast_sem(t->second);
             check_parameters(func, t->first, t->second, "func");
             t->type = func->u.eFunction.resultType;
             return;

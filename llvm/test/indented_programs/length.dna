@@ -44,8 +44,8 @@ def main
         l := length(x1, y1, x2, y2)
 
         writeString: "The length of this segment is "
-    writeInteger: l
-    writeString: "\n"
+        writeInteger: l
+        writeString: "\n"
 
-    if (l<=0):
-        break
+        if (l<=0):
+            break

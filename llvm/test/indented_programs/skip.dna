@@ -2,11 +2,18 @@ def main
     decl writeInteger: b as int
     decl writeChar: b as byte
     decl writeString: s as byte[]
-    def hello: x as int[][20]
-        skip
-        x[1][10] := 1
-    var y is int[10][20]
-    y[1][10] := 2
-    writeInteger: y[1][10]
-    hello: y
-    writeChar: "makaris"[2]
+    var x y is int
+    def foo is int: x as int
+        if x = 3 and x < 4:
+            writeString: "x is 3"
+            return: 3
+        elif x = 5:
+            writeString: "x is 5"
+            return: 5
+        else:
+            return: -1
+        x := 10
+        return: x
+    writeInteger: foo(3)
+    writeInteger: foo(5)
+    writeInteger: foo(0)
