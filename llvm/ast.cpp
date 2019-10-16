@@ -363,7 +363,7 @@ llvm::Value* ast_compile(ast t)
             ShadowedVariables.pop_back();
 
             closeScope();
-            if(OldBB)
+            if (OldBB)
                 Builder.SetInsertPoint(OldBB);
             return TheFunction;
         }
@@ -662,6 +662,9 @@ llvm::Value* ast_compile(ast t)
            // Emit merge block.
             TheFunction->getBasicBlockList().push_back(MergeBB); // ??
             Builder.SetInsertPoint(MergeBB);
+
+            // TODO:
+            Builder.CreateUnreachable();
 
             merge_blocks.pop_back();
             return nullptr;

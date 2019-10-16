@@ -45,11 +45,9 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast_sem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast_sem.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lexer.l" beforeDir="false" afterPath="$PROJECT_DIR$/lexer.l" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/a.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.ll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/length.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/length.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/test.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/test.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/test.ll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -108,7 +106,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="parser_i" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented_programs/prwtoi.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="parser_i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="parser_i">
+    <configuration name="parser_i" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented_programs/skip.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="parser_i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="parser_i">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -198,7 +196,9 @@
       <workItem from="1570284308697" duration="59000" />
       <workItem from="1570724785900" duration="6934000" />
       <workItem from="1570731814172" duration="466000" />
-      <workItem from="1570808052693" duration="12427000" />
+      <workItem from="1570808052693" duration="12580000" />
+      <workItem from="1570963279213" duration="609000" />
+      <workItem from="1571242021912" duration="8591000" />
     </task>
     <servers />
   </component>
@@ -220,6 +220,23 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>447</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>448</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>446</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

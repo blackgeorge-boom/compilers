@@ -249,5 +249,3 @@ void check_parameters (SymbolEntry* f, ast first, ast second, const std::string&
     if (real_param != nullptr || func_param != nullptr)
         fatal("Incorrect number of parameters at %s call", call_type.c_str());
 }
-
-

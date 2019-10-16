@@ -4,16 +4,8 @@ def main
     decl writeString: s as byte[]
     var x y is int
     def foo is int: x as int
-        if x = 3 and x < 4:
-            writeString: "x is 3"
-            return: 3
-        elif x = 5:
-            writeString: "x is 5"
-            return: 5
+        if x = 3:
+            return: 0
         else:
-            return: -1
-        x := 10
-        return: x
-    writeInteger: foo(3)
-    writeInteger: foo(5)
-    writeInteger: foo(0)
+            return: 0
+    skip

@@ -1,17 +1,14 @@
 #include <iostream>
 
-void foo(int y[], int z[10])
+int foo(int x)
 {
-	y[2] = 1;
-    z[3] = 1;
+	if (x) return 0;
+	else return 1;
 }
 
 int main()
 {
-	int x[10];
-	x[2] = 0;
-    x[3] = 0;
-    std::cout << x[2] << std::endl;
-	foo(x, x);
-	std::cout << x[3] << std::endl;
+	int x;
+	x = 0;
+	foo(x);
 }
