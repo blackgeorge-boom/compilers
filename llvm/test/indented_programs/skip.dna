@@ -2,10 +2,13 @@ def main
     decl writeInteger: b as int
     decl writeChar: b as byte
     decl writeString: s as byte[]
-    var x y is int
-    def foo is int: x as int
-        if x = 3:
-            return: 0
+    var x is int
+    def loc is int: n i j as int
+        def foo
+            writeInteger: n
+            writeString: "fucccck"
+        if 0:
+            return: 1
         else:
-            return: 0
+            return: -1
     skip
