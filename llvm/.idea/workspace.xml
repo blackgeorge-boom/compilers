@@ -21,6 +21,7 @@
     <option name="SHOW_CLOSE_PROMPT" value="true" />
     <option name="TOOL_WINDOW_SELECTED_CONTENT_INDEX" value="0" />
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
+    <option name="showStatusBarWidget" value="true" />
     <treeState key="project">
       <selectedPath>
         <pathElement>
@@ -42,14 +43,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/test.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/test.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/test.ll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
-    </list>
+    <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +53,24 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FavoritesManager">
+    <favorites_list name="dana_llvm" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -198,7 +209,11 @@
       <workItem from="1570731814172" duration="466000" />
       <workItem from="1570808052693" duration="12580000" />
       <workItem from="1570963279213" duration="609000" />
-      <workItem from="1571242021912" duration="8591000" />
+      <workItem from="1571242021912" duration="9014000" />
+      <workItem from="1571389188585" duration="13236000" />
+      <workItem from="1571696782027" duration="27000" />
+      <workItem from="1571926122516" duration="1399000" />
+      <workItem from="1571932433922" duration="8044000" />
     </task>
     <servers />
   </component>
@@ -223,18 +238,8 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>447</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>448</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>446</line>
-          <option name="timeStamp" value="4" />
+          <line>654</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

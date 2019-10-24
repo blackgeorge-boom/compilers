@@ -328,16 +328,15 @@ llvm::Value* ast_compile(ast t)
             FunctionVariables.push_back(CurFunctionVars);
 
             // Local def lists
-            llvm::Value* VS = ast_compile(t->second);
+            ast_compile(t->second);
 
             Builder.SetInsertPoint(BB);
 
             // TheBody should normally be nullptr after ast_compile()
-            llvm::Value* TheBody = ast_compile(t->third);
+            auto TheBody = static_cast<llvm::ConstantInt*>(ast_compile(t->third));
 
-            if (!TheBody) {
+            if (TheBody == nullptr) {
                 if (TheFunction->getReturnType() == llvm_void) {
-
                     // Finish off the proc.
                     Builder.CreateRetVoid();
                 }
@@ -576,9 +575,9 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ThenBB);
 
             // Generate code for "elifthen" block
-            llvm::Value* ExitStmt = ast_compile(t->second);
+            auto ElifExitStmt = static_cast<llvm::ConstantInt *>(ast_compile(t->second));
 
-            if (!ExitStmt)
+            if (!ElifExitStmt)
                 Builder.CreateBr(merge_blocks.back());
 
             // Emit else block.
@@ -586,7 +585,7 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ElifBB);
 
             // Generate code for "elif list" blocks
-            ast_compile(t->third);
+            auto ElifListExitStmt = static_cast<llvm::ConstantInt *>(ast_compile(t->third));
 
             Builder.CreateBr(MergeBB);
 
@@ -594,7 +593,13 @@ llvm::Value* ast_compile(ast t)
             TheFunction->getBasicBlockList().push_back(MergeBB); // ??
             Builder.SetInsertPoint(MergeBB);
 
-            return nullptr;
+            if (t->third == nullptr)
+                return ElifExitStmt;
+            else if (ElifExitStmt != nullptr && ElifListExitStmt != nullptr &&
+                     ElifExitStmt->getSExtValue() == 0 && ElifListExitStmt->getSExtValue() == 0)
+                return c32(0);
+            else return nullptr;
+
         }
         case IF_ELSE:
         {
@@ -633,9 +638,9 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ThenBB);
 
             // Generate code for "then" block
-            llvm::Value* ExitStmt = ast_compile(t->second);
+            auto ThenExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->second));
 
-            if (!ExitStmt)
+            if (!ThenExitStmt)
                 // Create branch to "ifcont"
                 Builder.CreateBr(MergeBB);
 
@@ -644,7 +649,9 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ElifBB);
 
             // Generate code for "elif list" blocks
-            ast_compile(t->third);
+            auto ElifExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->third));
+
+            if (t->third == nullptr) ElifExitStmt = c32(0);
 
             Builder.CreateBr(ElseBB);
 
@@ -653,9 +660,9 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(ElseBB);
 
             // Generate code for "else" block
-            ExitStmt = ast_compile(t->last);
+            auto ElseExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->last));
 
-            if (!ExitStmt)
+            if (!ElseExitStmt)
                 // Create branch to "ifcont"
                 Builder.CreateBr(MergeBB);
 
@@ -663,10 +670,14 @@ llvm::Value* ast_compile(ast t)
             TheFunction->getBasicBlockList().push_back(MergeBB); // ??
             Builder.SetInsertPoint(MergeBB);
 
-            // TODO:
-            Builder.CreateUnreachable();
-
             merge_blocks.pop_back();
+
+            if (ThenExitStmt != nullptr && ElifExitStmt != nullptr && ElseExitStmt != nullptr &&
+                ThenExitStmt->getSExtValue() == ElifExitStmt->getSExtValue() == ElseExitStmt->getSExtValue() == 0) {
+                Builder.CreateUnreachable();
+                return c32(0);
+            }
+
             return nullptr;
         }
         case LOOP:
@@ -698,7 +709,7 @@ llvm::Value* ast_compile(ast t)
             current_LR = new_LR;
 
             // Emit the body of the loop.
-            auto ExitStmt = ast_compile(t->first);
+            auto ExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->first));
 
             if (!ExitStmt) {
                 // Insert the unconditional branch into the end of LoopBB.
@@ -712,6 +723,11 @@ llvm::Value* ast_compile(ast t)
             current_LR = current_LR->previous;
             free(new_LR);
 
+            if (ExitStmt != nullptr && ExitStmt->getSExtValue() == 0) {
+                Builder.CreateUnreachable();
+                return c32(0);
+            }
+
             return nullptr;
         }
         case FPAR_DEF:break;
@@ -724,12 +740,15 @@ llvm::Value* ast_compile(ast t)
                     error("Loop identifier does not exist!\n");
                     exit(1);
                 }
-                return Builder.CreateBr(lr->after_block);
+                Builder.CreateBr(lr->after_block);
+                return c32(1);
             }
             else if (current_LR == nullptr)
                 error("No loop to break");
-            else
-                return Builder.CreateBr(current_LR->after_block);
+            else {
+                Builder.CreateBr(current_LR->after_block);
+                return c32(1);
+            }
         }
         case CONTINUE:
         {
@@ -740,12 +759,15 @@ llvm::Value* ast_compile(ast t)
                     error("Loop identifier does not exist!\n");
                     exit(1);
                 }
-                return Builder.CreateBr(lr->loop_block);
+                Builder.CreateBr(lr->loop_block);
+                return c32(1);
             }
             else if (current_LR == nullptr)
                 error("No loop to continue");
-            else
-                return Builder.CreateBr(current_LR->loop_block);
+            else {
+                Builder.CreateBr(current_LR->loop_block);
+                return c32(1);
+            }
         }
         case EXIT:
         {
@@ -754,7 +776,9 @@ llvm::Value* ast_compile(ast t)
             Type return_type = typeVoid;
             check_result_type(curr_func_type, return_type, curr_func_name);
 
-            return Builder.CreateRetVoid();
+            Builder.CreateRetVoid();
+
+            return c32(0);
         }
         case RETURN:
         {
@@ -768,7 +792,9 @@ llvm::Value* ast_compile(ast t)
             if (equalType(curr_func_type, typeInteger) && equalType(return_type, typeChar))
                 RetV = Builder.CreateIntCast(RetV, llvm_int, true);
 
-            return Builder.CreateRet(RetV);
+            Builder.CreateRet(RetV);
+
+            return c32(0);
         }
         case TRUE:
         {
