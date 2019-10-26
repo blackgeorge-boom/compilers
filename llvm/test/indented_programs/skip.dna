@@ -4,6 +4,7 @@ def main
     decl writeString: s as byte[]
     var x is int
     def loc is int: n i j as int
+        var y is int
         def foo
             writeInteger: n
             writeString: "fucccck"

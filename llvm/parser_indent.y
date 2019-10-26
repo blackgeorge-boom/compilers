@@ -328,6 +328,7 @@ int main(int argc, char **argv) {
 //  printf("Semantic check was successful.\n");
 //  print_code_list();
 
+  ast_sem(tree);
   llvm_compile_and_dump(tree);
 
   destroySymbolTable();
