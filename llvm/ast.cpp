@@ -193,6 +193,8 @@ ast ast_exit () {
 static llvm::LLVMContext TheContext;
 static llvm::IRBuilder<> Builder(TheContext);
 static std::unique_ptr<llvm::Module> TheModule;
+static std::vector<llvm::StructType*> StackFrameTypes;
+static std::vector<llvm::AllocaInst*> StackFrames;
 static std::map<std::string, llvm::AllocaInst*> NamedValues;
 static std::vector<std::map<std::string, llvm::AllocaInst*>> FunctionVariables;
 static std::vector<std::map<std::string, llvm::AllocaInst*>> ShadowedVariables;
@@ -279,8 +281,13 @@ llvm::Value* ast_compile(ast t)
 
             bool acceptByReference;
 
-            // Record the function arguments in the NamedValues map.
+            std::vector<llvm::Type*> members;
+
+           // Record the function arguments in the NamedValues map.
             for (auto& Arg : TheFunction->args()) {
+
+                if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0))
+                    continue;
 
                 std::string ArgName(Arg.getName());
 
@@ -322,10 +329,29 @@ llvm::Value* ast_compile(ast t)
 
                 //  Store the new variable locally to the function
                 CurFunctionVars[ArgName] = NamedValues[ArgName];
+
+                members.push_back(Arg.getType());
             }
 
             ShadowedVariables.push_back(CurShadowedVars);
             FunctionVariables.push_back(CurFunctionVars);
+
+            // TODO: custom
+            std::vector<llvm::Type*> local_vars = var_members(t->second);
+            members.insert(members.end(), local_vars.begin(), local_vars.end());
+
+            // Create type for the current stack frame
+            llvm::StructType* CurStackFrameType =
+                    llvm::StructType::create(TheContext,
+                                              llvm::ArrayRef<llvm::Type*>(members),
+                                              std::string(curr_func_name) + "_type");
+            StackFrameTypes.push_back(CurStackFrameType);
+
+            llvm::AllocaInst* CurStackFrame =
+                    CreateEntryBlockAlloca(TheFunction,
+                                           std::string(curr_func_name) + "_frame",
+                                           CurStackFrameType);
+            StackFrames.push_back(CurStackFrame);
 
             // Local def lists
             ast_compile(t->second);
@@ -384,6 +410,11 @@ llvm::Value* ast_compile(ast t)
             std::vector<llvm::Type*> Params;
             std::vector<std::string> Args;
 
+            if (!StackFrameTypes.empty()) {
+                Params.push_back(StackFrameTypes.back()->getPointerTo());
+                Args.push_back(StackFrames.back()->getName());
+            }
+
             // We open the scope of the current function that was
             // just inserted. The name of the function itself, though, has
             // been inserted to the previous scope.
@@ -436,8 +467,12 @@ llvm::Value* ast_compile(ast t)
 
             // Set names for all arguments.
             unsigned Idx = 0;
-            for (auto& Arg : F->args())
+            for (auto& Arg : F->args()) {
+                if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0))
+                    continue;
                 Arg.setName(Args[Idx++]);
+            }
+
 
             return F;
         }

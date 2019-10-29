@@ -249,3 +249,38 @@ void check_parameters (SymbolEntry* f, ast first, ast second, const std::string&
     if (real_param != nullptr || func_param != nullptr)
         fatal("Incorrect number of parameters at %s call", call_type.c_str());
 }
+/**
+ * Dive into local definitions and create
+ * a vector with the llvm types of all function's local variables,
+ */
+std::vector<llvm::Type*> var_members(ast t)
+{
+    std::vector<llvm::Type*> result;
+
+    if (t == nullptr)
+        return result;
+
+    ast local_def = t->first;
+    ast local_def_list = t->second;
+
+    while (local_def != nullptr) {
+
+        if (local_def->k == VAR_DEF) {
+            ast_compile(local_def->second);
+            auto var_type = local_def->second->type;
+            auto llvm_var_type = to_llvm_type(var_type);
+
+            do {
+                result.push_back(llvm_var_type);
+                local_def = local_def->first;
+            } while (local_def != nullptr);
+        }
+
+        if (local_def_list == nullptr)
+            break;
+
+        local_def = local_def_list->first;
+        local_def_list = local_def_list->second;
+    }
+    return result;
+}

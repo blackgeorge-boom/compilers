@@ -241,8 +241,8 @@ SymbolEntry * newVariable (const char * name, Type type)
         e->entryType = ENTRY_VARIABLE;
         e->u.eVariable.type = type;
         type->refCount++;
-//        currentScope->negOffset -= sizeOfType(type);
-        currentScope->negOffset += 1;
+        currentScope->negOffset -= sizeOfType(type);
+//        currentScope->negOffset += 1;
         e->u.eVariable.offset = currentScope->negOffset;
     }
     return e;

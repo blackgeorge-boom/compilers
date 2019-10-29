@@ -8,6 +8,7 @@ def main
         def foo
             writeInteger: n
             writeString: "fucccck"
+        var z is byte[10]
         if 0:
             return: 1
         else:

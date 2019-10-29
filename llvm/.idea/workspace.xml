@@ -43,8 +43,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/todo.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auxiliary.h" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parser_indent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_indent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbol.c" beforeDir="false" afterPath="$PROJECT_DIR$/symbol.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -217,6 +222,8 @@
       <workItem from="1571696782027" duration="27000" />
       <workItem from="1571926122516" duration="1399000" />
       <workItem from="1571932433922" duration="8044000" />
+      <workItem from="1572183921525" duration="5854000" />
+      <workItem from="1572368236115" duration="12553000" />
     </task>
     <servers />
   </component>
@@ -229,8 +236,34 @@
         <entry key="MAIN">
           <value>
             <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="indep_sem" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="COLUMN_ORDER" />
             </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="indep_sem" />
+                </option>
+              </RecentGroup>
+            </list>
           </value>
         </entry>
       </map>
@@ -240,19 +273,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast_sem.cpp</url>
-          <line>333</line>
-          <option name="timeStamp" value="13" />
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>288</line>
+          <option name="timeStamp" value="47" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast_sem.cpp</url>
-          <line>332</line>
-          <option name="timeStamp" value="14" />
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>289</line>
+          <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/symbol.h</url>
-          <line>112</line>
-          <option name="timeStamp" value="24" />
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>295</line>
+          <option name="timeStamp" value="52" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -270,8 +303,8 @@
         <watch expression="ShadowedVariables" language="ObjectiveC" />
         <watch expression="curr_func_name" language="ObjectiveC" />
         <watch expression="func_names" language="ObjectiveC" />
-        <watch expression="hashTable" language="ObjectiveC" />
-        <watch expression="hashValue" language="ObjectiveC" />
+        <watch expression="StackFrameTypes" language="ObjectiveC" />
+        <watch expression="StackFrames" language="ObjectiveC" />
       </configuration>
     </watches-manager>
   </component>
