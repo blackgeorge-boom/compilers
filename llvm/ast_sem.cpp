@@ -155,11 +155,11 @@ void ast_sem(ast t) {
         case VAR_DEF:
         {
             ast_sem(t->second);
-            insert(t->id, t->second->type);
+            insertVariable(t->id, t->second->type);
 
             ast temp = t->first;
             while (temp != nullptr) {
-                insert(temp->id, t->second->type);
+                insertVariable(temp->id, t->second->type);
                 temp = temp->first;
             }
             return;

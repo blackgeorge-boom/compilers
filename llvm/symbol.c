@@ -241,9 +241,9 @@ SymbolEntry * newVariable (const char * name, Type type)
         e->entryType = ENTRY_VARIABLE;
         e->u.eVariable.type = type;
         type->refCount++;
-        currentScope->negOffset -= sizeOfType(type);
-//        currentScope->negOffset += 1;
+//        currentScope->negOffset -= sizeOfType(type);
         e->u.eVariable.offset = currentScope->negOffset;
+        currentScope->negOffset += 1;
     }
     return e;
 }
@@ -393,7 +393,9 @@ SymbolEntry * newParameter (const char * name, Type type,
                 f->u.eFunction.lastArgument->u.eParameter.next = e;
                 f->u.eFunction.lastArgument = e;
             }
-            return e;            
+            e->u.eVariable.offset = currentScope->negOffset;
+            currentScope->negOffset += 1;
+            return e;
         case PARDEF_CHECK:
             e = f->u.eFunction.lastArgument;
             if (e == NULL)
@@ -430,10 +432,11 @@ static unsigned int fixOffset (SymbolEntry * args)
         unsigned int rest = fixOffset(args->u.eParameter.next);
         
         args->u.eParameter.offset = START_POSITIVE_OFFSET + rest;
-        if (args->u.eParameter.mode == PASS_BY_REFERENCE)
-            return rest + 2;
-        else
-            return rest + sizeOfType(args->u.eParameter.type);
+        return rest + 1;
+//        if (args->u.eParameter.mode == PASS_BY_REFERENCE)
+//            return rest + 2;
+//        else
+//            return rest + sizeOfType(args->u.eParameter.type);
     }
 }
 

@@ -195,9 +195,6 @@ static llvm::IRBuilder<> Builder(TheContext);
 static std::unique_ptr<llvm::Module> TheModule;
 static std::vector<llvm::StructType*> StackFrameTypes;
 static std::vector<llvm::AllocaInst*> StackFrames;
-static std::map<std::string, llvm::AllocaInst*> NamedValues;
-static std::vector<std::map<std::string, llvm::AllocaInst*>> FunctionVariables;
-static std::vector<std::map<std::string, llvm::AllocaInst*>> ShadowedVariables;
 
 // Useful LLVM types.
 static llvm::Type* llvm_bit = llvm::IntegerType::get(TheContext, 1);
@@ -241,7 +238,6 @@ llvm::Value* ast_compile(ast t)
         case PROGRAM:
         {
             openScope();
-            NamedValues.clear(); // TODO: check
 
             llvm::Value* V = ast_compile(t->first);
             closeScope();
@@ -257,6 +253,7 @@ llvm::Value* ast_compile(ast t)
         {
             curr_func_name = t->first->id;
             func_names.push_back(curr_func_name);
+
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
 
             if (!TheFunction)
@@ -267,6 +264,10 @@ llvm::Value* ast_compile(ast t)
 
             if (!TheFunction->empty())
                 return (llvm::Function*)LogErrorV("Function cannot be redefined.") ;
+
+            if (strcmp(curr_func_name, "main") == 0)
+                currentScope->negOffset = 0;
+
 
             llvm::BasicBlock* OldBB = Builder.GetInsertBlock();
 
@@ -279,64 +280,31 @@ llvm::Value* ast_compile(ast t)
             // Parameters and local variables of the function that shadow some other variables
             std::map<std::string, llvm::AllocaInst*> CurShadowedVars;
 
-            bool acceptByReference;
-
             std::vector<llvm::Type*> members;
 
-           // Record the function arguments in the NamedValues map.
+            // Record the function arguments in the NamedValues map.
             for (auto& Arg : TheFunction->args()) {
 
-                if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0))
+                if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0)) {
+                    members.push_back(Arg.getType());
                     continue;
+                }
 
                 std::string ArgName(Arg.getName());
-
                 char var_id[ArgName.size() + 1];
                 strcpy(var_id, ArgName.c_str()); // ArgName is const
                 SymbolEntry* se = lookup(var_id);
 
-                llvm::AllocaInst* Alloca = nullptr;
-
-                acceptByReference = se->u.eParameter.mode == PASS_BY_REFERENCE ||
-                                    se->u.eParameter.type->kind == Type_tag::TYPE_ARRAY ||
-                                    se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY;
-
-                if (!acceptByReference) {
-                    // Create an alloca for this variable.
-                    Alloca = CreateEntryBlockAlloca(TheFunction, ArgName, Arg.getType());
-
-                    // Store the initial value into the alloca.
-                    Builder.CreateStore(&Arg, Alloca);
-                }
-
-                // If variable already exists, shadow it and keep the old value
-                if (NamedValues.count(ArgName))
-                    CurShadowedVars[ArgName] = NamedValues[ArgName];
-
-                // Store the new variable globally
-                if (!acceptByReference)
-                    NamedValues[ArgName] = Alloca;
-                else if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
-//                    auto Tmp = Builder.CreateLoad(&Arg, "iarray");
+                if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
-                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
-
-//                    llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, &Arg, llvm::ArrayRef<llvm::Value*>(std::vector<llvm::Value*>{c32(0)}), "makaris", Builder.GetInsertBlock());
-                    NamedValues[ArgName] = reinterpret_cast<llvm::AllocaInst *>(Tmp);
+//                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
+                    members.push_back(llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1), 0));
+                    continue;
                 }
-                else
-                    NamedValues[ArgName] = reinterpret_cast<llvm::AllocaInst *>(&Arg);
-
-                //  Store the new variable locally to the function
-                CurFunctionVars[ArgName] = NamedValues[ArgName];
 
                 members.push_back(Arg.getType());
             }
 
-            ShadowedVariables.push_back(CurShadowedVars);
-            FunctionVariables.push_back(CurFunctionVars);
-
-            // TODO: custom
             std::vector<llvm::Type*> local_vars = var_members(t->second);
             members.insert(members.end(), local_vars.begin(), local_vars.end());
 
@@ -353,7 +321,35 @@ llvm::Value* ast_compile(ast t)
                                            CurStackFrameType);
             StackFrames.push_back(CurStackFrame);
 
-            // Local def lists
+            llvm::Value* StructPtr;
+            for (auto& Arg : TheFunction->args()) {
+
+                auto n = StackFrames.size();
+
+                if (n > 1 && static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes[n - 2]->getPointerTo(0)) {
+                    StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, 0, "");
+                    Builder.CreateStore(&Arg, StructPtr);
+                    continue;
+                }
+
+                std::string ArgName(Arg.getName());
+                char id[ArgName.size() + 1];
+                strcpy(id, ArgName.c_str());
+                SymbolEntry* se = lookup(id);
+
+                int offset = se->u.eVariable.offset;
+                StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, offset, ArgName + "_pos");
+
+                if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
+                    auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
+                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
+                    Builder.CreateStore(Tmp, StructPtr);
+                }
+                else
+                    Builder.CreateStore(&Arg, StructPtr);
+            }
+
+                // Local def lists
             ast_compile(t->second);
 
             Builder.SetInsertPoint(BB);
@@ -375,17 +371,8 @@ llvm::Value* ast_compile(ast t)
             // Validate the generated code, checking for consistency.
             llvm::verifyFunction(*TheFunction);
 
-            // Pop variables
-            auto vars = FunctionVariables.back();
-            for (auto& v : vars)
-                NamedValues.erase(v.first);
-            FunctionVariables.pop_back();
-
-            // Pop shadow variables
-            auto shadows = ShadowedVariables.back();
-            for (auto& s : shadows)
-                NamedValues[s.first] = s.second;
-            ShadowedVariables.pop_back();
+            StackFrames.pop_back();
+            StackFrameTypes.pop_back();
 
             closeScope();
             if (OldBB)
@@ -468,8 +455,6 @@ llvm::Value* ast_compile(ast t)
             // Set names for all arguments.
             unsigned Idx = 0;
             for (auto& Arg : F->args()) {
-                if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0))
-                    continue;
                 Arg.setName(Args[Idx++]);
             }
 
@@ -1192,71 +1177,16 @@ llvm::Value* ast_compile(ast t)
         }
         case VAR_DEF:
         {
-            ast_compile(t->second);
+            // Type is computed at var_members
             auto var_type = t->second->type;
-            auto llvm_var_type = to_llvm_type(var_type);
-
-            llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
-
-            // Create an alloca for this variable.
-            llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, std::string(t->id), llvm_var_type);
-
-            switch(var_type->kind) {
-                case Type_tag::TYPE_INTEGER: {
-                    auto InitVal = c32(0);
-                    Builder.CreateStore(InitVal, Alloca);
-                    break;
-                }
-                case Type_tag::TYPE_CHAR: {
-                    auto InitVal = c8(0);
-                    Builder.CreateStore(InitVal, Alloca);
-                    break;
-                }
-                case Type_tag::TYPE_ARRAY: {
-                    break;
-                }
-                default: {
-                    return nullptr;
-                }
-            }
-
-            // All of parameters and local variables of the function
-            auto CurFunctionVars = FunctionVariables.back();
-            // Parameters and local variables of the function that shadow some other variables
-            auto CurShadowedVars = ShadowedVariables.back();
-
-            insert(t->id, var_type);
-
-            // If variable already exists, shadow it and keep the old value
-            if (NamedValues.count(t->id))
-                CurShadowedVars[t->id] = NamedValues[t->id];
-
-            // Store the new variable globally
-            NamedValues[t->id] = Alloca;
-            //  Store the new variable locally to the function
-            CurFunctionVars[t->id] = NamedValues[t->id];
+            insertVariable(t->id, var_type);
 
             ast temp = t->first;
             while (temp != nullptr) {
-                insert(temp->id, var_type);
-                // If variable already exists, shadow it and keep the old value
-                if (NamedValues.count(temp->id))
-                    CurShadowedVars[temp->id] = NamedValues[temp->id];
-
-                Alloca = CreateEntryBlockAlloca(TheFunction, std::string(temp->id), llvm_var_type);
-
-                // Store the new variable globally
-                NamedValues[temp->id] = Alloca;
-                //  Store the new variable locally to the function
-                CurFunctionVars[temp->id] = NamedValues[temp->id];
-
+                insertVariable(temp->id, var_type);
                 temp = temp->first;
             }
-
-            ShadowedVariables.push_back(CurShadowedVars);
-            FunctionVariables.push_back(CurFunctionVars);
-
-            return nullptr;
+           return nullptr;
         }
         case PROC_CALL:
         {
@@ -1276,6 +1206,10 @@ llvm::Value* ast_compile(ast t)
 
             std::vector<llvm::Value*> ArgsV;
 
+            // TODO: for all lib functions
+            if (strcmp(t->id, "writeInteger") != 0 && strcmp(t->id, "writeString"))
+                ArgsV.push_back(StackFrames.back());
+
             ast param = t->first;         // First is expr
             ast param_list = t->second;
 
@@ -1288,12 +1222,12 @@ llvm::Value* ast_compile(ast t)
                                   func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
 
                 if (passByReference)
-                    ArgsV.push_back(NamedValues[param->first->id]);
+                    ArgsV.push_back(ast_compile(param->first));
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
 
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
-                    llvm::Value* Id = NamedValues[param->first->id];
+                    llvm::Value* Id = ast_compile(param->first);
                     llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
                     Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
@@ -1332,6 +1266,10 @@ llvm::Value* ast_compile(ast t)
 
             std::vector<llvm::Value*> ArgsV;
 
+            // TODO: for all lib functions
+            if (strcmp(t->id, "writeInteger") != 0)
+                ArgsV.push_back(StackFrames.back());
+
             ast param = t->first;         // First is expr
             ast param_list = t->second;
 
@@ -1344,12 +1282,12 @@ llvm::Value* ast_compile(ast t)
                                   func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
 
                 if (passByReference)
-                    ArgsV.push_back(NamedValues[param->first->id]);
+                    ArgsV.push_back(ast_compile(param->first));
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
 
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
-                    llvm::Value* Id = NamedValues[param->first->id];
+                    llvm::Value* Id = ast_compile(param->first);
                     llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
                     Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
@@ -1371,19 +1309,26 @@ llvm::Value* ast_compile(ast t)
         }
         case ID:
         {
-            SymbolEntry* e = lookup(t->id);
+            SymbolEntry* se = lookup(t->id);
 
-//            if (e == nullptr)
-//                error("ID - Undeclared variable : %s", t->id);
+            t->type = se->u.eVariable.type;
+            // TODO: see if unnecessary
+            t->nesting_diff = int(currentScope->nestingLevel) - se->nestingLevel;
+            t->offset = se->u.eVariable.offset;
 
-            t->type = e->u.eVariable.type;
-//            t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
-//            t->offset = e->u.eVariable.offset;
+            llvm::Value* CurStackFrame = StackFrames.back();
+            llvm::Type* CurStackFrameType = StackFrameTypes.back();
 
-            // Look this variable up in the function.
-            llvm::Value* Id = NamedValues[std::string(t->id)];
-            if (!Id)
-                return LogErrorV("Unknown variable name");
+            for (auto i = t->nesting_diff; i > 0; --i) {
+                llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, 0);
+                CurStackFrame = Builder.CreateLoad(CurStackFramePtr, "");
+                CurStackFrameType = CurStackFrame->getType()->getPointerElementType();
+            }
+
+            llvm::Value* Id = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, t->offset);
+
+            if (llvm::dyn_cast<llvm::PointerType>(Id->getType()->getPointerElementType()))
+                Id = Builder.CreateLoad(Id, "temp");
 
             return Id;
         }
@@ -1413,6 +1358,7 @@ llvm::Value* ast_compile(ast t)
             std::reverse(indexList.begin(), indexList.end());
 
             llvm::Value* Id = ast_compile(ast_iter);
+
             llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
             llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());

@@ -6,19 +6,33 @@
 main:                                   # @main
 	.cfi_startproc
 # BB#0:                                 # %entry
-	subq	$24, %rsp
+	pushq	%rbx
 .Lcfi0:
-	.cfi_def_cfa_offset 32
-	movl	$0, 12(%rsp)
+	.cfi_def_cfa_offset 16
+	subq	$48, %rsp
+.Lcfi1:
+	.cfi_def_cfa_offset 64
+.Lcfi2:
+	.cfi_offset %rbx, -16
+	movl	$0, 4(%rsp)
+	leaq	40(%rsp), %rbx
+	movl	$1, 40(%rsp)
 	xorl	%edi, %edi
 	callq	writeInteger
-	leaq	16(%rsp), %rdi
-	leaq	12(%rsp), %rdx
-	movl	$3, %esi
-	callq	loc
-	movl	12(%rsp), %edi
+	movl	40(%rsp), %edi
 	callq	writeInteger
-	addq	$24, %rsp
+	movq	%rsp, %rdi
+	movq	%rdi, %rsi
+	movq	%rbx, %rdx
+	callq	loc
+	movl	4(%rsp), %edi
+	callq	writeInteger
+	movl	40(%rsp), %edi
+	callq	writeInteger
+	movl	$.Lstr, %edi
+	callq	writeString
+	addq	$48, %rsp
+	popq	%rbx
 	retq
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
@@ -30,12 +44,22 @@ main:                                   # @main
 loc:                                    # @loc
 	.cfi_startproc
 # BB#0:                                 # %entry
-	movl	%esi, -28(%rsp)
-	movl	$1, (%rdx)
+	movq	%rdi, -24(%rsp)
+	movq	%rsi, -16(%rsp)
+	movq	%rdx, -8(%rsp)
+	movl	$3, (%rdx)
+	movq	-16(%rsp), %rax
+	movl	$5, 4(%rax)
 	retq
 .Lfunc_end1:
 	.size	loc, .Lfunc_end1-loc
 	.cfi_endproc
                                         # -- End function
+	.type	.Lstr,@object           # @str
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.Lstr:
+	.asciz	"yoooooooooooooo"
+	.size	.Lstr, 16
+
 
 	.section	".note.GNU-stack","",@progbits

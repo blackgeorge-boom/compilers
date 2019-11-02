@@ -21,6 +21,7 @@
     <option name="SHOW_CLOSE_PROMPT" value="true" />
     <option name="TOOL_WINDOW_SELECTED_CONTENT_INDEX" value="0" />
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
+    <option name="showStatusBarWidget" value="true" />
     <treeState key="project">
       <selectedPath>
         <pathElement>
@@ -43,13 +44,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/todo.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast_sem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast_sem.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auxiliary.h" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser_indent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_indent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/a.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.ll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/symbol.c" beforeDir="false" afterPath="$PROJECT_DIR$/symbol.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbol.h" beforeDir="false" afterPath="$PROJECT_DIR$/symbol.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -223,7 +226,10 @@
       <workItem from="1571926122516" duration="1399000" />
       <workItem from="1571932433922" duration="8044000" />
       <workItem from="1572183921525" duration="5854000" />
-      <workItem from="1572368236115" duration="12553000" />
+      <workItem from="1572368236115" duration="12616000" />
+      <workItem from="1572440509510" duration="517000" />
+      <workItem from="1572622076383" duration="13360000" />
+      <workItem from="1572687620477" duration="15532000" />
     </task>
     <servers />
   </component>
@@ -274,18 +280,23 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>288</line>
-          <option name="timeStamp" value="47" />
+          <line>1363</line>
+          <option name="timeStamp" value="95" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>289</line>
-          <option name="timeStamp" value="49" />
+          <line>1364</line>
+          <option name="timeStamp" value="96" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>295</line>
-          <option name="timeStamp" value="52" />
+          <line>1359</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>1358</line>
+          <option name="timeStamp" value="98" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -298,13 +309,11 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
-        <watch expression="NamedValues" language="ObjectiveC" />
-        <watch expression="FunctionVariables" language="ObjectiveC" />
-        <watch expression="ShadowedVariables" language="ObjectiveC" />
         <watch expression="curr_func_name" language="ObjectiveC" />
         <watch expression="func_names" language="ObjectiveC" />
         <watch expression="StackFrameTypes" language="ObjectiveC" />
         <watch expression="StackFrames" language="ObjectiveC" />
+        <watch expression="currentScope" language="ObjectiveC" />
       </configuration>
     </watches-manager>
   </component>

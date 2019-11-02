@@ -1,16 +1,18 @@
 def main
     decl writeInteger: b as int
-    decl writeChar: b as byte
+    #decl writeChar: b as byte
     decl writeString: s as byte[]
-    var x is int
-    def loc is int: n i j as int
-        var y is int
-        def foo
-            writeInteger: n
-            writeString: "fucccck"
-        var z is byte[10]
-        if 0:
-            return: 1
-        else:
-            return: -1
-    skip
+    var x is int[10]
+    var y is byte
+    def loc: a as int[], b as ref byte
+        b := '3'
+        a[1] := 5
+        #writeInteger: a[1]
+    x[1] := 0
+    y := 'g'
+    writeInteger: x[1]
+    writeInteger: y
+    loc: x, y
+    writeInteger: x[1]
+    writeInteger: y
+    writeString: "yoooooooooooooo"

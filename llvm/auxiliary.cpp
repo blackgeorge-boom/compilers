@@ -77,7 +77,7 @@ SymbolEntry* lookup(char* s) {
     return lookupEntry(name, LOOKUP_ALL_SCOPES, true);
 }
 
-SymbolEntry* insert(char* s, Type t) {
+SymbolEntry* insertVariable(char* s, Type t) {
     char* name;
     name = s;
     return newVariable(name, t);

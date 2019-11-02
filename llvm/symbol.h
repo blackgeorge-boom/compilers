@@ -44,7 +44,7 @@ typedef enum { false=0, true=1 } bool;
    --------------------------------------------------------------------- */
 
 #define START_POSITIVE_OFFSET 8     /* Αρχικό θετικό offset στο Ε.Δ.   */
-#define START_NEGATIVE_OFFSET 0     /* Αρχικό αρνητικό offset στο Ε.Δ. */
+#define START_NEGATIVE_OFFSET 1     /* Αρχικό αρνητικό offset στο Ε.Δ. */
 
 
 /* ---------------------------------------------------------------------

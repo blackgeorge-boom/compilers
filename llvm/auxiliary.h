@@ -12,7 +12,7 @@
  *******************************************/
 
 SymbolEntry* lookup(char* s);
-SymbolEntry* insert(char* s, Type t);
+SymbolEntry* insertVariable(char* s, Type t);
 
 /**
  * If function does not exists in the symbol table, insert it.
