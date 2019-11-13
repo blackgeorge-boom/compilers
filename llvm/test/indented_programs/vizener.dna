@@ -8,18 +8,11 @@ def main
     decl writeString: s as byte[]
 
     decl readInteger is int
-    decl readByte is byte
     decl readChar is byte
     decl readString: n as int, s as byte[]
 
-    decl extend is int: b as byte
-    decl shrink is byte: i as int
-
     decl strlen is int: s as byte[]
-    decl strcmp is int: s1 s2 as byte[]
-    decl strcpy: trg src as byte[]
-    decl strcat: trg src as byte[]
-    
+
     def tolower is byte: c as byte
         if (((c>='a') and (c<='z'))):
         return: c
@@ -37,8 +30,8 @@ def main
     	loop:
         	c := readChar()
         	if (c = '0'):
-           	writeChar: '\n'
-        	break
+                writeChar: '\n'
+                break
             if (((c >= 'a') and (c <= 'z')) or ((c >= 'A') and (c <= 'Z'))):
                 codec   := tolower(c) - 'a' + '\x01'
                 codep   := tolower(p[i]) - 'a' + '\x01'
@@ -73,22 +66,22 @@ def main
             c := readChar()
             if (c = '0'):
                 writeChar: '\n'
-            break
-                if (((c>='a') and (c<='z')) or ((c>='A') and (c<='Z'))):
-                    codec   := tolower(c) - 'a' + '\x01'
-                    codep   := tolower(p[i]) - 'a' + '\x01'
-                    codenew := codec - codep
+                break
+            if (((c>='a') and (c<='z')) or ((c>='A') and (c<='Z'))):
+                codec   := tolower(c) - 'a' + '\x01'
+                codep   := tolower(p[i]) - 'a' + '\x01'
+                codenew := codec - codep
 
-                    if (codenew < '\0'):
-                        codenew := codenew + '\x1a'
+                if (codenew < '\0'):
+                    codenew := codenew + '\x1a'
 
-                    if (((c>='a') and (c<='z'))):
-                        c := codenew - '\x01' + 'a'
-                    else:
-                        c := codenew - '\x01' + 'A'
+                if (((c>='a') and (c<='z'))):
+                    c := codenew - '\x01' + 'a'
+                else:
+                    c := codenew - '\x01' + 'A'
 
-                    if (i+1 >= n):
-                        i := 0
+                if (i+1 >= n):
+                    i := 0
             else:
                 i := i+1
                 result[j] := c

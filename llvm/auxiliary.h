@@ -145,4 +145,6 @@ extern char* curr_func_name;
 
 std::vector<llvm::Type*> var_members(ast t);
 
+std::vector<std::string> fix_arg_names(ast t);
+
 #endif //DANA_LLVM_AUXILIARY_H

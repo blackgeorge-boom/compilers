@@ -10,6 +10,7 @@ extern "C" {
 #include <cstring>
 #include <iostream>
 #include "auxiliary.h"
+#include "symbol.h"
 
 void print_loop_list ()
 {
@@ -283,4 +284,58 @@ std::vector<llvm::Type*> var_members(ast t)
         local_def_list = local_def_list->second;
     }
     return result;
+}
+
+std::vector<std::string> fix_arg_names(ast t)
+{
+    SymbolEntry* f = lookup(t->id);
+    destroyEntry(f);
+    Type func_type = typeVoid;
+
+    if (t->type != nullptr) {
+        func_type = t->type;    // Check func or proc
+    }
+
+    f = insertFunction(t->id, func_type);
+    if (f == nullptr) {
+        error("agamisou");    // f == nullptr means, function was declared before
+    }                      // The rest has already been done
+    openScope();
+
+    ast par_def = t->first;         // First is fpar_def
+    ast fpar_def_list = t->second;
+
+    Type par_type = nullptr;
+    std::vector<std::string> Args;
+
+//    SymbolEntry* args = f->u.eFunction.firstArgument;
+
+    while (par_def != nullptr) {
+
+        ast_compile(par_def->second);           // Second is fpar_type
+        par_type = par_def->second->type;
+
+//        args->id = par_def->id;
+        insertParameter(par_def->id, par_type, f);
+
+        Args.emplace_back(par_def->id);
+
+        ast par_list = par_def->first;
+        while (par_list != nullptr) {           // Insert the rest parameters
+//            args = args->u.eParameter.next;
+//            args->id = par_list->id;
+            insertParameter(par_list->id, par_type, f);
+            Args.emplace_back(par_list->id);
+            par_list = par_list->first;         // First is the rest of T_ids.
+        }
+
+        if (fpar_def_list == nullptr)
+            break;
+
+        par_def = fpar_def_list->first;        // Now for the rest of fpar_defs.
+        fpar_def_list = fpar_def_list->second;
+
+//        args = args->u.eParameter.next;
+    }
+    return Args;
 }
