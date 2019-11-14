@@ -32,8 +32,8 @@ def main
             writeString: "****"
             i := i+1
             if (i>=len):
-            break
-            writeString: "*\n"
+                break
+        writeString: "*\n"
         i :=0
         loop:
             writeString: "* "
@@ -41,18 +41,18 @@ def main
                     writeChar: word[i]
             elif((word[i]>='a') and (word[i]<='z')):
                     writeChar: word[i]+'A'-'a'
-                writeString: " "
+            writeString: " "
             i := i+1
             if (i>=len):
-            break
-            writeString: "*\n"
+                break
+        writeString: "*\n"
         i := 0
         loop:
             writeString: "****"
             i := i+1
             if (i>=len):
-            break
-            writeString: "*\n\n"
+                break
+        writeString: "*\n\n"
 
     var word is byte[80]
 

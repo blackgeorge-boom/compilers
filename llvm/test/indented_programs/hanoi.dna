@@ -1,4 +1,4 @@
-def solve
+def main
 
   decl writeString: s as byte[]
   decl readInteger is int

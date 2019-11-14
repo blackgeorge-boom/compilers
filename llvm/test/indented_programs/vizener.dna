@@ -15,9 +15,9 @@ def main
 
     def tolower is byte: c as byte
         if (((c>='a') and (c<='z'))):
-        return: c
-    	else:
-        return: c+'A'-'a'
+            return: c
+        else:
+            return: c+'A'-'a'
 
     def encode: p as byte[]
         var n i j is int

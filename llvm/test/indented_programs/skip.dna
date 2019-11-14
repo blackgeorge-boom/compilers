@@ -1,18 +1,9 @@
 def main
     decl writeInteger: b as int
-    #decl writeChar: b as byte
+    decl writeChar: b as byte
     #decl writeByte: b as byte
-    #decl writeString: s as byte[]
+    decl writeString: s as byte[]
     #decl readInteger is int
     var x is int
-    decl foo: x as int
-    def bar: y as int
-        x := 9
-        foo: y
-    def foo: x as int
-        writeInteger: x
-        bar: 1
-    foo: 3
-    bar: 5
-    writeInteger: x
+    writeString: "\x33sssss\tss\n"
 
