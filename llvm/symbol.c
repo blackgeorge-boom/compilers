@@ -456,7 +456,7 @@ void endFunctionHeader (SymbolEntry * f, Type type)
             internal("Cannot end parameters in an already defined function");
             break;
         case PARDEF_DEFINE:
-            fixOffset(f->u.eFunction.firstArgument);
+//            fixOffset(f->u.eFunction.firstArgument);
             f->u.eFunction.resultType = type;
             type->refCount++;
             break;

@@ -4,11 +4,15 @@ def main
     #decl writeByte: b as byte
     #decl writeString: s as byte[]
     #decl readInteger is int
-    #var x is int
-    #decl foo: z as int
-    decl bar: y as int
+    var x is int
+    decl foo: x as int
+    def bar: y as int
+        x := 9
+        foo: y
     def foo: x as int
         writeInteger: x
+        bar: 1
     foo: 3
-    skip
+    bar: 5
+    writeInteger: x
 

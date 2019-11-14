@@ -10,6 +10,10 @@
 
 loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
+enum {
+    FUNC_DECLARATION,
+    FUNC_DEFINITION
+} func_mode;
 std::vector<char*> func_names;
 char* curr_func_name;
 std::vector<llvm::BasicBlock*> merge_blocks;
@@ -245,6 +249,8 @@ llvm::Value* ast_compile(ast t)
         }
         case FUNC_DECL:
         {
+            func_mode = FUNC_DECLARATION;
+
             llvm::Function* V = static_cast<llvm::Function*>(ast_compile(t->first));
             closeScope();
 
@@ -252,6 +258,8 @@ llvm::Value* ast_compile(ast t)
         }
         case FUNC_DEF:
         {
+            func_mode = FUNC_DEFINITION;
+
             curr_func_name = t->first->id;
             func_names.push_back(curr_func_name);
 
@@ -259,18 +267,8 @@ llvm::Value* ast_compile(ast t)
 
             if (!TheFunction)
                 TheFunction = static_cast<llvm::Function*>(ast_compile(t->first));
-            else {
-                std::vector<std::string> Args = fix_arg_names(t->first);
-                unsigned Idx = 0;
-                for (auto& Arg : TheFunction->args()) {
-                    if (Idx == 0) {
-                        Idx++;
-                        continue;
-                    }
-                    Arg.setName(Args[Idx-1]);
-                    Idx++;
-                }
-            }
+            else
+                ast_compile(t->first);
 
             if (!TheFunction)
                 return nullptr;
@@ -395,10 +393,9 @@ llvm::Value* ast_compile(ast t)
                 llvm_func_type = to_llvm_type(t->type);
             }
 
-            SymbolEntry* f = insertFunction(t->id, func_type);
-            if (f == nullptr) {
-                return nullptr;    // f == nullptr means, function was declared before
-            }                      // The rest has already been done
+            SymbolEntry* f = newFunction(t->id);
+            if (func_mode == FUNC_DECLARATION)
+                forwardFunction(f);
 
             std::vector<llvm::Type*> Params;
             std::vector<std::string> Args;
@@ -450,6 +447,8 @@ llvm::Value* ast_compile(ast t)
                 par_def = fpar_def_list->first;        // Now for the rest of fpar_defs.
                 fpar_def_list = fpar_def_list->second;
             }
+
+            endFunctionHeader(f, func_type);
 
             llvm::FunctionType* FT =
                     llvm::FunctionType::get(llvm_func_type, Params, false);
@@ -1214,12 +1213,16 @@ llvm::Value* ast_compile(ast t)
             auto n = StackFrames.size();
 
             // TODO: for all lib functions
-            if (strcmp(curr_func_name, t->id) == 0 && n > 1) {
-                llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
-                ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
+            if (strcmp(t->id, "main")!= 0 && strcmp(t->id, "writeInteger") != 0 && strcmp(t->id, "writeString") != 0 && strcmp(t->id, "readString") != 0 && strcmp(t->id, "readChar") != 0 && strcmp(t->id, "writeByte") != 0 && strcmp(t->id, "writeChar") != 0 && strcmp(t->id, "readInteger") != 0 && strcmp(t->id, "strlen") != 0 && strcmp(t->id, "strcmp") != 0) {
+                SymbolEntry* se = lookup(t->id);
+                if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
+                    llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
+                    ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
+                }
+                else
+                    ArgsV.push_back(StackFrames.back());
+
             }
-            else if (strcmp(t->id, "writeInteger") != 0 && strcmp(t->id, "writeString") != 0 && strcmp(t->id, "readString") != 0 && strcmp(t->id, "readChar") != 0 && strcmp(t->id, "writeByte") != 0 && strcmp(t->id, "writeChar") != 0 && strcmp(t->id, "readInteger") != 0 && strcmp(t->id, "strlen") != 0 && strcmp(t->id, "strcmp") != 0)
-                ArgsV.push_back(StackFrames.back());
 
             ast param = t->first;         // First is expr
             ast param_list = t->second;

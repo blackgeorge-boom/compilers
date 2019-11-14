@@ -46,15 +46,10 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.h" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/hanoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/hanoi.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/pinakes.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/pinakes.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/prwtoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/prwtoi.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/reverse.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/reverse.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/a.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.ll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/symbol.c" beforeDir="false" afterPath="$PROJECT_DIR$/symbol.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/string.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/string.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/vizener.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/vizener.dna" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -235,7 +230,8 @@
       <workItem from="1572818417805" duration="203000" />
       <workItem from="1572886331327" duration="12913000" />
       <workItem from="1573071455080" duration="7000" />
-      <workItem from="1573655222485" duration="14482000" />
+      <workItem from="1573655222485" duration="14674000" />
+      <workItem from="1573723296011" duration="9053000" />
     </task>
     <servers />
   </component>
@@ -286,38 +282,23 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>242</line>
-          <option name="timeStamp" value="141" />
+          <line>344</line>
+          <option name="timeStamp" value="186" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>243</line>
-          <option name="timeStamp" value="142" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/auxiliary.cpp</url>
-          <line>339</line>
-          <option name="timeStamp" value="147" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/symbol.c</url>
-          <line>186</line>
-          <option name="timeStamp" value="151" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/symbol.c</url>
-          <line>517</line>
-          <option name="timeStamp" value="154" />
+          <line>346</line>
+          <option name="timeStamp" value="188" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>382</line>
-          <option name="timeStamp" value="159" />
+          <line>335</line>
+          <option name="timeStamp" value="189" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/symbol.c</url>
-          <line>189</line>
-          <option name="timeStamp" value="160" />
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>338</line>
+          <option name="timeStamp" value="190" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -335,6 +316,7 @@
         <watch expression="StackFrameTypes" language="ObjectiveC" />
         <watch expression="StackFrames" language="ObjectiveC" />
         <watch expression="currentScope" language="ObjectiveC" />
+        <watch expression="func_mode" language="ObjectiveC" />
       </configuration>
     </watches-manager>
   </component>
