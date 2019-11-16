@@ -3,7 +3,13 @@ def main
     decl writeChar: b as byte
     #decl writeByte: b as byte
     decl writeString: s as byte[]
-    #decl readInteger is int
+    decl readInteger is int
     var x is int
-    writeString: "\x33sssss\tss\n"
-
+    x := readInteger()
+    if x > 5:
+        writeString: "x > 5"
+    elif x < 5:
+        writeString: "x < 5"
+    else:
+        writeString: "x = 5"
+    x := 2

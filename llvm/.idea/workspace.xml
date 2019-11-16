@@ -44,25 +44,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/test/indented_programs/to_be_checked.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lexer.l" beforeDir="false" afterPath="$PROJECT_DIR$/lexer.l" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/a.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.ll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/vizener.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/vizener.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/arrayTr.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/bubble.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/hanoi.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/hello.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/length.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/pinakes.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/prwtoi.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/reverse.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/string.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/vizener.dna" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/orig_indented_programs/worBox.dna" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -243,7 +227,8 @@
       <workItem from="1573071455080" duration="7000" />
       <workItem from="1573655222485" duration="14674000" />
       <workItem from="1573723296011" duration="9053000" />
-      <workItem from="1573733504630" duration="6645000" />
+      <workItem from="1573733504630" duration="7949000" />
+      <workItem from="1573926583063" duration="5811000" />
     </task>
     <servers />
   </component>
@@ -294,22 +279,22 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>344</line>
+          <line>345</line>
           <option name="timeStamp" value="186" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>346</line>
+          <line>347</line>
           <option name="timeStamp" value="188" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>335</line>
+          <line>336</line>
           <option name="timeStamp" value="189" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>338</line>
+          <line>339</line>
           <option name="timeStamp" value="190" />
         </line-breakpoint>
       </breakpoints>

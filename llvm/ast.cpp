@@ -197,6 +197,7 @@ ast ast_exit () {
 static llvm::LLVMContext TheContext;
 static llvm::IRBuilder<> Builder(TheContext);
 static std::unique_ptr<llvm::Module> TheModule;
+static std::unique_ptr<llvm::legacy::FunctionPassManager> TheFPM;
 static std::vector<llvm::StructType*> StackFrameTypes;
 static std::vector<llvm::AllocaInst*> StackFrames;
 
@@ -374,6 +375,8 @@ llvm::Value* ast_compile(ast t)
 
             // Validate the generated code, checking for consistency.
             llvm::verifyFunction(*TheFunction);
+
+            TheFPM->run(*TheFunction);
 
             StackFrames.pop_back();
             StackFrameTypes.pop_back();
@@ -1406,6 +1409,13 @@ void llvm_compile_and_dump(ast t)
 
     TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
 
+    TheFPM = std::make_unique<llvm::legacy::FunctionPassManager>(TheModule.get());
+
+//    TheFPM->add(llvm::createAggressiveDCEPass());
+//    TheFPM->add(llvm::createCFGSimplificationPass());
+//    TheFPM->add(llvm::createDeadStoreEliminationPass());
+    TheFPM->add(llvm::createDeadInstEliminationPass());
+
     declare_dana_libs();
 
     ast_compile(t);
@@ -1418,6 +1428,8 @@ void llvm_compile_and_dump(ast t)
         TheModule->print(llvm::outs(), nullptr);
         return;
     }
+
+//    TheFPM->run(TheModule);
 
     TheModule->print(llvm::errs(), nullptr);
 }
