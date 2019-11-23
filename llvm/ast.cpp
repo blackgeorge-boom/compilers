@@ -374,7 +374,7 @@ llvm::Value* ast_compile(ast t)
             curr_func_name = func_names.back();
 
             // Validate the generated code, checking for consistency.
-            llvm::verifyFunction(*TheFunction);
+//            llvm::verifyFunction(*TheFunction);
 
             TheFPM->run(*TheFunction);
 
@@ -1414,7 +1414,10 @@ void llvm_compile_and_dump(ast t)
 //    TheFPM->add(llvm::createAggressiveDCEPass());
 //    TheFPM->add(llvm::createCFGSimplificationPass());
 //    TheFPM->add(llvm::createDeadStoreEliminationPass());
-    TheFPM->add(llvm::createDeadInstEliminationPass());
+//    TheFPM->add(llvm::createDeadInstEliminationPass());
+//    TheFPM->add(llvm::createMergedLoadStoreMotionPass());
+//    TheFPM->add(llvm::createGVNPass());
+    TheFPM->add(llvm::createIndVarSimplifyPass());
 
     declare_dana_libs();
 

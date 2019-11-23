@@ -5,11 +5,11 @@ def main
     decl writeString: s as byte[]
     decl readInteger is int
     var x is int
-    x := readInteger()
-    if x > 5:
-        writeString: "x > 5"
-    elif x < 5:
-        writeString: "x < 5"
-    else:
-        writeString: "x = 5"
-    x := 2
+    x := 7
+    loop:
+        if x * x < 1000:
+            x := x + 1
+        else:
+            break
+
+    writeInteger: x
