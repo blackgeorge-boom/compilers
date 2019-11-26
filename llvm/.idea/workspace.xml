@@ -46,6 +46,9 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/t.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/t.ll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/test.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/test.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/test.ll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -230,7 +233,9 @@
       <workItem from="1573733504630" duration="7949000" />
       <workItem from="1573926583063" duration="5909000" />
       <workItem from="1574091274976" duration="15000" />
-      <workItem from="1574538816671" duration="5211000" />
+      <workItem from="1574538816671" duration="5448000" />
+      <workItem from="1574635808666" duration="188000" />
+      <workItem from="1574789051479" duration="11173000" />
     </task>
     <servers />
   </component>

@@ -1415,9 +1415,19 @@ void llvm_compile_and_dump(ast t)
 //    TheFPM->add(llvm::createCFGSimplificationPass());
 //    TheFPM->add(llvm::createDeadStoreEliminationPass());
 //    TheFPM->add(llvm::createDeadInstEliminationPass());
-//    TheFPM->add(llvm::createMergedLoadStoreMotionPass());
+//    TheFPM->add(llvm::createMergedLoadStoreMotionPass()); // TODO: check
 //    TheFPM->add(llvm::createGVNPass());
-    TheFPM->add(llvm::createIndVarSimplifyPass());
+//    TheFPM->add(llvm::createIndVarSimplifyPass()); // TODO: check
+//    TheFPM->add(llvm::createInstructionCombiningPass());
+//    TheFPM->add(llvm::createJumpThreadingPass());
+//    TheFPM->add(llvm::createLICMPass()); // Loop Invariant Code Move
+//    TheFPM->add(llvm::createLoopDeletionPass()); // Check
+//    TheFPM->add(llvm::createLoopIdiomPass());
+//    TheFPM->add(llvm::createLoopUnrollPass());
+//    TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
+
+    TheFPM->add(llvm::createReassociatePass());
+    TheFPM->add(llvm::createEarlyCSEPass());
 
     declare_dana_libs();
 

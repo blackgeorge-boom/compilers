@@ -4,12 +4,6 @@ def main
     #decl writeByte: b as byte
     decl writeString: s as byte[]
     decl readInteger is int
-    var x is int
-    x := 7
-    loop:
-        if x * x < 1000:
-            x := x + 1
-        else:
-            break
-
-    writeInteger: x
+    var x y z is int
+    x := readInteger()
+    writeInteger: (1+x+2)*(x+(1+2))
