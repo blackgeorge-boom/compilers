@@ -23,6 +23,7 @@ extern "C" {
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Analysis/TargetTransformInfo.h"
 
 #include <string>
 

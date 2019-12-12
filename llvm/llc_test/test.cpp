@@ -1,18 +1,14 @@
 #include <iostream>
-int foo()
-{
-	if (0) return 0;
-	else return 1;
-}
 
+int factorial (int x, int y){
+    if (x==0)
+        return y;
+    else
+        return factorial(x-1,y*x);
+}
 
 int main()
 {
-	int j = 0;
-	for (int i = 0; i < 10; ++i) {
-        j = i * 10;
-        std::cout << j << std::endl;
-	}
-
-	return j;
+    int x = factorial(5, 1);
+	return 0;
 }

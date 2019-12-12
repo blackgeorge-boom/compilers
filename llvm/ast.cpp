@@ -374,7 +374,7 @@ llvm::Value* ast_compile(ast t)
             curr_func_name = func_names.back();
 
             // Validate the generated code, checking for consistency.
-//            llvm::verifyFunction(*TheFunction);
+//            llvm::verifyFunction(*TheFunction); # TODO: Same as verify module?
 
             TheFPM->run(*TheFunction);
 
@@ -1412,22 +1412,31 @@ void llvm_compile_and_dump(ast t)
     TheFPM = std::make_unique<llvm::legacy::FunctionPassManager>(TheModule.get());
 
 //    TheFPM->add(llvm::createAggressiveDCEPass());
-//    TheFPM->add(llvm::createCFGSimplificationPass());
-//    TheFPM->add(llvm::createDeadStoreEliminationPass());
-//    TheFPM->add(llvm::createDeadInstEliminationPass());
-//    TheFPM->add(llvm::createMergedLoadStoreMotionPass()); // TODO: check
-//    TheFPM->add(llvm::createGVNPass());
-//    TheFPM->add(llvm::createIndVarSimplifyPass()); // TODO: check
-//    TheFPM->add(llvm::createInstructionCombiningPass());
+    TheFPM->add(llvm::createCFGSimplificationPass());
+    TheFPM->add(llvm::createDeadStoreEliminationPass());
+    TheFPM->add(llvm::createDeadInstEliminationPass());
+    TheFPM->add(llvm::createMergedLoadStoreMotionPass()); // TODO: check
+    TheFPM->add(llvm::createGVNPass());
+    TheFPM->add(llvm::createInstructionCombiningPass());
 //    TheFPM->add(llvm::createJumpThreadingPass());
-//    TheFPM->add(llvm::createLICMPass()); // Loop Invariant Code Move
+    TheFPM->add(llvm::createLICMPass()); // Loop Invariant Code Move
+    TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
+//    TheFPM->add(llvm::createReassociatePass());
+//    TheFPM->add(llvm::createEarlyCSEPass());
+//    TheFPM->add(llvm::createEarlyCSEPass(true));
+    TheFPM->add(llvm::createConstantHoistingPass());
+//    TheFPM->add(llvm::createSCCPPass()); // Only DCE has worked so far
+//    TheFPM->add(llvm::createConstantPropagationPass());
+//    TheFPM->add(llvm::createCorrelatedValuePropagationPass());
+
+//    TheFPM->add(llvm::createVerifierPass());
+//    TheFPM->add(llvm::createTailCallEliminationPass());
+//    TheFPM->add(llvm::createIndVarSimplifyPass()); // TODO: check
 //    TheFPM->add(llvm::createLoopDeletionPass()); // Check
 //    TheFPM->add(llvm::createLoopIdiomPass());
+//    TheFPM->add(llvm::createLCSSAPass());
+//    TheFPM->add(llvm::createSimpleLoopUnrollPass());
 //    TheFPM->add(llvm::createLoopUnrollPass());
-//    TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
-
-    TheFPM->add(llvm::createReassociatePass());
-    TheFPM->add(llvm::createEarlyCSEPass());
 
     declare_dana_libs();
 
