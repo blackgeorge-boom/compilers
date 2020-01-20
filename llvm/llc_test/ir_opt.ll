@@ -1,4 +1,4 @@
-; ModuleID = 'dana program'
+; ModuleID = 'ir.ll'
 source_filename = "dana program"
 
 %main_type = type { [10 x i32], i32, i32 }

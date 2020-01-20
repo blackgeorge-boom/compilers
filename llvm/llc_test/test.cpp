@@ -1,13 +1,14 @@
-int foo()
-{
-	if (0) return 0;
-	else return 1;
-}
+#include <iostream>
 
+int factorial (int x, int y){
+    if (x==0)
+        return y;
+    else
+        return factorial(x-1,y*x);
+}
 
 int main()
 {
-	int x;
-	x = 0;
-	foo();
+    int x = factorial(5, 1);
+	return 0;
 }

@@ -43,8 +43,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/a.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.ll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/do.sh" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/do.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,10 +83,16 @@
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectId" id="1P0phsqog4qVGsZq4wUT2bxPvpv" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/llc_test" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -89,6 +101,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
@@ -98,18 +111,6 @@
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/cmake-build-debug" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="CMake Application.parser_i">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
@@ -134,13 +135,15 @@
     </list>
   </component>
   <component name="ServiceViewManager">
-    <option name="allServicesViewState">
-      <serviceView>
-        <treeState>
-          <expand />
-          <select />
-        </treeState>
-      </serviceView>
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
     </option>
   </component>
   <component name="SvnConfiguration">
@@ -214,6 +217,26 @@
       <workItem from="1571696782027" duration="27000" />
       <workItem from="1571926122516" duration="1399000" />
       <workItem from="1571932433922" duration="8044000" />
+      <workItem from="1572183921525" duration="5854000" />
+      <workItem from="1572368236115" duration="12616000" />
+      <workItem from="1572440509510" duration="517000" />
+      <workItem from="1572622076383" duration="13360000" />
+      <workItem from="1572687620477" duration="16530000" />
+      <workItem from="1572818417805" duration="203000" />
+      <workItem from="1572886331327" duration="12913000" />
+      <workItem from="1573071455080" duration="7000" />
+      <workItem from="1573655222485" duration="14674000" />
+      <workItem from="1573723296011" duration="9053000" />
+      <workItem from="1573733504630" duration="7949000" />
+      <workItem from="1573926583063" duration="5909000" />
+      <workItem from="1574091274976" duration="15000" />
+      <workItem from="1574538816671" duration="5448000" />
+      <workItem from="1574635808666" duration="188000" />
+      <workItem from="1574789051479" duration="11373000" />
+      <workItem from="1574939602572" duration="1797000" />
+      <workItem from="1576170064102" duration="12467000" />
+      <workItem from="1579521565819" duration="25000" />
+      <workItem from="1579526427598" duration="3158000" />
     </task>
     <servers />
   </component>
@@ -226,20 +249,99 @@
         <entry key="MAIN">
           <value>
             <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="indep_sem" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="COLUMN_ORDER" />
             </State>
           </value>
         </entry>
       </map>
     </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="indep_sem" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1466" y="98" width="1160" height="570" maximized="true" key="DiffContextDialog" timestamp="1576178805974">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state x="1466" y="98" width="1160" height="570" maximized="true" key="DiffContextDialog/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1576178805974" />
+    <state width="623" height="234" key="GridCell.Tab.0.bottom" timestamp="1576182554237">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="623" height="234" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1576182554237" />
+    <state width="623" height="234" key="GridCell.Tab.0.center" timestamp="1576182554236">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="623" height="234" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1576182554236" />
+    <state width="623" height="234" key="GridCell.Tab.0.left" timestamp="1576182554236">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="623" height="234" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1576182554236" />
+    <state width="623" height="234" key="GridCell.Tab.0.right" timestamp="1576182554236">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="623" height="234" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1576182554236" />
+    <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1579527653711">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579527653711" />
+    <state x="111" y="27" width="1160" height="570" maximized="true" key="dock-window-1" timestamp="1579527082067">
+      <screen x="47" y="27" width="1319" height="741" />
+    </state>
+    <state x="111" y="27" width="1160" height="570" maximized="true" key="dock-window-1/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579527082067" />
+    <state x="1692" y="119" width="707" height="528" key="find.popup" timestamp="1576180569657">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state x="1692" y="119" width="707" height="528" key="find.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1576180569657" />
+    <state x="369" y="89" width="672" height="678" key="search.everywhere.popup" timestamp="1579529011194">
+      <screen x="47" y="27" width="1319" height="741" />
+    </state>
+    <state x="369" y="89" width="672" height="678" key="search.everywhere.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579529011194" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>654</line>
-          <option name="timeStamp" value="5" />
+          <line>345</line>
+          <option name="timeStamp" value="186" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>347</line>
+          <option name="timeStamp" value="188" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>336</line>
+          <option name="timeStamp" value="189" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>339</line>
+          <option name="timeStamp" value="190" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -252,11 +354,12 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
-        <watch expression="NamedValues" language="ObjectiveC" />
-        <watch expression="FunctionVariables" language="ObjectiveC" />
-        <watch expression="ShadowedVariables" language="ObjectiveC" />
         <watch expression="curr_func_name" language="ObjectiveC" />
         <watch expression="func_names" language="ObjectiveC" />
+        <watch expression="StackFrameTypes" language="ObjectiveC" />
+        <watch expression="StackFrames" language="ObjectiveC" />
+        <watch expression="currentScope" language="ObjectiveC" />
+        <watch expression="func_mode" language="ObjectiveC" />
       </configuration>
     </watches-manager>
   </component>

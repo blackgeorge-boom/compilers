@@ -52,7 +52,7 @@ def main
                 writeInteger: x[i]
                 i := i+1
             else: break
-            writeString: "\n"
+        writeString: "\n"
 
     var seed i is int
     var x      is int [16]

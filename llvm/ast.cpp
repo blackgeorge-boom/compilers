@@ -10,6 +10,10 @@
 
 loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
+enum {
+    FUNC_DECLARATION,
+    FUNC_DEFINITION
+} func_mode;
 std::vector<char*> func_names;
 char* curr_func_name;
 std::vector<llvm::BasicBlock*> merge_blocks;
@@ -193,9 +197,9 @@ ast ast_exit () {
 static llvm::LLVMContext TheContext;
 static llvm::IRBuilder<> Builder(TheContext);
 static std::unique_ptr<llvm::Module> TheModule;
-static std::map<std::string, llvm::AllocaInst*> NamedValues;
-static std::vector<std::map<std::string, llvm::AllocaInst*>> FunctionVariables;
-static std::vector<std::map<std::string, llvm::AllocaInst*>> ShadowedVariables;
+static std::unique_ptr<llvm::legacy::FunctionPassManager> TheFPM;
+static std::vector<llvm::StructType*> StackFrameTypes;
+static std::vector<llvm::AllocaInst*> StackFrames;
 
 // Useful LLVM types.
 static llvm::Type* llvm_bit = llvm::IntegerType::get(TheContext, 1);
@@ -239,7 +243,6 @@ llvm::Value* ast_compile(ast t)
         case PROGRAM:
         {
             openScope();
-            NamedValues.clear(); // TODO: check
 
             llvm::Value* V = ast_compile(t->first);
             closeScope();
@@ -247,18 +250,26 @@ llvm::Value* ast_compile(ast t)
         }
         case FUNC_DECL:
         {
-            llvm::Value* V = ast_compile(t->first);
+            func_mode = FUNC_DECLARATION;
+
+            llvm::Function* V = static_cast<llvm::Function*>(ast_compile(t->first));
             closeScope();
-            return V;
+
+            return nullptr;
         }
         case FUNC_DEF:
         {
+            func_mode = FUNC_DEFINITION;
+
             curr_func_name = t->first->id;
             func_names.push_back(curr_func_name);
+
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
 
             if (!TheFunction)
                 TheFunction = static_cast<llvm::Function*>(ast_compile(t->first));
+            else
+                ast_compile(t->first);
 
             if (!TheFunction)
                 return nullptr;
@@ -266,68 +277,84 @@ llvm::Value* ast_compile(ast t)
             if (!TheFunction->empty())
                 return (llvm::Function*)LogErrorV("Function cannot be redefined.") ;
 
+            if (StackFrames.empty())
+                currentScope->negOffset = 0;
+
             llvm::BasicBlock* OldBB = Builder.GetInsertBlock();
 
             // Create a new basic block to start insertion into.
             llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", TheFunction);
             Builder.SetInsertPoint(BB);
 
-            // All of parameters and local variables of the function
-            std::map<std::string, llvm::AllocaInst*> CurFunctionVars;
-            // Parameters and local variables of the function that shadow some other variables
-            std::map<std::string, llvm::AllocaInst*> CurShadowedVars;
+            std::vector<llvm::Type*> members;
 
-            bool acceptByReference;
-
-            // Record the function arguments in the NamedValues map.
             for (auto& Arg : TheFunction->args()) {
 
-                std::string ArgName(Arg.getName());
+                if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0)) {
+                    members.push_back(Arg.getType());
+                    continue;
+                }
 
+                std::string ArgName(Arg.getName());
                 char var_id[ArgName.size() + 1];
                 strcpy(var_id, ArgName.c_str()); // ArgName is const
                 SymbolEntry* se = lookup(var_id);
 
-                llvm::AllocaInst* Alloca = nullptr;
-
-                acceptByReference = se->u.eParameter.mode == PASS_BY_REFERENCE ||
-                                    se->u.eParameter.type->kind == Type_tag::TYPE_ARRAY ||
-                                    se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY;
-
-                if (!acceptByReference) {
-                    // Create an alloca for this variable.
-                    Alloca = CreateEntryBlockAlloca(TheFunction, ArgName, Arg.getType());
-
-                    // Store the initial value into the alloca.
-                    Builder.CreateStore(&Arg, Alloca);
-                }
-
-                // If variable already exists, shadow it and keep the old value
-                if (NamedValues.count(ArgName))
-                    CurShadowedVars[ArgName] = NamedValues[ArgName];
-
-                // Store the new variable globally
-                if (!acceptByReference)
-                    NamedValues[ArgName] = Alloca;
-                else if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
-//                    auto Tmp = Builder.CreateLoad(&Arg, "iarray");
+                if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
-                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
-
-//                    llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, &Arg, llvm::ArrayRef<llvm::Value*>(std::vector<llvm::Value*>{c32(0)}), "makaris", Builder.GetInsertBlock());
-                    NamedValues[ArgName] = reinterpret_cast<llvm::AllocaInst *>(Tmp);
+//                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
+                    members.push_back(llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1), 0));
+                    continue;
                 }
-                else
-                    NamedValues[ArgName] = reinterpret_cast<llvm::AllocaInst *>(&Arg);
 
-                //  Store the new variable locally to the function
-                CurFunctionVars[ArgName] = NamedValues[ArgName];
+                members.push_back(Arg.getType());
             }
 
-            ShadowedVariables.push_back(CurShadowedVars);
-            FunctionVariables.push_back(CurFunctionVars);
+            std::vector<llvm::Type*> local_vars = var_members(t->second);
+            members.insert(members.end(), local_vars.begin(), local_vars.end());
 
-            // Local def lists
+            // Create type for the current stack frame
+            llvm::StructType* CurStackFrameType =
+                    llvm::StructType::create(TheContext,
+                                              llvm::ArrayRef<llvm::Type*>(members),
+                                              std::string(curr_func_name) + "_type");
+            StackFrameTypes.push_back(CurStackFrameType);
+
+            llvm::AllocaInst* CurStackFrame =
+                    CreateEntryBlockAlloca(TheFunction,
+                                           std::string(curr_func_name) + "_frame",
+                                           CurStackFrameType);
+            StackFrames.push_back(CurStackFrame);
+
+            llvm::Value* StructPtr;
+            for (auto& Arg : TheFunction->args()) {
+
+                auto n = StackFrames.size();
+
+                if (n > 1 && static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes[n - 2]->getPointerTo(0)) {
+                    StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, 0, "");
+                    Builder.CreateStore(&Arg, StructPtr);
+                    continue;
+                }
+
+                std::string ArgName(Arg.getName());
+                char id[ArgName.size() + 1];
+                strcpy(id, ArgName.c_str());
+                SymbolEntry* se = lookup(id);
+
+                int offset = se->u.eVariable.offset;
+                StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, offset, ArgName + "_pos");
+
+                if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
+                    auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
+                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
+                    Builder.CreateStore(Tmp, StructPtr);
+                }
+                else
+                    Builder.CreateStore(&Arg, StructPtr);
+            }
+
+                // Local def lists
             ast_compile(t->second);
 
             Builder.SetInsertPoint(BB);
@@ -347,19 +374,12 @@ llvm::Value* ast_compile(ast t)
             curr_func_name = func_names.back();
 
             // Validate the generated code, checking for consistency.
-            llvm::verifyFunction(*TheFunction);
+//            llvm::verifyFunction(*TheFunction); # TODO: Same as verify module?
 
-            // Pop variables
-            auto vars = FunctionVariables.back();
-            for (auto& v : vars)
-                NamedValues.erase(v.first);
-            FunctionVariables.pop_back();
+            TheFPM->run(*TheFunction);
 
-            // Pop shadow variables
-            auto shadows = ShadowedVariables.back();
-            for (auto& s : shadows)
-                NamedValues[s.first] = s.second;
-            ShadowedVariables.pop_back();
+            StackFrames.pop_back();
+            StackFrameTypes.pop_back();
 
             closeScope();
             if (OldBB)
@@ -376,13 +396,17 @@ llvm::Value* ast_compile(ast t)
                 llvm_func_type = to_llvm_type(t->type);
             }
 
-            SymbolEntry* f = insertFunction(t->id, func_type);
-            if (f == nullptr) {
-                return nullptr;    // f == nullptr means, function was declared before
-            }                      // The rest has already been done
+            SymbolEntry* f = newFunction(t->id);
+            if (func_mode == FUNC_DECLARATION)
+                forwardFunction(f);
 
             std::vector<llvm::Type*> Params;
             std::vector<std::string> Args;
+
+            if (!StackFrameTypes.empty()) {
+                Params.push_back(StackFrameTypes.back()->getPointerTo());
+                Args.push_back(StackFrames.back()->getName());
+            }
 
             // We open the scope of the current function that was
             // just inserted. The name of the function itself, though, has
@@ -427,6 +451,8 @@ llvm::Value* ast_compile(ast t)
                 fpar_def_list = fpar_def_list->second;
             }
 
+            endFunctionHeader(f, func_type);
+
             llvm::FunctionType* FT =
                     llvm::FunctionType::get(llvm_func_type, Params, false);
 
@@ -436,8 +462,10 @@ llvm::Value* ast_compile(ast t)
 
             // Set names for all arguments.
             unsigned Idx = 0;
-            for (auto& Arg : F->args())
+            for (auto& Arg : F->args()) {
                 Arg.setName(Args[Idx++]);
+            }
+
 
             return F;
         }
@@ -1157,71 +1185,16 @@ llvm::Value* ast_compile(ast t)
         }
         case VAR_DEF:
         {
-            ast_compile(t->second);
+            // Type is computed at var_members
             auto var_type = t->second->type;
-            auto llvm_var_type = to_llvm_type(var_type);
-
-            llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
-
-            // Create an alloca for this variable.
-            llvm::AllocaInst* Alloca = CreateEntryBlockAlloca(TheFunction, std::string(t->id), llvm_var_type);
-
-            switch(var_type->kind) {
-                case Type_tag::TYPE_INTEGER: {
-                    auto InitVal = c32(0);
-                    Builder.CreateStore(InitVal, Alloca);
-                    break;
-                }
-                case Type_tag::TYPE_CHAR: {
-                    auto InitVal = c8(0);
-                    Builder.CreateStore(InitVal, Alloca);
-                    break;
-                }
-                case Type_tag::TYPE_ARRAY: {
-                    break;
-                }
-                default: {
-                    return nullptr;
-                }
-            }
-
-            // All of parameters and local variables of the function
-            auto CurFunctionVars = FunctionVariables.back();
-            // Parameters and local variables of the function that shadow some other variables
-            auto CurShadowedVars = ShadowedVariables.back();
-
-            insert(t->id, var_type);
-
-            // If variable already exists, shadow it and keep the old value
-            if (NamedValues.count(t->id))
-                CurShadowedVars[t->id] = NamedValues[t->id];
-
-            // Store the new variable globally
-            NamedValues[t->id] = Alloca;
-            //  Store the new variable locally to the function
-            CurFunctionVars[t->id] = NamedValues[t->id];
+            insertVariable(t->id, var_type);
 
             ast temp = t->first;
             while (temp != nullptr) {
-                insert(temp->id, var_type);
-                // If variable already exists, shadow it and keep the old value
-                if (NamedValues.count(temp->id))
-                    CurShadowedVars[temp->id] = NamedValues[temp->id];
-
-                Alloca = CreateEntryBlockAlloca(TheFunction, std::string(temp->id), llvm_var_type);
-
-                // Store the new variable globally
-                NamedValues[temp->id] = Alloca;
-                //  Store the new variable locally to the function
-                CurFunctionVars[temp->id] = NamedValues[temp->id];
-
+                insertVariable(temp->id, var_type);
                 temp = temp->first;
             }
-
-            ShadowedVariables.push_back(CurShadowedVars);
-            FunctionVariables.push_back(CurFunctionVars);
-
-            return nullptr;
+           return nullptr;
         }
         case PROC_CALL:
         {
@@ -1240,6 +1213,19 @@ llvm::Value* ast_compile(ast t)
                 return LogErrorV("Unknown procedure referenced");
 
             std::vector<llvm::Value*> ArgsV;
+            auto n = StackFrames.size();
+
+            // TODO: for all lib functions
+            if (strcmp(t->id, "main")!= 0 && strcmp(t->id, "writeInteger") != 0 && strcmp(t->id, "writeString") != 0 && strcmp(t->id, "readString") != 0 && strcmp(t->id, "readChar") != 0 && strcmp(t->id, "writeByte") != 0 && strcmp(t->id, "writeChar") != 0 && strcmp(t->id, "readInteger") != 0 && strcmp(t->id, "strlen") != 0 && strcmp(t->id, "strcmp") != 0) {
+                SymbolEntry* se = lookup(t->id);
+                if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
+                    llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
+                    ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
+                }
+                else
+                    ArgsV.push_back(StackFrames.back());
+
+            }
 
             ast param = t->first;         // First is expr
             ast param_list = t->second;
@@ -1253,12 +1239,12 @@ llvm::Value* ast_compile(ast t)
                                   func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
 
                 if (passByReference)
-                    ArgsV.push_back(NamedValues[param->first->id]);
+                    ArgsV.push_back(ast_compile(param->first));
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
 
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
-                    llvm::Value* Id = NamedValues[param->first->id];
+                    llvm::Value* Id = ast_compile(param->first);
                     llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
                     Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
@@ -1296,6 +1282,15 @@ llvm::Value* ast_compile(ast t)
                 return LogErrorV("Unknown function referenced");
 
             std::vector<llvm::Value*> ArgsV;
+            auto n = StackFrames.size();
+
+            // TODO: for all lib functions
+            if (strcmp(curr_func_name, t->id) == 0 && n > 1) {
+                llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
+                ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
+            }
+            else if (strcmp(t->id, "writeInteger") != 0 && strcmp(t->id, "writeString") != 0 && strcmp(t->id, "readString") != 0 && strcmp(t->id, "writeByte") != 0 && strcmp(t->id, "readChar") != 0 && strcmp(t->id, "writeChar") != 0 && strcmp(t->id, "readInteger") != 0 && strcmp(t->id, "strlen") != 0 && strcmp(t->id, "strcmp") != 0)
+                ArgsV.push_back(StackFrames.back());
 
             ast param = t->first;         // First is expr
             ast param_list = t->second;
@@ -1309,12 +1304,12 @@ llvm::Value* ast_compile(ast t)
                                   func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
 
                 if (passByReference)
-                    ArgsV.push_back(NamedValues[param->first->id]);
+                    ArgsV.push_back(ast_compile(param->first));
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
 
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
-                    llvm::Value* Id = NamedValues[param->first->id];
+                    llvm::Value* Id = ast_compile(param->first);
                     llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
                     Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
@@ -1336,19 +1331,26 @@ llvm::Value* ast_compile(ast t)
         }
         case ID:
         {
-            SymbolEntry* e = lookup(t->id);
+            SymbolEntry* se = lookup(t->id);
 
-//            if (e == nullptr)
-//                error("ID - Undeclared variable : %s", t->id);
+            t->type = se->u.eVariable.type;
+            // TODO: see if unnecessary
+            t->nesting_diff = int(currentScope->nestingLevel) - se->nestingLevel;
+            t->offset = se->u.eVariable.offset;
 
-            t->type = e->u.eVariable.type;
-//            t->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
-//            t->offset = e->u.eVariable.offset;
+            llvm::Value* CurStackFrame = StackFrames.back();
+            llvm::Type* CurStackFrameType = StackFrameTypes.back();
 
-            // Look this variable up in the function.
-            llvm::Value* Id = NamedValues[std::string(t->id)];
-            if (!Id)
-                return LogErrorV("Unknown variable name");
+            for (auto i = t->nesting_diff; i > 0; --i) {
+                llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, 0);
+                CurStackFrame = Builder.CreateLoad(CurStackFramePtr, "");
+                CurStackFrameType = CurStackFrame->getType()->getPointerElementType();
+            }
+
+            llvm::Value* Id = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, t->offset);
+
+            if (llvm::dyn_cast<llvm::PointerType>(Id->getType()->getPointerElementType()))
+                Id = Builder.CreateLoad(Id, "temp");
 
             return Id;
         }
@@ -1360,7 +1362,7 @@ llvm::Value* ast_compile(ast t)
                 StringVector.push_back(c);
             StringVector.push_back(0);
 
-            return Builder.CreateGlobalStringPtr(s, "str");
+            return Builder.CreateGlobalString(s, "str");
         }
         case L_VALUE:
         {
@@ -1378,20 +1380,25 @@ llvm::Value* ast_compile(ast t)
             std::reverse(indexList.begin(), indexList.end());
 
             llvm::Value* Id = ast_compile(ast_iter);
-            llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
+//            if (ast_iter->k == STR) {
+//
+//                return Id;
+//            }
+            llvm::Type* PointeeType = Id->getType()->getPointerElementType();
             llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
+
             return Pointer;
         };
         case R_VALUE:
         {
-            llvm::Value* RValuePointer = ast_compile(t->first);
+            llvm::Value* LValue = ast_compile(t->first);
             t->type = t->first->type;
 
             if (t->first->k == STR)     // String as rvalue does not need to create a load. Just return the pointer
-                return RValuePointer;
+                return llvm::GetElementPtrInst::Create(LValue->getType()->getPointerElementType(), LValue, llvm::ArrayRef<llvm::Value*>(std::vector<llvm::Value*>{c32(0), c32(0)}), "str_ptr", Builder.GetInsertBlock());
             else
-                return Builder.CreateLoad(RValuePointer, "rvalue");
+                return Builder.CreateLoad(LValue, "rvalue");
         }
     }
 }
@@ -1401,6 +1408,34 @@ void llvm_compile_and_dump(ast t)
 //    ast_sem(t);
 
     TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
+
+    TheFPM = std::make_unique<llvm::legacy::FunctionPassManager>(TheModule.get());
+
+    TheFPM->add(llvm::createCFGSimplificationPass());
+    TheFPM->add(llvm::createDeadStoreEliminationPass());
+    TheFPM->add(llvm::createDeadInstEliminationPass());
+    TheFPM->add(llvm::createMergedLoadStoreMotionPass()); // TODO: check
+    TheFPM->add(llvm::createGVNPass());
+    TheFPM->add(llvm::createInstructionCombiningPass());
+    TheFPM->add(llvm::createLICMPass()); // Loop Invariant Code Move
+    TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
+    TheFPM->add(llvm::createConstantHoistingPass());
+//    TheFPM->add(llvm::createAggressiveDCEPass());
+//    TheFPM->add(llvm::createReassociatePass());
+//    TheFPM->add(llvm::createEarlyCSEPass());
+//    TheFPM->add(llvm::createSCCPPass()); // Only DCE has worked so far
+//    TheFPM->add(llvm::createConstantPropagationPass());
+//    TheFPM->add(llvm::createJumpThreadingPass());
+//    TheFPM->add(llvm::createLoopDeletionPass()); // Check
+//    TheFPM->add(llvm::createSimpleLoopUnrollPass());
+//    TheFPM->add(llvm::createLoopUnrollPass());
+//    TheFPM->add(llvm::createLCSSAPass());
+//    TheFPM->add(llvm::createIndVarSimplifyPass()); // TODO: check
+
+//    TheFPM->add(llvm::createCorrelatedValuePropagationPass());
+//    TheFPM->add(llvm::createVerifierPass());
+//    TheFPM->add(llvm::createTailCallEliminationPass());
+//    TheFPM->add(llvm::createLoopIdiomPass());
 
     declare_dana_libs();
 
@@ -1414,6 +1449,8 @@ void llvm_compile_and_dump(ast t)
         TheModule->print(llvm::outs(), nullptr);
         return;
     }
+
+//    TheFPM->run(TheModule);
 
     TheModule->print(llvm::errs(), nullptr);
 }
@@ -1439,7 +1476,14 @@ llvm::Type* to_llvm_type(Type type) {
 }
 
 static llvm::Function* TheWriteInteger;
+static llvm::Function* TheWriteChar;
+static llvm::Function* TheWriteByte;
 static llvm::Function* TheWriteString;
+static llvm::Function* TheReadString;
+static llvm::Function* TheReadInteger;
+static llvm::Function* TheReadChar;
+static llvm::Function* TheStrlen;
+static llvm::Function* TheStrcmp;
 
 void declare_dana_libs()
 {
@@ -1451,6 +1495,22 @@ void declare_dana_libs()
             llvm::Function::Create(writeInteger_type, llvm::Function::ExternalLinkage,
                              "writeInteger", TheModule.get());
 
+    // declare void @writeChar(i8)
+    llvm::FunctionType *writeChar_type =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
+                                    std::vector<llvm::Type*>{ llvm_byte }, false);
+    TheWriteChar =
+            llvm::Function::Create(writeChar_type, llvm::Function::ExternalLinkage,
+                                   "writeChar", TheModule.get());
+
+    // declare void @writeByte(i8)
+    llvm::FunctionType *writeByte_type =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
+                                    std::vector<llvm::Type*>{ llvm_byte }, false);
+    TheWriteByte =
+            llvm::Function::Create(writeByte_type, llvm::Function::ExternalLinkage,
+                                   "writeByte", TheModule.get());
+
     // declare void @writeString(i8*)
     llvm::FunctionType *writeString_type =
             llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
@@ -1458,5 +1518,46 @@ void declare_dana_libs()
     TheWriteString =
             llvm::Function::Create(writeString_type, llvm::Function::ExternalLinkage,
                              "writeString", TheModule.get());
+
+    // declare void @readString(i8*)
+    llvm::FunctionType *readString_type =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
+                                    std::vector<llvm::Type *>{ llvm_int, llvm::PointerType::get(llvm_byte, 0) }, false);
+    TheReadString =
+            llvm::Function::Create(readString_type, llvm::Function::ExternalLinkage,
+                                   "readString", TheModule.get());
+
+    // declare void @readInteger(i8*)
+    llvm::FunctionType *readInteger_type =
+            llvm::FunctionType::get(llvm_int,
+                                    std::vector<llvm::Type *>{}, false);
+    TheReadInteger =
+            llvm::Function::Create(readInteger_type, llvm::Function::ExternalLinkage,
+                                   "readInteger", TheModule.get());
+
+    // declare void @readChar(i8*)
+    llvm::FunctionType *readChar_type =
+            llvm::FunctionType::get(llvm_byte,
+                                    std::vector<llvm::Type *>{}, false);
+    TheReadChar =
+            llvm::Function::Create(readChar_type, llvm::Function::ExternalLinkage,
+                                   "readChar", TheModule.get());
+
+    // declare void @strlen(i8*)
+    llvm::FunctionType *strlen_type =
+            llvm::FunctionType::get(llvm_int,
+                                    std::vector<llvm::Type *>{ llvm::PointerType::get(llvm_byte, 0) }, false);
+    TheStrlen =
+            llvm::Function::Create(strlen_type, llvm::Function::ExternalLinkage,
+                                   "strlen", TheModule.get());
+    //TODO : fix comment
+    // declare void @strlen(i8*)
+    llvm::FunctionType *strcmp_type =
+            llvm::FunctionType::get(llvm_int,
+                                    std::vector<llvm::Type *>{ llvm::PointerType::get(llvm_byte, 0), llvm::PointerType::get(llvm_byte, 0) }, false);
+    TheStrcmp =
+            llvm::Function::Create(strcmp_type, llvm::Function::ExternalLinkage,
+                                   "strcmp", TheModule.get());
+
 }
 

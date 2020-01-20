@@ -5,6 +5,10 @@
       <w>allocas</w>
       <w>elif</w>
       <w>iarray</w>
+      <w>strlen</w>
+      <w>yyerror</w>
+      <w>yylval</w>
+      <w>yytext</w>
     </words>
   </dictionary>
 </component>

@@ -1,11 +1,10 @@
-def solve
+def main
 
   decl writeString: s as byte[]
   decl readInteger is int
 
   def hanoi: rings as int, source target auxiliary as byte []
 
-    decl moveme: boom as int
     def move: source target as byte []
       writeString: "Moving from "
       writeString: source

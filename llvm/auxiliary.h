@@ -12,7 +12,7 @@
  *******************************************/
 
 SymbolEntry* lookup(char* s);
-SymbolEntry* insert(char* s, Type t);
+SymbolEntry* insertVariable(char* s, Type t);
 
 /**
  * If function does not exists in the symbol table, insert it.
@@ -143,5 +143,8 @@ void insert_func_code(char* func_name, ast code);
 extern std::vector<char*> func_names;
 extern char* curr_func_name;
 
+std::vector<llvm::Type*> var_members(ast t);
+
+std::vector<std::string> fix_arg_names(ast t);
 
 #endif //DANA_LLVM_AUXILIARY_H

@@ -31,10 +31,10 @@ def main
                     return: 0
                 j := j+1
                 if (j >= 3):
-                break
+                    break
             i := i+1
             if (i >= 3-1):
-            break
+                break
             return: 1
 
     def isTriangular is int: a as int[3][3]
@@ -50,10 +50,10 @@ def main
                     break
                 j := j+1
                 if (j >= 3):
-                break
+                    break
             i := i+1
             if (i >= 3-1):
-            break
+                break
             upper := 2
         i := 1
         loop:
@@ -64,10 +64,10 @@ def main
                     break
                 j := j+1
                 if (j >= i):
-                break
+                    break
             i := i+1
             if (i >= 3):
-            break
+                break
         return: lower + upper
 
     var a is int[3][3]
@@ -81,10 +81,10 @@ def main
         a[i][j] := readInteger()
         j := j+1
         if (j >= 3):
-        break
+            break
         i := i+1
         if (i >= 3):
-        break
+            break
     i := 0
     loop:
         j := 0
@@ -93,11 +93,11 @@ def main
             writeChar: ' '
             j := j+1
             if (j >= 3):
-            break
+                break
         writeChar: '\n'
         i := i+1
         if (i >= 3):
-        break
+            break
     if (isSymmetric(a)):
         writeString: "The matrix is symmetric\n"
     else:

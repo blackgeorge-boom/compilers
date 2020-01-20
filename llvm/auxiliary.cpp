@@ -10,6 +10,7 @@ extern "C" {
 #include <cstring>
 #include <iostream>
 #include "auxiliary.h"
+#include "symbol.h"
 
 void print_loop_list ()
 {
@@ -77,7 +78,7 @@ SymbolEntry* lookup(char* s) {
     return lookupEntry(name, LOOKUP_ALL_SCOPES, true);
 }
 
-SymbolEntry* insert(char* s, Type t) {
+SymbolEntry* insertVariable(char* s, Type t) {
     char* name;
     name = s;
     return newVariable(name, t);
@@ -248,4 +249,93 @@ void check_parameters (SymbolEntry* f, ast first, ast second, const std::string&
     }
     if (real_param != nullptr || func_param != nullptr)
         fatal("Incorrect number of parameters at %s call", call_type.c_str());
+}
+/**
+ * Dive into local definitions and create
+ * a vector with the llvm types of all function's local variables,
+ */
+std::vector<llvm::Type*> var_members(ast t)
+{
+    std::vector<llvm::Type*> result;
+
+    if (t == nullptr)
+        return result;
+
+    ast local_def = t->first;
+    ast local_def_list = t->second;
+
+    while (local_def != nullptr) {
+
+        if (local_def->k == VAR_DEF) {
+            ast_compile(local_def->second);
+            auto var_type = local_def->second->type;
+            auto llvm_var_type = to_llvm_type(var_type);
+
+            do {
+                result.push_back(llvm_var_type);
+                local_def = local_def->first;
+            } while (local_def != nullptr);
+        }
+
+        if (local_def_list == nullptr)
+            break;
+
+        local_def = local_def_list->first;
+        local_def_list = local_def_list->second;
+    }
+    return result;
+}
+
+std::vector<std::string> fix_arg_names(ast t)
+{
+    SymbolEntry* f = lookup(t->id);
+    destroyEntry(f);
+    Type func_type = typeVoid;
+
+    if (t->type != nullptr) {
+        func_type = t->type;    // Check func or proc
+    }
+
+    f = insertFunction(t->id, func_type);
+    if (f == nullptr) {
+        error("agamisou");    // f == nullptr means, function was declared before
+    }                      // The rest has already been done
+    openScope();
+
+    ast par_def = t->first;         // First is fpar_def
+    ast fpar_def_list = t->second;
+
+    Type par_type = nullptr;
+    std::vector<std::string> Args;
+
+//    SymbolEntry* args = f->u.eFunction.firstArgument;
+
+    while (par_def != nullptr) {
+
+        ast_compile(par_def->second);           // Second is fpar_type
+        par_type = par_def->second->type;
+
+//        args->id = par_def->id;
+        insertParameter(par_def->id, par_type, f);
+
+        Args.emplace_back(par_def->id);
+
+        ast par_list = par_def->first;
+        while (par_list != nullptr) {           // Insert the rest parameters
+//            args = args->u.eParameter.next;
+//            args->id = par_list->id;
+            insertParameter(par_list->id, par_type, f);
+            Args.emplace_back(par_list->id);
+            par_list = par_list->first;         // First is the rest of T_ids.
+        }
+
+        if (fpar_def_list == nullptr)
+            break;
+
+        par_def = fpar_def_list->first;        // Now for the rest of fpar_defs.
+        fpar_def_list = fpar_def_list->second;
+
+//        args = args->u.eParameter.next;
+    }
+    return Args;
 }

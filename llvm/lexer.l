@@ -7,6 +7,11 @@
 void yyerror (const char *msg);
 void debug (const char *msg);
 
+char escape_char(char c);
+int hex_char_to_int(char c);
+char escape_hex(char least, char most);
+char* escape_string(char* text);
+
 int comment_nesting = 0;  
 int line_number = 1;
 int current_line_indent = 0;
@@ -205,51 +210,24 @@ R[`~@#$^_\{\}\;?.]
 {D}+            { yylval.n = atoi(yytext); return T_const; }
 \'({D}|{L})\' { yylval.n = yytext[1]; return T_char; }
 
-\'("\\"[ntr0"\"\'""""\\"])\' {
-                            char c = yytext[2];
-                            if     ( c =='n')
-                            	yylval.n = '\n'; 
-                            else if( c =='r')
-                            	yylval.n = '\r';
-                            else if( c =='t')
-                            	yylval.n = '\t';
-                            else if( c =='0')
-                            	yylval.n = '\0';
-                            else if( c =='\'')
-                            	yylval.n = '\'';
-                            else if( c =='\"')
-                            	yylval.n = '\"'; //"
-                            else {
-                            	yylval.n = '\\';
-                            }
-                            return T_char;
-                        }
+\'("\\"[ntr0"\"\'""""\\"])\'    {
+                                    yylval.n = escape_char(yytext[2]);
+                                    return T_char;
+                                }
 \'("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F]))\' {
-                                                int i, val,decimal = 0;;
-                                                for(i=3; i<5 ;i++){
-                                                	if(yytext[i]>='0' && yytext[i]<='9') {
-                                                       val = yytext[i] - 48;
-                                                      }
-                                                      else if(yytext[i]>='a' && yytext[i]<='f')
-                                                      {
-                                                          val = yytext[i] - 97 + 10;
-                                                      }
-                                                      else if(yytext[i]>='A' && yytext[i]<='F')
-                                                      {
-                                                          val = yytext[i] - 65 + 10;
-                                                      }
-                                                      if (i==3) {
-                                                      	decimal += val * 16; 
-                                                      }
-                                                      else{
-                                                      	decimal += val;
-                                                      }
+                                                    char most_significant = yytext[3];
+                                                    char least_significant = yytext[4];
+                                                    yylval.n = escape_hex(most_significant, least_significant);
+                                                    return T_char;
                                                 }
-                                                yylval.n = decimal; return T_char; }
 \'[ ]\'		{ yylval.n = yytext[1]; return T_char; }
+
 \"(({S}|{Q}|{L}|{R}|{D}|("\\"{E})|("\\"{X})|("\\"[x]({D}|[a-f]|[A-F])({D}|[a-f]|[A-F])|" "))+)\" {
-													yytext[strlen(yytext) - 1] = '\0';
-													yylval.s = strdup(yytext + 1); return T_str; }
+    yytext[strlen(yytext) - 1] = '\0';      // replaces final \"
+    yylval.s = escape_string(yytext + 1);   // dumps starting \" and replaces escape sequences
+    return T_str;
+}
+
 \"\"				{ std::string temp = "\0"; strcpy(yylval.s, temp.c_str()); return T_str; }
 {W}+                { /* nothing */ }
 \n                  { line_number++; current_line_indent = 0; if (command_line_flag) BEGIN(INDENT); }
@@ -257,3 +235,66 @@ R[`~@#$^_\{\}\;?.]
 
 
 %%
+
+char escape_char(char c)
+{
+    switch (c) {
+        case 'n':
+            return '\n';
+        case 'r':
+            return '\r';
+        case 't':
+            return '\t';
+        case '0':
+            return '\0';
+        case '\'':
+            return '\'';
+        case '\"':
+            return '\"';
+        case '\\':
+            return '\\';
+        default:
+            yyerror("Wrong case with escape char...");
+    }
+}
+
+int hex_char_to_int(char c)
+{
+    if (c >= '0' && c <= '9')
+        return c - '0';
+    else if (c >= 'a' && c <= 'f')
+        return c - 'a' + 10;
+    else if (c >= 'A' && c <= 'F')
+        return c - 'A' + 10;
+    else
+        error("Wrong char at hex digit");
+}
+
+char escape_hex(char most, char least)
+{
+    return 16 * hex_char_to_int(most) + hex_char_to_int(least);
+}
+
+char* escape_string(char* text)
+{
+    char* fixed_string = (char *)malloc((strlen(text) + 1) * sizeof(char));
+    int i = 0;
+    int j = 0;
+
+    while (text[i] != '\0') {
+        if (text[i] == '\\') {
+            i++;
+            if (text[i] == 'x') {
+                fixed_string[j] = escape_hex(text[i + 1], text[i + 2]);
+                i += 2;
+            }
+            else
+                fixed_string[j] = escape_char(text[i]);
+        }
+        else
+            fixed_string[j] = text[i];
+        i++;
+        j++;
+    }
+    return fixed_string;
+}
