@@ -12,3 +12,5 @@ def main
         x[i] := y + 1
         if i >= 10:
             break
+        break
+    writeInteger: 3
