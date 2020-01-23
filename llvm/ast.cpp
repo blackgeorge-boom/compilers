@@ -18,7 +18,7 @@ std::vector<char*> func_names;
 char* curr_func_name;
 std::vector<llvm::BasicBlock*> merge_blocks;
 
-static ast ast_make (kind k, char* s, int n,
+static ast ast_make(kind k, char* s, int n,
                      ast first, ast second, ast third, ast last, Type t) {
     ast p;
     if ((p = new struct node) == nullptr)
@@ -354,7 +354,10 @@ llvm::Value* ast_compile(ast t)
                     Builder.CreateStore(&Arg, StructPtr);
             }
 
-                // Local def lists
+            if (strcmp(t->first->id, "main") == 0)
+                declare_dana_libs();
+
+            // Local def lists
             ast_compile(t->second);
 
             Builder.SetInsertPoint(BB);
@@ -376,7 +379,7 @@ llvm::Value* ast_compile(ast t)
             // Validate the generated code, checking for consistency.
 //            llvm::verifyFunction(*TheFunction); # TODO: Same as verify module?
 
-            TheFPM->run(*TheFunction);
+//            TheFPM->run(*TheFunction);
 
             StackFrames.pop_back();
             StackFrameTypes.pop_back();
@@ -465,7 +468,6 @@ llvm::Value* ast_compile(ast t)
             for (auto& Arg : F->args()) {
                 Arg.setName(Args[Idx++]);
             }
-
 
             return F;
         }
@@ -1437,7 +1439,7 @@ void llvm_compile_and_dump(ast t)
 //    TheFPM->add(llvm::createTailCallEliminationPass());
 //    TheFPM->add(llvm::createLoopIdiomPass());
 
-    declare_dana_libs();
+//    declare_dana_libs();
 
     ast_compile(t);
 
@@ -1487,13 +1489,34 @@ static llvm::Function* TheStrcmp;
 
 void declare_dana_libs()
 {
+    SymbolEntry* f;
+    std::string func_name = "writeInteger";
+    char* cstr = &func_name[0];
+
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(cstr, typeInteger, f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
+
     // declare void @writeInteger(i32)
     llvm::FunctionType *writeInteger_type =
-            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
+            llvm::FunctionType::get(llvm_void,
                               std::vector<llvm::Type*>{ llvm_int }, false);
     TheWriteInteger =
             llvm::Function::Create(writeInteger_type, llvm::Function::ExternalLinkage,
                              "writeInteger", TheModule.get());
+
+    func_name = "writeChar";
+    cstr = &func_name[0];
+
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(cstr, typeChar, f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
 
     // declare void @writeChar(i8)
     llvm::FunctionType *writeChar_type =
@@ -1502,6 +1525,7 @@ void declare_dana_libs()
     TheWriteChar =
             llvm::Function::Create(writeChar_type, llvm::Function::ExternalLinkage,
                                    "writeChar", TheModule.get());
+
 
     // declare void @writeByte(i8)
     llvm::FunctionType *writeByte_type =

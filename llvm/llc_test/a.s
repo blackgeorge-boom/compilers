@@ -11,6 +11,8 @@ main:                                   # @main
 	.cfi_def_cfa_offset 16
 	movl	$3, %edi
 	callq	writeInteger
+	movl	$97, %edi
+	callq	writeChar
 	popq	%rax
 	retq
 .Lfunc_end0:

@@ -1,16 +1,10 @@
 def main
-    decl writeInteger: b as int
-    decl writeChar: b as byte
+#    decl writeInteger: b as int
+#    decl writeChar: b as byte
     #decl writeByte: b as byte
-    decl writeString: s as byte[]
-    decl readInteger is int
-    var x is int[10]
     var y i is int
-    y := 0
     i := 0
     loop:
-        x[i] := y + 1
         if i >= 10:
             break
-        break
-    writeInteger: 3
+        i := i + 1
