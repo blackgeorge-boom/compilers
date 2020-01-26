@@ -2,6 +2,7 @@
 
 Oflag=0
 file=""
+indent_flag=false
 asm_out=false
 ir_out=false
 
@@ -12,6 +13,7 @@ do
         -O1)  Oflag=1;;
         -O2)  Oflag=2;;
         -O3)  Oflag=3;;
+        -indent) indent_flag=true;;
         -i)   ir_out=true;;
         -f)   asm_out=true;;
         -*)   ;;
@@ -20,16 +22,37 @@ do
     shift
 done
 
-optf=""
+compiler=dana_compiler
+if [[ ${indent_flag} = true ]]; then
+    compiler=dana_compiler_indent
+fi
+
+opt_flag=""
 if [[ ${Oflag} -ne 0 ]]; then
-    optf=-O${Oflag}
+    opt_flag=-O${Oflag}
 fi
 
 if [[ ${file} != "" ]]; then
+
 	echo "Compiling ${file}"
-	../cmake-build-debug/parser_i < ${file} 2> ir.ll || exit 1
-	opt-5.0 ${optf} ir.ll -S -o ir_opt.ll
-	llc-5.0 ${optf} ir_opt.ll -o a.s
-	clang-5.0 a.s lib.a -o a.out
-	./a.out
+
+    t=${file%.*}
+    name=${t##*/}
+
+	echo "Compiling ${name}"
+
+	../cmake-build-debug/${compiler} < ${file} 2> ${name}_ir.ll || exit 1
+	opt-5.0 ${opt_flag} ${name}_ir.ll -S -o ${name}_ir_opt.ll
+	llc-5.0 ${opt_flag} ${name}_ir_opt.ll -o ${name}_asm.s
+	clang-5.0 ${name}_asm.s lib.a -o ${name}.out
+
+    if [[ ${ir_out} = true ]]; then
+        cat ${name}_ir_opt.ll
+    fi
+
+    if [[ ${asm_out} = true ]]; then
+        cat ${name}_asm.s
+    fi
+
+	./${name}.out
 fi
