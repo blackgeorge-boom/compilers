@@ -1,8 +1,5 @@
 def main
 
-  decl writeString: s as byte[]
-  decl readInteger is int
-
   def hanoi: rings as int, source target auxiliary as byte []
 
     def move: source target as byte []

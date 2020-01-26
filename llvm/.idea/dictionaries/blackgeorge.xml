@@ -3,8 +3,11 @@
     <words>
       <w>alloca</w>
       <w>allocas</w>
+      <w>cstr</w>
       <w>elif</w>
       <w>iarray</w>
+      <w>strcat</w>
+      <w>strcpy</w>
       <w>strlen</w>
       <w>yyerror</w>
       <w>yylval</w>

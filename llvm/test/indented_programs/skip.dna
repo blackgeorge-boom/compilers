@@ -5,6 +5,7 @@ def main
     var y i is int
     i := 0
     loop:
-        if i >= 10:
+        if i >= 100:
             break
         i := i + 1
+        writeInteger: i

@@ -44,6 +44,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/a.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/a.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/ir.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/ir.ll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/ir_opt.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/ir_opt.ll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/hanoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/hanoi.dna" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -113,7 +120,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="parser_i" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented_programs/skip.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="parser_i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="parser_i">
+    <configuration name="parser_i" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented_programs/vizener.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="parser_i" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="parser_i">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -236,7 +243,8 @@
       <workItem from="1579647940537" duration="616000" />
       <workItem from="1579648673911" duration="38000" />
       <workItem from="1579696564202" duration="22000" />
-      <workItem from="1579777313077" duration="4166000" />
+      <workItem from="1579777313077" duration="4980000" />
+      <workItem from="1580041845367" duration="5807000" />
     </task>
     <servers />
   </component>
@@ -288,59 +296,64 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
+    <state x="1504" y="27" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1580057944530">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state x="1504" y="27" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580057944530" />
     <state x="1466" y="98" width="1160" height="570" maximized="true" key="DiffContextDialog" timestamp="1576178805974">
       <screen x="1366" y="0" width="1360" height="768" />
     </state>
     <state x="1466" y="98" width="1160" height="570" maximized="true" key="DiffContextDialog/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1576178805974" />
-    <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl" timestamp="1579778365860">
-      <screen x="1366" y="0" width="2560" height="1440" />
+    <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl" timestamp="1580043421549">
+      <screen x="1366" y="0" width="1360" height="768" />
     </state>
+    <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580043421549" />
     <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778365860" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.bottom" timestamp="1579781463791">
+    <state width="622" height="342" key="GridCell.Tab.0.bottom" timestamp="1580058131653">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="622" height="342" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580058131653" />
+    <state width="981" height="1289" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
+    <state width="622" height="342" key="GridCell.Tab.0.center" timestamp="1580058131652">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="622" height="342" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580058131652" />
+    <state width="981" height="1289" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296607" />
+    <state width="622" height="342" key="GridCell.Tab.0.left" timestamp="1580058131652">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="622" height="342" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580058131652" />
+    <state width="981" height="1289" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296607" />
+    <state width="622" height="342" key="GridCell.Tab.0.right" timestamp="1580058131652">
+      <screen x="1366" y="0" width="1360" height="768" />
+    </state>
+    <state width="622" height="342" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580058131652" />
+    <state width="981" height="1289" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296607" />
+    <state width="981" height="1289" key="GridCell.Tab.1.bottom" timestamp="1579782296608">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
-    <state width="623" height="617" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579648710586" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781463791" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.center" timestamp="1579781463791">
+    <state width="981" height="1289" key="GridCell.Tab.1.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
+    <state width="981" height="1289" key="GridCell.Tab.1.center" timestamp="1579782296608">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
-    <state width="623" height="617" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579648710586" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781463791" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.left" timestamp="1579781463791">
+    <state width="981" height="1289" key="GridCell.Tab.1.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
+    <state width="981" height="1289" key="GridCell.Tab.1.left" timestamp="1579782296608">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
-    <state width="623" height="617" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579648710586" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781463791" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.right" timestamp="1579781463791">
+    <state width="981" height="1289" key="GridCell.Tab.1.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
+    <state width="981" height="1289" key="GridCell.Tab.1.right" timestamp="1579782296608">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
-    <state width="623" height="617" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579648710586" />
-    <state width="1192" height="1036" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781463791" />
-    <state width="981" height="1289" key="GridCell.Tab.1.bottom" timestamp="1579779771800">
-      <screen x="1366" y="0" width="2560" height="1440" />
-    </state>
-    <state width="981" height="1289" key="GridCell.Tab.1.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779771800" />
-    <state width="981" height="1289" key="GridCell.Tab.1.center" timestamp="1579779771800">
-      <screen x="1366" y="0" width="2560" height="1440" />
-    </state>
-    <state width="981" height="1289" key="GridCell.Tab.1.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779771800" />
-    <state width="981" height="1289" key="GridCell.Tab.1.left" timestamp="1579779771800">
-      <screen x="1366" y="0" width="2560" height="1440" />
-    </state>
-    <state width="981" height="1289" key="GridCell.Tab.1.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779771800" />
-    <state width="981" height="1289" key="GridCell.Tab.1.right" timestamp="1579779771800">
-      <screen x="1366" y="0" width="2560" height="1440" />
-    </state>
-    <state width="981" height="1289" key="GridCell.Tab.1.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779771800" />
+    <state width="981" height="1289" key="GridCell.Tab.1.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
     <state x="2066" y="84" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1579779256911">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579527653711" />
     <state x="2066" y="84" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779256911" />
-    <state x="-622" y="27" width="2232" height="1108" maximized="true" key="dock-window-1" timestamp="1579778954601">
+    <state x="-622" y="27" width="2232" height="1108" maximized="true" key="dock-window-1" timestamp="1580041859563">
       <screen x="47" y="27" width="1319" height="741" />
     </state>
-    <state x="111" y="27" width="1160" height="570" maximized="true" key="dock-window-1/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1579648675212" />
+    <state x="111" y="27" width="1160" height="570" maximized="true" key="dock-window-1/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580041859563" />
     <state x="-622" y="27" width="2232" height="1108" maximized="true" key="dock-window-1/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778954601" />
     <state x="1980" y="223" width="1331" height="990" key="find.popup" timestamp="1579781482344">
       <screen x="1366" y="0" width="2560" height="1440" />

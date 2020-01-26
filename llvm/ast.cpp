@@ -1486,102 +1486,280 @@ static llvm::Function* TheReadInteger;
 static llvm::Function* TheReadChar;
 static llvm::Function* TheStrlen;
 static llvm::Function* TheStrcmp;
+static llvm::Function* TheStrcpy;
+static llvm::Function* TheStrcat;
+static llvm::Function* TheShrink;
+static llvm::Function* TheExtend;
+static llvm::Function* TheReadByte;
 
 void declare_dana_libs()
 {
     SymbolEntry* f;
-    std::string func_name = "writeInteger";
-    char* cstr = &func_name[0];
+    std::string func_name;
+    char* cstr;
 
-    f = newFunction(cstr);
-    forwardFunction(f);
-    openScope();
-    insertParameter(cstr, typeInteger, f);
-    endFunctionHeader(f, typeVoid);
-    closeScope();
+    std::string n_str = "n";
+    std::string b_str = "b";
+    std::string s_str = "s";
+    std::string i_str = "i";
+    std::string s1_str = "s1";
+    std::string s2_str = "s2";
+    std::string trg_str = "trg";
+    std::string src_str = "src";
+
+    char* n = &n_str[0];
+    char* b = &b_str[0];
+    char* s = &s_str[0];
+    char* i = &i_str[0];
+    char* s1 = &s1_str[0];
+    char* s2 = &s2_str[0];
+    char* trg = &trg_str[0];
+    char* src = &src_str[0];
 
     // declare void @writeInteger(i32)
-    llvm::FunctionType *writeInteger_type =
-            llvm::FunctionType::get(llvm_void,
-                              std::vector<llvm::Type*>{ llvm_int }, false);
-    TheWriteInteger =
-            llvm::Function::Create(writeInteger_type, llvm::Function::ExternalLinkage,
-                             "writeInteger", TheModule.get());
-
-    func_name = "writeChar";
+    func_name = "writeInteger";
     cstr = &func_name[0];
-
     f = newFunction(cstr);
     forwardFunction(f);
     openScope();
-    insertParameter(cstr, typeChar, f);
+    insertParameter(n, typeInteger, f);
     endFunctionHeader(f, typeVoid);
     closeScope();
 
+    llvm::FunctionType* writeInteger_type =
+            llvm::FunctionType::get(llvm_void,
+                                    std::vector<llvm::Type*>{ llvm_int }, false);
+    TheWriteInteger =
+            llvm::Function::Create(writeInteger_type, llvm::Function::ExternalLinkage,
+                                   "writeInteger", TheModule.get());
+
+    // declare void @writeByte(i8)
+    func_name = "writeByte";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(b, typeChar, f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
+
+    llvm::FunctionType* writeByte_type =
+            llvm::FunctionType::get(llvm_void,
+                                    std::vector<llvm::Type*>{ llvm_byte }, false);
+    TheWriteByte =
+            llvm::Function::Create(writeByte_type, llvm::Function::ExternalLinkage,
+                                   "writeByte", TheModule.get());
+
+
     // declare void @writeChar(i8)
-    llvm::FunctionType *writeChar_type =
+    func_name = "writeChar";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(b, typeChar, f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
+
+    llvm::FunctionType* writeChar_type =
             llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
                                     std::vector<llvm::Type*>{ llvm_byte }, false);
     TheWriteChar =
             llvm::Function::Create(writeChar_type, llvm::Function::ExternalLinkage,
                                    "writeChar", TheModule.get());
 
-
-    // declare void @writeByte(i8)
-    llvm::FunctionType *writeByte_type =
-            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
-                                    std::vector<llvm::Type*>{ llvm_byte }, false);
-    TheWriteByte =
-            llvm::Function::Create(writeByte_type, llvm::Function::ExternalLinkage,
-                                   "writeByte", TheModule.get());
-
     // declare void @writeString(i8*)
-    llvm::FunctionType *writeString_type =
-            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
-                              std::vector<llvm::Type *>{ llvm::PointerType::get(llvm_byte, 0) }, false);
+    func_name = "writeString";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(s, typeIArray(typeChar), f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
+
+    llvm::FunctionType* writeString_type =
+            llvm::FunctionType::get(llvm_void,
+                                    std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0) },
+                                   false);
     TheWriteString =
             llvm::Function::Create(writeString_type, llvm::Function::ExternalLinkage,
-                             "writeString", TheModule.get());
+                                   "writeString", TheModule.get());
 
-    // declare void @readString(i8*)
-    llvm::FunctionType *readString_type =
-            llvm::FunctionType::get(llvm::Type::getVoidTy(TheContext),
-                                    std::vector<llvm::Type *>{ llvm_int, llvm::PointerType::get(llvm_byte, 0) }, false);
-    TheReadString =
-            llvm::Function::Create(readString_type, llvm::Function::ExternalLinkage,
-                                   "readString", TheModule.get());
+    // declare int @readInteger()
+    func_name = "readInteger";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    endFunctionHeader(f, typeInteger);
+    closeScope();
 
-    // declare void @readInteger(i8*)
-    llvm::FunctionType *readInteger_type =
+    llvm::FunctionType* readInteger_type =
             llvm::FunctionType::get(llvm_int,
-                                    std::vector<llvm::Type *>{}, false);
+                                    std::vector<llvm::Type*>{}, false);
     TheReadInteger =
             llvm::Function::Create(readInteger_type, llvm::Function::ExternalLinkage,
                                    "readInteger", TheModule.get());
 
-    // declare void @readChar(i8*)
-    llvm::FunctionType *readChar_type =
+    // declare i8 @readByte()
+    func_name = "readByte";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    endFunctionHeader(f, typeChar);
+    closeScope();
+
+    llvm::FunctionType* readByte_type =
             llvm::FunctionType::get(llvm_byte,
-                                    std::vector<llvm::Type *>{}, false);
+                                    std::vector<llvm::Type*>{}, false);
+    TheReadByte =
+            llvm::Function::Create(readByte_type, llvm::Function::ExternalLinkage,
+                                   "readByte", TheModule.get());
+
+    // declare i8 @readChar()
+    func_name = "readChar";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    endFunctionHeader(f, typeChar);
+    closeScope();
+
+    llvm::FunctionType* readChar_type =
+            llvm::FunctionType::get(llvm_byte,
+                                    std::vector<llvm::Type*>{}, false);
     TheReadChar =
             llvm::Function::Create(readChar_type, llvm::Function::ExternalLinkage,
                                    "readChar", TheModule.get());
 
-    // declare void @strlen(i8*)
-    llvm::FunctionType *strlen_type =
+    // declare void @readString(i32, i8*)
+    func_name = "readString";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(n, typeInteger, f);
+    insertParameter(s, typeIArray(typeChar), f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
+
+    llvm::FunctionType* readString_type =
+            llvm::FunctionType::get(llvm_void,
+                                    std::vector<llvm::Type*>{ llvm_int, llvm::PointerType::get(llvm_byte, 0) },
+                                   false);
+    TheReadString =
+            llvm::Function::Create(readString_type, llvm::Function::ExternalLinkage,
+                                   "readString", TheModule.get());
+
+    // declare int @extend(i8)
+    func_name = "extend";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(b, typeChar, f);
+    endFunctionHeader(f, typeInteger);
+    closeScope();
+
+    llvm::FunctionType* extend_type =
             llvm::FunctionType::get(llvm_int,
-                                    std::vector<llvm::Type *>{ llvm::PointerType::get(llvm_byte, 0) }, false);
+                                    std::vector<llvm::Type*>{ llvm_byte }, false);
+    TheExtend =
+            llvm::Function::Create(extend_type, llvm::Function::ExternalLinkage,
+                                   "extend", TheModule.get());
+
+    // declare byte @shrink(i32)
+    func_name = "shrink";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(i, typeInteger, f);
+    endFunctionHeader(f, typeChar);
+    closeScope();
+
+    llvm::FunctionType* shrink_type =
+            llvm::FunctionType::get(llvm_byte,
+                                    std::vector<llvm::Type*>{ llvm_int }, false);
+    TheShrink =
+            llvm::Function::Create(shrink_type, llvm::Function::ExternalLinkage,
+                                   "shrink", TheModule.get());
+
+    // declare int @strlen(i8*)
+    func_name = "strlen";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(s, typeIArray(typeChar), f);
+    endFunctionHeader(f, typeInteger);
+    closeScope();
+
+    llvm::FunctionType* strlen_type =
+            llvm::FunctionType::get(llvm_int,
+                                    std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0) },
+                                    false);
     TheStrlen =
             llvm::Function::Create(strlen_type, llvm::Function::ExternalLinkage,
                                    "strlen", TheModule.get());
-    //TODO : fix comment
-    // declare void @strlen(i8*)
-    llvm::FunctionType *strcmp_type =
+
+    // declare int @strcmp(i8*, i8*)
+    func_name = "strcmp";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(s1, typeIArray(typeChar), f);
+    insertParameter(s2, typeIArray(typeChar), f);
+    endFunctionHeader(f, typeInteger);
+    closeScope();
+
+    llvm::FunctionType* strcmp_type =
             llvm::FunctionType::get(llvm_int,
-                                    std::vector<llvm::Type *>{ llvm::PointerType::get(llvm_byte, 0), llvm::PointerType::get(llvm_byte, 0) }, false);
+                                    std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0),
+                                                                      llvm::PointerType::get(llvm_byte, 0) },
+                                    false);
     TheStrcmp =
             llvm::Function::Create(strcmp_type, llvm::Function::ExternalLinkage,
                                    "strcmp", TheModule.get());
 
-}
+    // declare void @strcpy(i8*, i8*)
+    func_name = "strcpy";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(trg, typeIArray(typeChar), f);
+    insertParameter(src, typeIArray(typeChar), f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
 
+    llvm::FunctionType* strcpy_type =
+            llvm::FunctionType::get(llvm_void,
+                                    std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0), llvm::PointerType::get(llvm_byte, 0) }, false);
+    TheStrcpy =
+            llvm::Function::Create(strcpy_type, llvm::Function::ExternalLinkage,
+                                   "strcpy", TheModule.get());
+
+    // declare void @strcat(i8*, i8*)
+    func_name = "strcat";
+    cstr = &func_name[0];
+    f = newFunction(cstr);
+    forwardFunction(f);
+    openScope();
+    insertParameter(trg, typeIArray(typeChar), f);
+    insertParameter(src, typeIArray(typeChar), f);
+    endFunctionHeader(f, typeVoid);
+    closeScope();
+
+    llvm::FunctionType* strcat_type =
+            llvm::FunctionType::get(llvm_void,
+                                    std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0), llvm::PointerType::get(llvm_byte, 0) }, false);
+    TheStrcat =
+            llvm::Function::Create(strcat_type, llvm::Function::ExternalLinkage,
+                                   "strcat", TheModule.get());
+
+
+}
