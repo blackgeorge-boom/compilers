@@ -107,7 +107,7 @@ var V is byte
         end
     end
 
-    def main
+    def main2
     var N i M V j is int
     var ans is byte[32]
     begin
@@ -143,5 +143,5 @@ var V is byte
         end
     end
 begin
-    main
+    main2
 end

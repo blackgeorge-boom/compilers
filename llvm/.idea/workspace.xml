@@ -45,28 +45,11 @@
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/bubble_asm.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/bubble_asm.s" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/bubble_ir.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/bubble_ir.ll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/bubble_ir_opt.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/bubble_ir_opt.ll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser_unindent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_unindent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/save_universe_ir.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/save_universe_ir.ll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/gcj2008/cheating_boolean_tree.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/cheating_boolean_tree.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/dana_indent" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/dana_unindent" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/decl_libraries" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/gcj2008/perm_rle.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/perm_rle.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/save_universe.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/save_universe.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/text_messaging_outrage.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/text_messaging_outrage.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/triangle_areas.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/triangle_areas.dna" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/bubble.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/bubble.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/decl_libraries" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/hanoi.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/hanoi.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/hello.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/hello.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/prwtoi.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/prwtoi.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unindented_programs/reverse.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/unindented_programs/reverse.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +103,8 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -129,13 +113,13 @@
       <recent name="$PROJECT_DIR$/cmake-build-debug" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.dana_compiler">
+  <component name="RunManager" selected="CMake Application.dana_compiler_indent">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dana_compiler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/gcj2008/save_universe.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler">
+    <configuration name="dana_compiler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/gcj2008/perm_rle.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -265,7 +249,7 @@
       <workItem from="1580472846718" duration="4159000" />
       <workItem from="1580477616656" duration="46000" />
       <workItem from="1580481934119" duration="2911000" />
-      <workItem from="1580486567854" duration="274000" />
+      <workItem from="1580486567854" duration="4279000" />
     </task>
     <servers />
   </component>
@@ -317,11 +301,19 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="1626" y="51" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1580476823816">
+    <state x="1998" y="121" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1580489029330">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state x="1504" y="27" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580062619967" />
-    <state x="1626" y="51" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580476823816" />
+    <state x="1998" y="121" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489029330" />
+    <state x="2361" y="524" width="559" height="390" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1580489281874">
+      <screen x="1366" y="0" width="2560" height="1440" />
+    </state>
+    <state x="2361" y="524" width="559" height="390" key="#com.intellij.fileTypes.FileTypeChooser/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489281874" />
+    <state x="2382" y="575" width="518" height="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1580489452213">
+      <screen x="1366" y="0" width="2560" height="1440" />
+    </state>
+    <state x="2382" y="575" width="518" height="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489452213" />
     <state x="1466" y="98" width="1150" height="570" maximized="true" key="DiffContextDialog" timestamp="1580061581006">
       <screen x="1366" y="0" width="1360" height="768" />
     </state>
@@ -331,26 +323,26 @@
     </state>
     <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580043421549" />
     <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778365860" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.bottom" timestamp="1580485578266">
+    <state width="1190" height="420" key="GridCell.Tab.0.bottom" timestamp="1580490872788">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580485578266" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.center" timestamp="1580485578266">
+    <state width="1190" height="420" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
+    <state width="1190" height="420" key="GridCell.Tab.0.center" timestamp="1580490872787">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580485578266" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.left" timestamp="1580485578266">
+    <state width="1190" height="420" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872787" />
+    <state width="1190" height="420" key="GridCell.Tab.0.left" timestamp="1580490872786">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580485578266" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.right" timestamp="1580485578266">
+    <state width="1190" height="420" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872786" />
+    <state width="1190" height="420" key="GridCell.Tab.0.right" timestamp="1580490872788">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
-    <state width="1190" height="1289" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580485578266" />
+    <state width="1190" height="420" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
     <state width="512" height="334" key="GridCell.Tab.1.bottom" timestamp="1580070188136">
       <screen x="1366" y="0" width="1360" height="768" />
     </state>
@@ -371,6 +363,10 @@
     </state>
     <state width="512" height="334" key="GridCell.Tab.1.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
     <state width="981" height="1289" key="GridCell.Tab.1.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
+    <state x="2135" y="354" key="SettingsEditor" timestamp="1580489509992">
+      <screen x="1366" y="0" width="2560" height="1440" />
+    </state>
+    <state x="2135" y="354" key="SettingsEditor/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489509992" />
     <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1580069856655">
       <screen x="1366" y="0" width="1360" height="768" />
     </state>
@@ -386,11 +382,11 @@
     </state>
     <state x="1692" y="119" width="707" height="538" key="find.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580067884396" />
     <state x="1980" y="223" width="1331" height="990" key="find.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781482344" />
-    <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup" timestamp="1580483948926">
+    <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup" timestamp="1580489715454">
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state x="369" y="89" width="672" height="678" key="search.everywhere.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580069445980" />
-    <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580483948926" />
+    <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489715454" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

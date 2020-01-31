@@ -1,8 +1,12 @@
 def main
-    def foo
-        writeInteger: 1
-    def bar
-        foo
+    def foo is int
+        return: 1
+    def bar is int
+        return: foo()
     var y i is int
+    var x is byte
     i := 0
-    bar
+    writeInteger: bar()
+    y := readByte()
+    writeByte: y
+

@@ -1238,7 +1238,6 @@ llvm::Value* ast_compile(ast t)
                 }
                 else
                     ArgsV.push_back(StackFrames.back());
-
             }
 
             ast param = t->first;         // First is expr
@@ -1298,13 +1297,26 @@ llvm::Value* ast_compile(ast t)
             std::vector<llvm::Value*> ArgsV;
             auto n = StackFrames.size();
 
-            // TODO: for all lib functions
-            if (strcmp(curr_func_name, t->id) == 0 && n > 1) {
-                llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
-                ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
+            // If function is "main" or one of the lib functions,
+            // there is no parent frame
+            if (strcmp(t->id, "main") != 0 &&
+                std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
+                SymbolEntry* se = lookup(t->id);
+                if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
+                    llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
+                    ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
+                }
+                else
+                    ArgsV.push_back(StackFrames.back());
             }
-            else if (std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names))
-                ArgsV.push_back(StackFrames.back());
+
+            // TODO: for all lib functions
+//            if (strcmp(curr_func_name, t->id) == 0 && n > 1) {
+//                llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
+//                ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
+//            }
+//            else if (std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names))
+//                ArgsV.push_back(StackFrames.back());
 
             ast param = t->first;         // First is expr
             ast param_list = t->second;

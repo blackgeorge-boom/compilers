@@ -83,7 +83,7 @@ var S is byte[1001]
         return: min
     end
 
-    def main
+    def main2
     var N i k ans is int
     begin
         N := readInteger()
@@ -104,5 +104,5 @@ var S is byte[1001]
         end
     end
 begin
-    main
+    main2
 end

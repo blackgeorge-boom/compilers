@@ -1,4 +1,4 @@
-; ModuleID = 'dana program'
+; ModuleID = 'save_universe_ir.ll'
 source_filename = "dana program"
 
 %main_type = type {}
