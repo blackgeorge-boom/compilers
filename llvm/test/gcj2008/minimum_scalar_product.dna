@@ -1,21 +1,4 @@
 def Program
-decl writeInteger: n as int
-decl writeByte: b as byte
-decl writeChar: b as byte
-decl writeString: s as byte[]
-
-decl readInteger is int
-decl readByte is byte
-decl readChar is byte
-decl readString: n as int, s as byte[]
-
-decl extend is int: b as byte
-decl shrink is byte: i as int
-
-decl strlen is int: s as byte[]
-decl strcmp is int: s1 s2 as byte[]
-decl strcpy: trg src as byte[]
-decl strcat: trg src as byte[]
     def work is int: v1 as int[], v2 as int[], n as int
         def ArraySort: x as int[], n as int
             def swap: x y as ref int
@@ -65,7 +48,7 @@ decl strcat: trg src as byte[]
         return: ret
     end
 
-    def main
+    def main2
     var T i n j Y is int
     var v1 v2 is int[8]
     begin
@@ -101,5 +84,5 @@ decl strcat: trg src as byte[]
         end
     end
 begin
-    main
+    main2
 end

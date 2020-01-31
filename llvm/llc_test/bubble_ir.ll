@@ -7,9 +7,9 @@ source_filename = "dana program"
 %writeArray_type = type { %main_type*, [1 x i8]*, i32, [1 x i32]*, i32 }
 
 @str = private unnamed_addr constant [3 x i8] c", \00"
-@str.15 = private unnamed_addr constant [2 x i8] c"\0A\00"
-@str.16 = private unnamed_addr constant [16 x i8] c"Initial array: \00"
-@str.17 = private unnamed_addr constant [15 x i8] c"Sorted array: \00"
+@str.1 = private unnamed_addr constant [2 x i8] c"\0A\00"
+@str.2 = private unnamed_addr constant [16 x i8] c"Initial array: \00"
+@str.3 = private unnamed_addr constant [15 x i8] c"Sorted array: \00"
 
 define void @main() {
 entry:
@@ -63,14 +63,14 @@ ifcont:                                           ; preds = %then
   br label %loop
 
 afterloop:                                        ; preds = %else
-  %str_ptr = getelementptr [16 x i8], [16 x i8]* @str.16, i32 0, i32 0
+  %str_ptr = getelementptr [16 x i8], [16 x i8]* @str.2, i32 0, i32 0
   %12 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 2
   %lvalue_ptr8 = getelementptr [16 x i32], [16 x i32]* %12, i32 0, i32 0
   call void @writeArray(%main_type* %main_frame, i8* %str_ptr, i32 16, i32* %lvalue_ptr8)
   %13 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 2
   %lvalue_ptr9 = getelementptr [16 x i32], [16 x i32]* %13, i32 0, i32 0
   call void @bsort(%main_type* %main_frame, i32 16, i32* %lvalue_ptr9)
-  %str_ptr10 = getelementptr [15 x i8], [15 x i8]* @str.17, i32 0, i32 0
+  %str_ptr10 = getelementptr [15 x i8], [15 x i8]* @str.3, i32 0, i32 0
   %14 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 2
   %lvalue_ptr11 = getelementptr [16 x i32], [16 x i32]* %14, i32 0, i32 0
   call void @writeArray(%main_type* %main_frame, i8* %str_ptr10, i32 16, i32* %lvalue_ptr11)
@@ -104,34 +104,6 @@ declare i32 @strcmp(i8*, i8*)
 declare void @strcpy(i8*, i8*)
 
 declare void @strcat(i8*, i8*)
-
-declare void @writeInteger.1(%main_type*, i32)
-
-declare void @writeByte.2(%main_type*, i8)
-
-declare void @writeChar.3(%main_type*, i8)
-
-declare void @writeString.4(%main_type*, i8*)
-
-declare i32 @readInteger.5(%main_type*)
-
-declare i8 @readByte.6(%main_type*)
-
-declare i8 @readChar.7(%main_type*)
-
-declare void @readString.8(%main_type*, i32, i8*)
-
-declare i32 @extend.9(%main_type*, i8)
-
-declare i8 @shrink.10(%main_type*, i32)
-
-declare i32 @strlen.11(%main_type*, i8*)
-
-declare i32 @strcmp.12(%main_type*, i8*, i8*)
-
-declare void @strcpy.13(%main_type*, i8*, i8*)
-
-declare void @strcat.14(%main_type*, i8*, i8*)
 
 define void @bsort(%main_type* %main_frame, i32 %n, i32* %x) {
 entry:
@@ -342,7 +314,7 @@ ifcont12:                                         ; preds = %ifcont
   br label %loop
 
 afterloop:                                        ; preds = %else
-  %str_ptr13 = getelementptr [2 x i8], [2 x i8]* @str.15, i32 0, i32 0
+  %str_ptr13 = getelementptr [2 x i8], [2 x i8]* @str.1, i32 0, i32 0
   call void @writeString(i8* %str_ptr13)
   ret void
 }

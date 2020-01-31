@@ -1,7 +1,4 @@
 def main
-		decl writeString: s as byte[]
-		decl readInteger is int
-		decl writeInteger: n as int
 
         def bsort: n as int, x as int []
                 def swap: x y as ref int

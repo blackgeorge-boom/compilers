@@ -7,7 +7,6 @@
 #include "logger.h"
 #include "symbol.h"
 
-
 loop_record current_LR = nullptr;
 function_code_list current_CL = nullptr;
 enum {
@@ -16,10 +15,12 @@ enum {
 } func_mode;
 std::vector<char*> func_names;
 char* curr_func_name;
-std::vector<llvm::BasicBlock*> merge_blocks;
+std::vector<std::string> lib_names{"writeInteger", "writeByte", "writeChar", "writeString",
+                                   "readInteger", "readByte", "readChar", "readString",
+                                   "extend", "shrink",
+                                   "strlen", "strcmp", "strcpy", "strcat"};
 
-static ast ast_make(kind k, char* s, int n,
-                     ast first, ast second, ast third, ast last, Type t) {
+static ast ast_make(kind k, char* s, int n, ast first, ast second, ast third, ast last, Type t) {
     ast p;
     if ((p = new struct node) == nullptr)
         exit(1);
@@ -206,7 +207,6 @@ static llvm::Type* llvm_bit = llvm::IntegerType::get(TheContext, 1);
 static llvm::Type* llvm_byte = llvm::IntegerType::get(TheContext, 8);
 static llvm::Type* llvm_int = llvm::IntegerType::get(TheContext, 32);
 static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
-//static Type* i64 = IntegerType::get(TheContext, 64);
 
 // Useful LLVM helper functions.
 inline llvm::ConstantInt* c8(char c) {
@@ -233,6 +233,8 @@ static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function* TheFunction,
     return TmpB.CreateAlloca(VarType, 0, VarName.c_str());
 }
 
+std::vector<llvm::BasicBlock*> merge_blocks;
+
 llvm::Value* ast_compile(ast t)
 {
     if (!t)
@@ -243,6 +245,14 @@ llvm::Value* ast_compile(ast t)
         case PROGRAM:
         {
             openScope();
+
+            // Outer function should be called "main"
+            // Change outer function name to "main" if necessary
+            ast func_def_tree = t->first;
+            char* outer_func_name = func_def_tree->first->id;
+            free(outer_func_name);
+            outer_func_name = (char*)malloc(strlen("main") + 1); // big enough to hold "main"
+            strcpy(outer_func_name, "main");
 
             llvm::Value* V = ast_compile(t->first);
             closeScope();
@@ -1217,8 +1227,10 @@ llvm::Value* ast_compile(ast t)
             std::vector<llvm::Value*> ArgsV;
             auto n = StackFrames.size();
 
-            // TODO: for all lib functions
-            if (strcmp(t->id, "main")!= 0 && strcmp(t->id, "writeInteger") != 0 && strcmp(t->id, "writeString") != 0 && strcmp(t->id, "readString") != 0 && strcmp(t->id, "readChar") != 0 && strcmp(t->id, "writeByte") != 0 && strcmp(t->id, "writeChar") != 0 && strcmp(t->id, "readInteger") != 0 && strcmp(t->id, "strlen") != 0 && strcmp(t->id, "strcmp") != 0) {
+            // If function is "main" or one of the lib functions,
+            // there is no parent frame
+            if (strcmp(t->id, "main") != 0 &&
+                std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
                 SymbolEntry* se = lookup(t->id);
                 if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
@@ -1291,7 +1303,7 @@ llvm::Value* ast_compile(ast t)
                 llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                 ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
             }
-            else if (strcmp(t->id, "writeInteger") != 0 && strcmp(t->id, "writeString") != 0 && strcmp(t->id, "readString") != 0 && strcmp(t->id, "writeByte") != 0 && strcmp(t->id, "readChar") != 0 && strcmp(t->id, "writeChar") != 0 && strcmp(t->id, "readInteger") != 0 && strcmp(t->id, "strlen") != 0 && strcmp(t->id, "strcmp") != 0)
+            else if (std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names))
                 ArgsV.push_back(StackFrames.back());
 
             ast param = t->first;         // First is expr

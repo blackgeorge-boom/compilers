@@ -1,8 +1,5 @@
 def solve
 
-	decl readInteger is int
-	decl writeString: s as byte[]
-
   def hanoi: rings as int, source target auxiliary as byte []
     def move: source target as byte []
     begin

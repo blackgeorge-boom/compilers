@@ -20,7 +20,7 @@ extern int boom;
 ast tree;
 
 struct stack_t {      
-  int top, flag;      
+  int top, flag;
   struct stack_t *next;
 };
 typedef struct stack_t *stack;
@@ -150,11 +150,9 @@ data_type:
   "int" { $$ = typeInteger; }
 | "byte" { $$ = typeChar; }
 
-
 type:
   data_type int_const_list { $$ = ast_type($1, $2); }
 ;
-
 
 fpar_type:
   type { $$ = $1; }
@@ -179,7 +177,7 @@ func_decl:
 
 var_def:
   "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }
-;     
+;
 
 stmt:
   "skip" { $$ = NULL; }
@@ -311,9 +309,12 @@ int main(int argc, char **argv) {
   printf("Compilation was successful.\n");
 
   initSymbolTable(997);
-  ast_sem(tree);
-  printf("Semantic check was successful.\n");
-  print_code_list();
+//  ast_sem(tree);
+//  printf("Semantic check was successful.\n");
+//  print_code_list();
+
+  llvm_compile_and_dump(tree);
+
   destroySymbolTable();
   return 0;
 }

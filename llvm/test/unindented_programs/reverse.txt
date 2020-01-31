@@ -1,6 +1,4 @@
 def main
-		decl writeString: s as byte[]
-		decl strlen is int: s as byte[]
         var r is byte [32]
 
         def reverse: s as byte []

@@ -1,7 +1,4 @@
 def main
-		decl writeString: s as byte[]
-		decl writeInteger: n as int
-		decl readInteger is int
         def prime is byte: n as int
                 var i is int
                 begin

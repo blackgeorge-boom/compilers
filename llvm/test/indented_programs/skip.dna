@@ -1,11 +1,8 @@
 def main
-#    decl writeInteger: b as int
-#    decl writeChar: b as byte
-    #decl writeByte: b as byte
+    def foo
+        writeInteger: 1
+    def bar
+        foo
     var y i is int
     i := 0
-    loop:
-        if i >= 100:
-            break
-        i := i + 1
-        writeInteger: i
+    bar
