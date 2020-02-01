@@ -10,14 +10,7 @@ entry:
   %main_frame = alloca %main_type
   %0 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 1
   store i32 0, i32* %0
-  %fcalltmp = call i32 @bar(%main_type* %main_frame)
-  call void @writeInteger(i32 %fcalltmp)
-  %1 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 2
-  %fcalltmp1 = call i8 @readChar()
-  store i8 %fcalltmp1, i8* %1
-  %2 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 2
-  %rvalue = load i8, i8* %2
-  call void @writeChar(i8 %rvalue)
+  call void @writeByte(i8 99)
   ret void
 }
 

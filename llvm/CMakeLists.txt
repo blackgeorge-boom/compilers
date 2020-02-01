@@ -22,9 +22,11 @@ ADD_FLEX_BISON_DEPENDENCY(Scanner ParserU)
 ADD_FLEX_BISON_DEPENDENCY(Scanner ParserI)
 
 add_executable(dana_compiler ${BISON_ParserU_OUTPUTS} ${FLEX_Scanner_OUTPUTS} ast.cpp ast.h error.c error.h general.c
-               general.h symbol.c symbol.h auxiliary.cpp auxiliary.h logger.cpp logger.h ast_sem.cpp ast_sem.h)
+               general.h symbol.c symbol.h auxiliary.cpp auxiliary.h logger.cpp logger.h ast_sem.cpp ast_sem.h
+               our_libs.h our_libs.cpp)
 add_executable(dana_compiler_indent ${BISON_ParserI_OUTPUTS} ${FLEX_Scanner_OUTPUTS} ast.cpp ast.h error.c error.h general.c
-               general.h symbol.c symbol.h auxiliary.cpp auxiliary.h logger.cpp logger.h ast_sem.cpp ast_sem.h)
+               general.h symbol.c symbol.h auxiliary.cpp auxiliary.h logger.cpp logger.h ast_sem.cpp ast_sem.h
+               our_libs.h our_libs.cpp)
 
 # Set the path to the library folder
 link_directories(/usr/lib/x86_64-linux-gnu/)

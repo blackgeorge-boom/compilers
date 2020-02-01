@@ -6,7 +6,5 @@ def main
     var y i is int
     var x is byte
     i := 0
-    writeInteger: bar()
-    y := readByte()
-    writeByte: y
+    writeByte: 'c'
 

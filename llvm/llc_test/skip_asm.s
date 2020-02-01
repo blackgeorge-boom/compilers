@@ -10,14 +10,8 @@ main:                                   # @main
 .Lcfi0:
 	.cfi_def_cfa_offset 32
 	movl	$0, 12(%rsp)
-	leaq	8(%rsp), %rdi
-	callq	bar
-	movl	%eax, %edi
-	callq	writeInteger
-	callq	readChar
-	movb	%al, 16(%rsp)
-	movl	16(%rsp), %edi
-	callq	writeChar
+	movl	$99, %edi
+	callq	writeByte
 	addq	$24, %rsp
 	retq
 .Lfunc_end0:

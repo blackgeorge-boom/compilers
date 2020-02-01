@@ -44,7 +44,7 @@ if [[ ${file} != "" ]]; then
 	../cmake-build-debug/${compiler} < ${file} 2> ${name}_ir.ll || exit 1
 	opt-5.0 ${opt_flag} ${name}_ir.ll -S -o ${name}_ir_opt.ll
 	llc-5.0 ${opt_flag} ${name}_ir_opt.ll -o ${name}_asm.s
-	clang-5.0 ${name}_asm.s lib.a -o ${name}.out
+	clang-5.0 ${name}_asm.s lib.a ../our_libs.o -o ${name}.out
 
     if [[ ${ir_out} = true ]]; then
         cat ${name}_ir_opt.ll
