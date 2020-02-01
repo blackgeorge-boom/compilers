@@ -16,8 +16,14 @@
 
 * Library of functions
 
+### Technology used
+
+* Flex/Bison for the AST (in C)
+* LLVM for the IR code
+
+### For the [compiler class](https://courses.softlab.ntua.gr/compilers/2017a/) of NTUA
+
 ## Authors
 
 Makaris Nikolaos - 03113108
 Mavrogeorgis Nikolaos - 03113087
-Compilers Ntua 2017

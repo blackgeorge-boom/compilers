@@ -44,15 +44,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/our_libs.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/our_libs.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/do.sh" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/do.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/skip_asm.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/skip_asm.s" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/skip_ir.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/skip_ir.ll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/skip_ir_opt.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/skip_ir_opt.ll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,7 +249,7 @@
       <workItem from="1580481934119" duration="2911000" />
       <workItem from="1580486567854" duration="4279000" />
       <workItem from="1580490919814" duration="75000" />
-      <workItem from="1580552916970" duration="5145000" />
+      <workItem from="1580552916970" duration="6498000" />
     </task>
     <servers />
   </component>
