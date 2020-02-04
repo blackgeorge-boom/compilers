@@ -2,34 +2,31 @@
 source_filename = "dana program"
 
 %main_type = type { i32 }
-%aux_type = type { %main_type* }
 %hanoi_type = type { %main_type*, i32, [1 x i8]*, [1 x i8]*, [1 x i8]* }
 %move_type = type { %hanoi_type*, [1 x i8]*, [1 x i8]* }
 
-@str = private unnamed_addr constant [12 x i8] c"Just saying\00"
-@str.1 = private unnamed_addr constant [13 x i8] c"Moving from \00"
-@str.2 = private unnamed_addr constant [5 x i8] c" to \00"
-@str.3 = private unnamed_addr constant [3 x i8] c".\0A\00"
-@str.4 = private unnamed_addr constant [8 x i8] c"Rings: \00"
-@str.5 = private unnamed_addr constant [5 x i8] c"left\00"
-@str.6 = private unnamed_addr constant [6 x i8] c"right\00"
-@str.7 = private unnamed_addr constant [7 x i8] c"middle\00"
+@str = private unnamed_addr constant [13 x i8] c"Moving from \00"
+@str.1 = private unnamed_addr constant [5 x i8] c" to \00"
+@str.2 = private unnamed_addr constant [3 x i8] c".\0A\00"
+@str.3 = private unnamed_addr constant [8 x i8] c"Rings: \00"
+@str.4 = private unnamed_addr constant [5 x i8] c"left\00"
+@str.5 = private unnamed_addr constant [6 x i8] c"right\00"
+@str.6 = private unnamed_addr constant [7 x i8] c"middle\00"
 
 define void @main() {
 entry:
   %main_frame = alloca %main_type
-  %str_ptr = getelementptr [8 x i8], [8 x i8]* @str.4, i32 0, i32 0
+  %str_ptr = getelementptr [8 x i8], [8 x i8]* @str.3, i32 0, i32 0
   call void @writeString(i8* %str_ptr)
   %0 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 0
   %fcalltmp = call i32 @readInteger()
   store i32 %fcalltmp, i32* %0
   %1 = getelementptr inbounds %main_type, %main_type* %main_frame, i32 0, i32 0
   %rvalue = load i32, i32* %1
-  %str_ptr1 = getelementptr [5 x i8], [5 x i8]* @str.5, i32 0, i32 0
-  %str_ptr2 = getelementptr [6 x i8], [6 x i8]* @str.6, i32 0, i32 0
-  %str_ptr3 = getelementptr [7 x i8], [7 x i8]* @str.7, i32 0, i32 0
+  %str_ptr1 = getelementptr [5 x i8], [5 x i8]* @str.4, i32 0, i32 0
+  %str_ptr2 = getelementptr [6 x i8], [6 x i8]* @str.5, i32 0, i32 0
+  %str_ptr3 = getelementptr [7 x i8], [7 x i8]* @str.6, i32 0, i32 0
   call void @hanoi(%main_type* %main_frame, i32 %rvalue, i8* %str_ptr1, i8* %str_ptr2, i8* %str_ptr3)
-  call void @aux(%main_type* %main_frame)
   ret void
 }
 
@@ -60,16 +57,6 @@ declare i32 @strcmp(i8*, i8*)
 declare void @strcpy(i8*, i8*)
 
 declare void @strcat(i8*, i8*)
-
-define void @aux(%main_type* %main_frame) {
-entry:
-  %aux_frame = alloca %aux_type
-  %0 = getelementptr inbounds %aux_type, %aux_type* %aux_frame, i32 0, i32 0
-  store %main_type* %main_frame, %main_type** %0
-  %str_ptr = getelementptr [12 x i8], [12 x i8]* @str, i32 0, i32 0
-  call void @writeString(i8* %str_ptr)
-  ret void
-}
 
 define void @hanoi(%main_type* %main_frame, i32 %rings, i8* %source, i8* %target, i8* %auxiliary) {
 entry:
@@ -152,19 +139,19 @@ entry:
   %target_pos = getelementptr inbounds %move_type, %move_type* %move_frame, i32 0, i32 2
   %cast1 = bitcast i8* %target to [1 x i8]*
   store [1 x i8]* %cast1, [1 x i8]** %target_pos
-  %str_ptr = getelementptr [13 x i8], [13 x i8]* @str.1, i32 0, i32 0
+  %str_ptr = getelementptr [13 x i8], [13 x i8]* @str, i32 0, i32 0
   call void @writeString(i8* %str_ptr)
   %1 = getelementptr inbounds %move_type, %move_type* %move_frame, i32 0, i32 1
   %temp = load [1 x i8]*, [1 x i8]** %1
   %lvalue_ptr = getelementptr [1 x i8], [1 x i8]* %temp, i32 0, i32 0
   call void @writeString(i8* %lvalue_ptr)
-  %str_ptr2 = getelementptr [5 x i8], [5 x i8]* @str.2, i32 0, i32 0
+  %str_ptr2 = getelementptr [5 x i8], [5 x i8]* @str.1, i32 0, i32 0
   call void @writeString(i8* %str_ptr2)
   %2 = getelementptr inbounds %move_type, %move_type* %move_frame, i32 0, i32 2
   %temp3 = load [1 x i8]*, [1 x i8]** %2
   %lvalue_ptr4 = getelementptr [1 x i8], [1 x i8]* %temp3, i32 0, i32 0
   call void @writeString(i8* %lvalue_ptr4)
-  %str_ptr5 = getelementptr [3 x i8], [3 x i8]* @str.3, i32 0, i32 0
+  %str_ptr5 = getelementptr [3 x i8], [3 x i8]* @str.2, i32 0, i32 0
   call void @writeString(i8* %str_ptr5)
   ret void
 }

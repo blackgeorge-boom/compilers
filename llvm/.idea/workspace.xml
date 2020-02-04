@@ -45,6 +45,10 @@
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/do.sh" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/do.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/hanoi_asm.s" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/hanoi_asm.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/hanoi_ir.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/hanoi_ir.ll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llc_test/hanoi_ir_opt.ll" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/hanoi_ir_opt.ll" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +91,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/ast.cpp" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -250,6 +254,7 @@
       <workItem from="1580486567854" duration="4279000" />
       <workItem from="1580490919814" duration="75000" />
       <workItem from="1580552916970" duration="6498000" />
+      <workItem from="1580837651384" duration="3555000" />
     </task>
     <servers />
   </component>
@@ -323,26 +328,30 @@
     </state>
     <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580560303817" />
     <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778365860" />
-    <state width="1190" height="420" key="GridCell.Tab.0.bottom" timestamp="1580490872788">
-      <screen x="1366" y="0" width="2560" height="1440" />
+    <state width="516" height="872" key="GridCell.Tab.0.bottom" timestamp="1580838937187">
+      <screen x="51" y="27" width="1629" height="1023" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
     <state width="1190" height="420" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
-    <state width="1190" height="420" key="GridCell.Tab.0.center" timestamp="1580490872787">
-      <screen x="1366" y="0" width="2560" height="1440" />
+    <state width="516" height="872" key="GridCell.Tab.0.bottom/51.27.1629.1023@51.27.1629.1023" timestamp="1580838937187" />
+    <state width="516" height="872" key="GridCell.Tab.0.center" timestamp="1580838937186">
+      <screen x="51" y="27" width="1629" height="1023" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872787" />
-    <state width="1190" height="420" key="GridCell.Tab.0.left" timestamp="1580490872786">
-      <screen x="1366" y="0" width="2560" height="1440" />
+    <state width="516" height="872" key="GridCell.Tab.0.center/51.27.1629.1023@51.27.1629.1023" timestamp="1580838937186" />
+    <state width="516" height="872" key="GridCell.Tab.0.left" timestamp="1580838937185">
+      <screen x="51" y="27" width="1629" height="1023" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872786" />
-    <state width="1190" height="420" key="GridCell.Tab.0.right" timestamp="1580490872788">
-      <screen x="1366" y="0" width="2560" height="1440" />
+    <state width="516" height="872" key="GridCell.Tab.0.left/51.27.1629.1023@51.27.1629.1023" timestamp="1580838937185" />
+    <state width="516" height="872" key="GridCell.Tab.0.right" timestamp="1580838937186">
+      <screen x="51" y="27" width="1629" height="1023" />
     </state>
     <state width="512" height="334" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
+    <state width="516" height="872" key="GridCell.Tab.0.right/51.27.1629.1023@51.27.1629.1023" timestamp="1580838937186" />
     <state width="512" height="334" key="GridCell.Tab.1.bottom" timestamp="1580070188136">
       <screen x="1366" y="0" width="1360" height="768" />
     </state>
@@ -367,13 +376,14 @@
       <screen x="1366" y="0" width="2560" height="1440" />
     </state>
     <state x="2135" y="354" key="SettingsEditor/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489509992" />
-    <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1580555887003">
-      <screen x="1366" y="0" width="1360" height="768" />
+    <state x="497" y="87" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1580845368702">
+      <screen x="51" y="27" width="1629" height="1023" />
     </state>
     <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580555887003" />
     <state x="2066" y="84" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779256911" />
-    <state x="-477" y="27" width="2222" height="1108" maximized="true" key="dock-window-1" timestamp="1580384676185">
-      <screen x="47" y="27" width="1319" height="741" />
+    <state x="497" y="87" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/51.27.1629.1023@51.27.1629.1023" timestamp="1580845368702" />
+    <state x="-477" y="27" width="2222" height="1108" maximized="true" key="dock-window-1" timestamp="1580838087813">
+      <screen x="51" y="27" width="1629" height="1023" />
     </state>
     <state x="111" y="27" width="1160" height="570" key="dock-window-1/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188318" />
     <state x="-477" y="27" width="2222" height="1108" maximized="true" key="dock-window-1/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580384676185" />
@@ -382,11 +392,12 @@
     </state>
     <state x="1692" y="119" width="707" height="538" key="find.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580067884396" />
     <state x="1980" y="223" width="1331" height="990" key="find.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781482344" />
-    <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup" timestamp="1580489715454">
-      <screen x="1366" y="0" width="2560" height="1440" />
+    <state x="449" y="112" width="831" height="937" key="search.everywhere.popup" timestamp="1580839690466">
+      <screen x="51" y="27" width="1629" height="1023" />
     </state>
     <state x="369" y="89" width="672" height="678" key="search.everywhere.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580069445980" />
     <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489715454" />
+    <state x="449" y="112" width="831" height="937" key="search.everywhere.popup/51.27.1629.1023@51.27.1629.1023" timestamp="1580839690466" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

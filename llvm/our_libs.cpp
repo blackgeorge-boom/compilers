@@ -5,11 +5,23 @@
 #include <cstdio>
 #include "our_libs.h"
 
-void writeByte(char b)
-{
-    printf("%x", b);
+void writeByte(unsigned char b){
+    std::cout << int(b);
 }
-
+unsigned char readByte(){
+    int c;
+    std::cin >> c;
+    return char(c);
+}
+int extend (unsigned char b){
+    return int(b);
+}
+unsigned char shrink(int i){
+    if (i>255) {
+        i = i%256;
+    }
+    return char(i);
+}
 //char readByte();
 //{
 //
