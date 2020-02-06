@@ -1,19 +1,19 @@
 	.text
-	.file	"hanoi_ir_opt.ll"
-	.globl	main
+	.file	"dana program"
+	.globl	main                    # -- Begin function main
 	.p2align	4, 0x90
 	.type	main,@function
 main:                                   # @main
 	.cfi_startproc
 # BB#0:                                 # %entry
 	pushq	%rax
-.Ltmp0:
+.Lcfi0:
 	.cfi_def_cfa_offset 16
 	movl	$.Lstr.3, %edi
 	callq	writeString
 	callq	readInteger
 	movl	%eax, (%rsp)
-	leaq	(%rsp), %rdi
+	movq	%rsp, %rdi
 	movl	$.Lstr.4, %edx
 	movl	$.Lstr.5, %ecx
 	movl	$.Lstr.6, %r8d
@@ -24,22 +24,22 @@ main:                                   # @main
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
 	.cfi_endproc
-
-	.globl	hanoi
+                                        # -- End function
+	.globl	hanoi                   # -- Begin function hanoi
 	.p2align	4, 0x90
 	.type	hanoi,@function
 hanoi:                                  # @hanoi
 	.cfi_startproc
 # BB#0:                                 # %entry
 	subq	$40, %rsp
-.Ltmp1:
+.Lcfi1:
 	.cfi_def_cfa_offset 48
 	movq	%rdi, (%rsp)
 	movl	%esi, 8(%rsp)
 	movq	%rdx, 16(%rsp)
 	movq	%rcx, 24(%rsp)
 	movq	%r8, 32(%rsp)
-	cmpl	$0, 8(%rsp)
+	testl	%esi, %esi
 	jle	.LBB1_2
 # BB#1:                                 # %then
 	movq	(%rsp), %rdi
@@ -51,7 +51,7 @@ hanoi:                                  # @hanoi
 	callq	hanoi
 	movq	16(%rsp), %rsi
 	movq	24(%rsp), %rdx
-	leaq	(%rsp), %rdi
+	movq	%rsp, %rdi
 	callq	move
 	movq	(%rsp), %rdi
 	movl	8(%rsp), %esi
@@ -66,15 +66,15 @@ hanoi:                                  # @hanoi
 .Lfunc_end1:
 	.size	hanoi, .Lfunc_end1-hanoi
 	.cfi_endproc
-
-	.globl	move
+                                        # -- End function
+	.globl	move                    # -- Begin function move
 	.p2align	4, 0x90
 	.type	move,@function
 move:                                   # @move
 	.cfi_startproc
 # BB#0:                                 # %entry
 	subq	$24, %rsp
-.Ltmp2:
+.Lcfi2:
 	.cfi_def_cfa_offset 32
 	movq	%rdi, (%rsp)
 	movq	%rsi, 8(%rsp)
@@ -94,7 +94,7 @@ move:                                   # @move
 .Lfunc_end2:
 	.size	move, .Lfunc_end2-move
 	.cfi_endproc
-
+                                        # -- End function
 	.type	.Lstr,@object           # @str
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .Lstr:

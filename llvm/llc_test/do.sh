@@ -42,9 +42,9 @@ if [[ ${file} != "" ]]; then
 	echo "Compiling ${name}"
 
 	../cmake-build-debug/${compiler} < ${file} 2> ${name}_ir.ll || exit 1
-	opt-3.9 ${opt_flag} ${name}_ir.ll -S -o ${name}_ir_opt.ll
-	llc-3.9 ${opt_flag} ${name}_ir_opt.ll -o ${name}_asm.s
-	clang-3.9 ${name}_asm.s lib.a -o ${name}.out
+	opt-5.0 ${opt_flag} ${name}_ir.ll -S -o ${name}_ir_opt.ll
+	llc-5.0 ${opt_flag} ${name}_ir_opt.ll -o ${name}_asm.s
+	clang++-5.0 -Wall -Wextra -Werror ${name}_asm.s lib.a our_libs.a -o ${name}.out -ll
 
     if [[ ${ir_out} = true ]]; then
         cat ${name}_ir_opt.ll

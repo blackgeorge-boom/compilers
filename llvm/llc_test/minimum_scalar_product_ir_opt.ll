@@ -1,4 +1,4 @@
-; ModuleID = 'dana program'
+; ModuleID = 'minimum_scalar_product_ir.ll'
 source_filename = "dana program"
 
 %main_type = type {}
