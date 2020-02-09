@@ -72,6 +72,7 @@ def Program
                 v2[j] := readInteger()
                 j := j + 1
             end
+
             Y := work(v1, v2, n)
 
             writeString: "Case #"

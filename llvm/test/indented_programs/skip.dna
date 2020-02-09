@@ -6,7 +6,6 @@ def main
     var y i is int
     var x is byte
     i := 0
-    x := readByte()
-    writeChar: x
-    writeInteger: extend('b')
-    writeChar: shrink(99)
+    y := readInteger()
+    writeInteger: y
+
