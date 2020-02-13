@@ -1,11 +1,11 @@
 def main
-    def foo is int
-        return: 1
-    def bar is int
-        return: foo()
-    var y i is int
-    var x is byte
-    i := 0
-    y := readInteger()
-    writeInteger: y
+    var x is int[3]
+    var i is int
 
+    i := 1
+    x[0] := 1
+    x[1] := 2
+    x[2] := -1
+
+    if x[i] > x[i+1]:
+        writeString: "wwwwwwwwwuuuuuut\n"

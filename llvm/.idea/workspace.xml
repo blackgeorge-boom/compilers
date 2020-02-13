@@ -33,8 +33,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="dana_compiler_indent" />
       <config projectName="dana_llvm" targetName="dana_compiler" />
+      <config projectName="dana_llvm" targetName="dana_compiler_indent" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -45,23 +45,9 @@
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/bubble_asm.s" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/bubble_ir.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/bubble_ir_opt.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/cheating_boolean_tree_ir.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/do.sh" beforeDir="false" afterPath="$PROJECT_DIR$/llc_test/do.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/hanoi_asm.s" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/hanoi_ir.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/hanoi_ir_opt.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/minimum_scalar_product_asm.s" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/minimum_scalar_product_ir.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/minimum_scalar_product_ir_opt.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/perm_rle_asm.s" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/perm_rle_ir.ll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llc_test/perm_rle_ir_opt.ll" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product1.in" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product1.in" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/wordBox.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/wordBox.dna" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -270,7 +256,13 @@
       <workItem from="1580837651384" duration="3555000" />
       <workItem from="1581002493829" duration="10643000" />
       <workItem from="1581263558976" duration="257000" />
-      <workItem from="1581263918013" duration="4669000" />
+      <workItem from="1581263918013" duration="5603000" />
+      <workItem from="1581461271456" duration="394000" />
+      <workItem from="1581461723193" duration="261000" />
+      <workItem from="1581499967868" duration="2180000" />
+      <workItem from="1581513443387" duration="1391000" />
+      <workItem from="1581522075820" duration="6897000" />
+      <workItem from="1581529079881" duration="109000" />
     </task>
     <servers />
   </component>
@@ -347,30 +339,34 @@
     </state>
     <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580560303817" />
     <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778365860" />
-    <state width="532" height="571" key="GridCell.Tab.0.bottom" timestamp="1581257665909">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state width="861" height="585" key="GridCell.Tab.0.bottom" timestamp="1581528987210">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state width="861" height="585" key="GridCell.Tab.0.bottom/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
     <state width="512" height="334" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
     <state width="1190" height="420" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
     <state width="624" height="428" key="GridCell.Tab.0.bottom/47.27.1319.741@47.27.1319.741" timestamp="1581018247491" />
     <state width="532" height="571" key="GridCell.Tab.0.bottom/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="532" height="571" key="GridCell.Tab.0.center" timestamp="1581257665909">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state width="861" height="585" key="GridCell.Tab.0.center" timestamp="1581528987210">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state width="861" height="585" key="GridCell.Tab.0.center/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
     <state width="512" height="334" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872787" />
     <state width="624" height="428" key="GridCell.Tab.0.center/47.27.1319.741@47.27.1319.741" timestamp="1581018247489" />
     <state width="532" height="571" key="GridCell.Tab.0.center/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="532" height="571" key="GridCell.Tab.0.left" timestamp="1581257665908">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state width="861" height="585" key="GridCell.Tab.0.left" timestamp="1581528987210">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state width="861" height="585" key="GridCell.Tab.0.left/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
     <state width="512" height="334" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872786" />
     <state width="624" height="428" key="GridCell.Tab.0.left/47.27.1319.741@47.27.1319.741" timestamp="1581018247488" />
     <state width="532" height="571" key="GridCell.Tab.0.left/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665908" />
-    <state width="532" height="571" key="GridCell.Tab.0.right" timestamp="1581257665909">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state width="861" height="585" key="GridCell.Tab.0.right" timestamp="1581528987210">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state width="861" height="585" key="GridCell.Tab.0.right/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
     <state width="512" height="334" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
     <state width="624" height="428" key="GridCell.Tab.0.right/47.27.1319.741@47.27.1319.741" timestamp="1581018247490" />
@@ -419,9 +415,10 @@
     <state x="1692" y="119" width="707" height="538" key="find.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580067884396" />
     <state x="1980" y="223" width="1331" height="990" key="find.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781482344" />
     <state x="363" y="142" width="707" height="538" key="find.popup/47.27.1319.741@47.27.1319.741" timestamp="1581009671498" />
-    <state x="449" y="112" width="831" height="937" key="search.everywhere.popup" timestamp="1581269329396">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1581525206760">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581525206760" />
     <state x="369" y="89" width="672" height="678" key="search.everywhere.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580069445980" />
     <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489715454" />
     <state x="369" y="89" width="673" height="679" key="search.everywhere.popup/47.27.1319.741@47.27.1319.741" timestamp="1581009927635" />

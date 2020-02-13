@@ -10,32 +10,76 @@ def Program
             end
 
         var changed is byte
-        var i is int
+        var i j is int
         begin
+            j := n - 1
             loop:
             begin
+                if j = 0: begin break end
                 changed := false
                 i := 0
                 loop:
                 begin
-                    if i < n-1:
+                    if i < j:
                     begin
+                        writeString: "i swap: "
+                        writeInteger: i
+                        writeString: ", "
+                        writeInteger: x[i]
+                        writeString: ", "
+                        writeInteger: x[i+1]
+                        writeString: "\n"
+                        if x[i+1] < 0:
+                            begin writeString: "ok so far\n" end
+                        else: begin writeInteger: x[i+1] end
                         if x[i] > x[i+1]:
                         begin
+                            writeString: "Swapping: "
+                            writeInteger: x[i]
+                            writeString: ", "
+                            writeInteger: x[i+1]
+                            writeString: "\n"
                             swap: x[i], x[i+1]
                             changed := true
                         end
-                        i := i+1
+                        else:
+                        begin
+                            writeString: "Noo\n"
+                        end
+                        i := i + 1
                     end
                     else: begin break end
                 end
-                if not changed: begin break end
+                if not changed: begin writeString: "Not changed\n" break end
+                j := j - 1
             end
         end
     var ret i is int
     begin
+        writeString: "\n===Before ===\n"
+        i := 0
+        loop:
+        begin
+            if i = n: begin break end
+            writeInteger: v1[i]
+            writeString: ", "
+            i := i + 1
+        end
+        writeString: "\n======\n"
+
         ArraySort: v1, n
         ArraySort: v2, n
+
+        writeString: "\n===After===\n"
+        i := 0
+        loop:
+        begin
+            if i = n: begin break end
+            writeInteger: v1[i]
+            writeString: ", "
+            i := i + 1
+        end
+        writeString: "\n======\n"
 
         ret := 0
         i := 0
@@ -58,6 +102,10 @@ def Program
         begin
             if i = T: begin break end
             n := readInteger()
+            writeString: "n is: "
+            writeInteger: n
+            writeChar: '\n'
+
             j := 0
             loop:
             begin
@@ -65,6 +113,7 @@ def Program
                 v1[j] := readInteger()
                 j := j + 1
             end
+
             j := 0
             loop:
             begin
