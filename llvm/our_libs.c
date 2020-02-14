@@ -4,6 +4,12 @@
 
 #include <stdio.h>
 
+//int readInteger() {
+//    int n;
+//    scanf("%d", &n);
+//    return n;
+//}
+
 void writeByte(char b) {
     printf("%d", b);
 }

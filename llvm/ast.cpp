@@ -205,7 +205,7 @@ static std::vector<llvm::AllocaInst*> StackFrames;
 // Useful LLVM types.
 static llvm::Type* llvm_bit = llvm::IntegerType::get(TheContext, 1);
 static llvm::Type* llvm_byte = llvm::IntegerType::get(TheContext, 8);
-static llvm::Type* llvm_int = llvm::IntegerType::get(TheContext, 32);
+static llvm::Type* llvm_int = llvm::IntegerType::get(TheContext, 16);
 static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
 
 // Useful LLVM helper functions.
@@ -214,7 +214,7 @@ inline llvm::ConstantInt* c8(char c) {
 }
 
 inline llvm::ConstantInt* c32(int n) {
-  return llvm::ConstantInt::get(TheContext, llvm::APInt(32, n, false));
+  return llvm::ConstantInt::get(TheContext, llvm::APInt(16, n, false));
 }
 
 inline llvm::ConstantPointerNull* llvm_null(llvm::PointerType* llvm_type) {
@@ -1611,6 +1611,7 @@ void declare_dana_libs()
                                    "writeString", TheModule.get());
 
     // declare int @readInteger()
+
     func_name = "readInteger";
     cstr = &func_name[0];
     f = newFunction(cstr);

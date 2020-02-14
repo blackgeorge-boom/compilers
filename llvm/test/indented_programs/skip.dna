@@ -1,11 +1,25 @@
 def main
+    def baz: z as int[]
+        var i is int
+
+        i := 0
+        if z[i] > z[i+1]:
+            writeInteger: z[i]
+            writeString: " is greater than "
+            writeInteger: z[i+1]
+            writeString:"\n"
+        else:
+            writeInteger: z[i+1]
+            writeString: " is greater than "
+            writeInteger: z[i]
+            writeString:"\n"
+
     var x is int[3]
     var i is int
 
     i := 1
-    x[0] := 1
-    x[1] := 2
-    x[2] := -1
+    x[0] := 40000
+    x[1] := readInteger()
+    baz: x
+    writeString: ""
 
-    if x[i] > x[i+1]:
-        writeString: "wwwwwwwwwuuuuuut\n"

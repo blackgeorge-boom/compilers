@@ -33,8 +33,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="dana_compiler" />
       <config projectName="dana_llvm" targetName="dana_compiler_indent" />
+      <config projectName="dana_llvm" targetName="dana_compiler" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -44,10 +44,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/test/gcj2008/msp.in" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/our_libs.c" beforeDir="false" afterPath="$PROJECT_DIR$/our_libs.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/gcj2008/minimum_scalar_product.dna" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/wordBox.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/wordBox.dna" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,22 +107,22 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/llc_test" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/cmake-build-debug" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
   </component>
-  <component name="RunManager" selected="CMake Application.dana_compiler_indent">
+  <component name="RunManager" selected="CMake Application.dana_compiler">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dana_compiler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/unindented_programs/bubble.txt" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler">
+    <configuration name="dana_compiler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/gcj2008/triangle_areas.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -263,6 +265,8 @@
       <workItem from="1581513443387" duration="1391000" />
       <workItem from="1581522075820" duration="6897000" />
       <workItem from="1581529079881" duration="109000" />
+      <workItem from="1581613520548" duration="1371000" />
+      <workItem from="1581690227893" duration="11431000" />
     </task>
     <servers />
   </component>
@@ -314,15 +318,17 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="453" y="113" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1581255561770">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state x="1439" y="88" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1581707141394">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state x="1439" y="88" key="#com.intellij.execution.impl.EditConfigurationsDialog/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581707141394" />
     <state x="1504" y="27" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580062619967" />
     <state x="1998" y="121" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489029330" />
     <state x="453" y="113" key="#com.intellij.execution.impl.EditConfigurationsDialog/51.27.1629.1023@51.27.1629.1023" timestamp="1581255561770" />
-    <state x="685" y="400" width="586" height="390" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1581254428017">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state x="1678" y="383" width="576" height="390" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1581706719832">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state x="1678" y="383" width="576" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581706719832" />
     <state x="2361" y="524" width="559" height="390" key="#com.intellij.fileTypes.FileTypeChooser/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489281874" />
     <state x="560" y="297" width="598" height="210" key="#com.intellij.fileTypes.FileTypeChooser/47.27.1319.741@47.27.1319.741" timestamp="1581006090775" />
     <state x="685" y="400" width="586" height="390" key="#com.intellij.fileTypes.FileTypeChooser/51.27.1629.1023@51.27.1629.1023" timestamp="1581254428017" />
@@ -339,34 +345,34 @@
     </state>
     <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580560303817" />
     <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778365860" />
-    <state width="861" height="585" key="GridCell.Tab.0.bottom" timestamp="1581528987210">
+    <state width="833" height="545" key="GridCell.Tab.0.bottom" timestamp="1581705952616">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="861" height="585" key="GridCell.Tab.0.bottom/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
+    <state width="833" height="545" key="GridCell.Tab.0.bottom/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581705952616" />
     <state width="512" height="334" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
     <state width="1190" height="420" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
     <state width="624" height="428" key="GridCell.Tab.0.bottom/47.27.1319.741@47.27.1319.741" timestamp="1581018247491" />
     <state width="532" height="571" key="GridCell.Tab.0.bottom/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="861" height="585" key="GridCell.Tab.0.center" timestamp="1581528987210">
+    <state width="833" height="545" key="GridCell.Tab.0.center" timestamp="1581705952615">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="861" height="585" key="GridCell.Tab.0.center/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
+    <state width="833" height="545" key="GridCell.Tab.0.center/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581705952615" />
     <state width="512" height="334" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872787" />
     <state width="624" height="428" key="GridCell.Tab.0.center/47.27.1319.741@47.27.1319.741" timestamp="1581018247489" />
     <state width="532" height="571" key="GridCell.Tab.0.center/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="861" height="585" key="GridCell.Tab.0.left" timestamp="1581528987210">
+    <state width="833" height="545" key="GridCell.Tab.0.left" timestamp="1581705952615">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="861" height="585" key="GridCell.Tab.0.left/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
+    <state width="833" height="545" key="GridCell.Tab.0.left/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581705952615" />
     <state width="512" height="334" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872786" />
     <state width="624" height="428" key="GridCell.Tab.0.left/47.27.1319.741@47.27.1319.741" timestamp="1581018247488" />
     <state width="532" height="571" key="GridCell.Tab.0.left/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665908" />
-    <state width="861" height="585" key="GridCell.Tab.0.right" timestamp="1581528987210">
+    <state width="833" height="545" key="GridCell.Tab.0.right" timestamp="1581705952616">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="861" height="585" key="GridCell.Tab.0.right/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581528987210" />
+    <state width="833" height="545" key="GridCell.Tab.0.right/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581705952616" />
     <state width="512" height="334" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
     <state width="624" height="428" key="GridCell.Tab.0.right/47.27.1319.741@47.27.1319.741" timestamp="1581018247490" />
@@ -397,9 +403,10 @@
     <state x="2135" y="354" key="SettingsEditor/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489509992" />
     <state x="344" y="38" key="SettingsEditor/47.27.1319.741@47.27.1319.741" timestamp="1581002716000" />
     <state x="418" y="42" key="SettingsEditor/51.27.1629.1023@51.27.1629.1023" timestamp="1581250582994" />
-    <state x="408" y="70" width="432" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1581010439314">
-      <screen x="47" y="27" width="1319" height="741" />
+    <state x="1484" y="61" width="432" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1581705118656">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state x="1484" y="61" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581705118656" />
     <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580555887003" />
     <state x="2066" y="84" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779256911" />
     <state x="408" y="70" width="432" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741@47.27.1319.741" timestamp="1581010439314" />
@@ -409,16 +416,17 @@
     </state>
     <state x="111" y="27" width="1160" height="570" key="dock-window-1/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188318" />
     <state x="-477" y="27" width="2222" height="1108" maximized="true" key="dock-window-1/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580384676185" />
-    <state x="363" y="142" width="707" height="538" key="find.popup" timestamp="1581009671498">
-      <screen x="47" y="27" width="1319" height="741" />
+    <state x="1426" y="163" width="901" height="763" key="find.popup" timestamp="1581704539198">
+      <screen x="1024" y="0" width="1680" height="1050" />
     </state>
+    <state x="1426" y="163" width="901" height="763" key="find.popup/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581704539198" />
     <state x="1692" y="119" width="707" height="538" key="find.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580067884396" />
     <state x="1980" y="223" width="1331" height="990" key="find.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781482344" />
     <state x="363" y="142" width="707" height="538" key="find.popup/47.27.1319.741@47.27.1319.741" timestamp="1581009671498" />
-    <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1581525206760">
+    <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1581705765398">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581525206760" />
+    <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581705765398" />
     <state x="369" y="89" width="672" height="678" key="search.everywhere.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580069445980" />
     <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489715454" />
     <state x="369" y="89" width="673" height="679" key="search.everywhere.popup/47.27.1319.741@47.27.1319.741" timestamp="1581009927635" />

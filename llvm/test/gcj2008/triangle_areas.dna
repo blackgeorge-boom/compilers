@@ -47,7 +47,7 @@ def program
         y[2]:=0 loop: begin if y[2] > M: begin break end
             if MathAbs(x[1] * y[2] - x[2] * y[1]) = A:
             begin
-                strcpy: ret, ""
+                strcpy: ret, " "
                 #toString: x[0], tmp 
                 strcat: ret, tmp strcat: ret, " "
                 #toString: y[0], tmp strcat: ret, tmp strcat: ret, " "
@@ -64,7 +64,7 @@ def program
         strcpy: ret, "IMPOSSIBLE"
     end
 
-    def main
+    def main2
     var C i N M A is int
     var ans is byte[32]
     begin
@@ -89,5 +89,5 @@ def program
     end
 
 begin
-    main
+    main2
 end
