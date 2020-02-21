@@ -76,7 +76,8 @@ var S is byte[1001]
         end
 
     begin
-        min := 1073741823
+#        min := 1073741823
+        min := 32767
         s_length := strlen(S)
         go: 0
 

@@ -65,23 +65,28 @@ def Program
         return: res
     end
 
-    def main
+    def main2
     var i j N P K L Y is int
     var freq is int[100]
     begin
         N := readInteger()
+#        writeInteger: N
         i := 0
         loop:
         begin
             if i = N: begin break end
             P := readInteger()
+#           writeInteger: P
             K := readInteger()
+           writeInteger: K
             L := readInteger()
+            writeInteger: L
             j := 0
             loop:
             begin
                 if j = L: begin break end
                 freq[j] := readInteger()
+#                writeInteger: freq[j]
                 j := j + 1
             end
 
@@ -96,5 +101,5 @@ def Program
         end
     end
 begin
-    main
+    main2
 end

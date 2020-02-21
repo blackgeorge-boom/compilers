@@ -10,7 +10,7 @@
 //    return n;
 //}
 
-void writeByte(char b) {
+void writeByte(unsigned char b) {
     printf("%d", b);
 }
 
@@ -26,7 +26,7 @@ int extend(unsigned char b) {
 }
 
 unsigned char shrink(int i) {
-    char res = i;
+    unsigned char res = i;
     if (i > 255) {
         res = i % 256;
     }

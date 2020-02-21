@@ -26,6 +26,9 @@ def program
                 i := i - 1
                 j := j + 1
             end
+            writeString: "ret: "
+            writeChar: ret[0]
+            writeString: "\n"
         end
 
         def MathAbs is int: x as int
@@ -83,6 +86,9 @@ def program
             writeInteger: i+1
             writeString: ": "
             writeString: ans
+            writeString: "-"
+            writeChar: ans[1]
+            writeString: " "
             writeString: "\n"
             i := i + 1
         end

@@ -14,12 +14,12 @@ def main
             writeInteger: z[i]
             writeString:"\n"
 
-    var x is int[3]
+    var x is int[4]
     var i is int
+    var b is byte
 
     i := 1
-    x[0] := 40000
-    x[1] := readInteger()
-    baz: x
-    writeString: ""
-
+    b := readByte()
+    writeInteger: extend(b)
+    writeChar: b
+    writeByte: b
