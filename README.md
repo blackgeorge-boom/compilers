@@ -21,6 +21,34 @@
 * Flex/Bison for the AST (in C)
 * LLVM for the IR code
 
+### Dependencies
+
+* flex
+* bison
+* llvm-3.9
+* clang-3.9/clang++-3.9
+
+### Build
+
+```shell script
+cd llvm
+mkdir build-dir
+cmake ..
+make
+```
+
+### Run
+
+```shell script
+
+./dana [-indent] [-Olevel] [-i] [-f] inputfile
+
+-indent   Offside rule trigger
+-Olevel   O[0-3] optimisation flag
+-i        Output LLVM code
+-f        Output assembly code
+```
+
 ### For the [compiler class](https://courses.softlab.ntua.gr/compilers/2017a/) of NTUA
 
 ## Authors
