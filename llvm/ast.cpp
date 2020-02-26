@@ -240,6 +240,8 @@ static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function* TheFunction,
     return TmpB.CreateAlloca(VarType, 0, VarName.c_str());
 }
 
+// A vector that holds the merge blocks, needed for the if, elif, if_else statements.
+// We use a vector and not a single basic block because we could have nested if, elif, if_else statements.
 std::vector<llvm::BasicBlock*> merge_blocks;
 
 llvm::Value* ast_compile(ast t)
@@ -443,15 +445,15 @@ llvm::Value* ast_compile(ast t)
         }
         case HEADER:
         {
-            /*
-             * HEADER
-             * The header of a function definition or declaration.
-             *
-             * t-> id is the name of the function.
-             * t-> first is the first batch of function parameters(fpar_def).
-             * t-> second is the list of the other batches of function parameters(fpar_def_list).
-             * t-> type is the type of the function.
-             */
+        /*
+         * HEADER
+         * The header of a function definition or declaration.
+         *
+         * t-> id is the name of the function.
+         * t-> first is the first batch of function parameters(fpar_def).
+         * t-> second is the list of the other batches of function parameters(fpar_def_list).
+         * t-> type is the type of the function.
+         */
             Type func_type = typeVoid;  // The symbolic type of the function.
             llvm::Type* llvm_func_type = llvm_void;  // The llvm type of the function.
 
@@ -485,12 +487,12 @@ llvm::Value* ast_compile(ast t)
             llvm::Type* llvm_par_ty= llvm_void;
 
             while (par_def != nullptr) {
-                /* The parameter definition batch (fpar_def):
-                 *
-                 * t -> id is a name of the first parameter
-                 * t -> first is a list of all the other parameters in the batch(if they exist).
-                 * t -> second is the type of these function parameters
-                 */
+            /* The parameter definition batch (fpar_def):
+             *
+             * t -> id is a name of the first parameter
+             * t -> first is a list of all the other parameters in the batch(if they exist).
+             * t -> second is the type of these function parameters
+             */
                 // Compile the par_def->second in order to find the fpar_type.
                 ast_compile(par_def->second);           // Second is fpar_type
                 par_type = par_def->second->type;
@@ -522,8 +524,8 @@ llvm::Value* ast_compile(ast t)
                 fpar_def_list = fpar_def_list->second; // The rest of the list of batches.
             }
 
-            endFunctionHeader(f, func_type);  // Finilize function in Symbol table
-            // Create function in llvm
+            endFunctionHeader(f, func_type);  // Finilize function in Symbol table.
+            // Create function in llvm.
             llvm::FunctionType* FT =
                     llvm::FunctionType::get(llvm_func_type, Params, false);
 
@@ -537,10 +539,18 @@ llvm::Value* ast_compile(ast t)
                 Arg.setName(Args[Idx++]);
             }
 
-            return F;
+            return F;  // Return the function.
         }
         case SEQ:
         {
+        /*
+         * SEQUENCE
+         * Compile
+         * t->first and then t->second
+         * whatever they are. They can be:
+         * local_def local_def_list, fpar_def fpar_def_list, stmt stmt_list, expr expr_list,
+         * respectively.
+         */
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
@@ -555,40 +565,68 @@ llvm::Value* ast_compile(ast t)
         }
         case TYPE:
         {
+        /*
+         * TYPE
+         * Set t->type correctly with var_def_type function.
+         */
             t->type = var_def_type(t->type, t->first);
             return nullptr;
         }
         case REF_TYPE:
         {
+        /*
+         * REFERENCE TYPE
+         * Set t->type pointer of datatype.
+         */
             t->type = typePointer(t->type);
             return nullptr;
         }
         case IARRAY_TYPE:
         {
+        /*
+         * UKNOWN SIZE ARRAY TYPE
+         * Set t->type correctly with var_def_type function
+         * and then set it to unknown size array type.
+         */
             Type my_type = var_def_type(t->type, t->first);
             t->type = typeIArray(my_type);
             return nullptr;
         }
         case CONST:
         {
+        /*
+         * CONSTANT
+         * Set type as integer for symbol table and
+         * constant int of 16 bits in llvm.
+         */
             t->type = typeInteger;
             return c16(t->num);
         }
         case CHAR:
         {
+        /*
+        * CHARACTER
+        * Set type as character for symbol table and
+        * constant int of 8 bits(1 byte) in llvm.
+        */
             t->type = typeChar;
             return c8(t->num);
         }
 
-        // TODO: check if works
         case IF:
         {
-            llvm::Value* CondV = ast_compile(t->first);
+        /*
+         * IF STATEMENT (without an else)
+         * t->first is the condition of the if statement.
+         * t->second is a block (sequence of statements).
+         * t->third is an elif_list (list of elif statements).
+         */
+            llvm::Value* CondV = ast_compile(t->first);  // Compile the condition.
 
             if (!CondV)
                 return nullptr;
-
             Type expr_type = t->first->type;
+            // Check if condition is an integer or a character.
             if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
 
@@ -603,49 +641,57 @@ llvm::Value* ast_compile(ast t)
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
-            // Create blocks for the then and else cases.  Insert the 'then' block at the
+            // Create blocks for the then and elif cases.  Insert the 'then' block at the
             // end of the function.
-            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "then", TheFunction); // ??
+            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "then", TheFunction);
             llvm::BasicBlock* ElifBB = llvm::BasicBlock::Create(TheContext, "elif");
             llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "ifcont");
 
-            merge_blocks.push_back(MergeBB);
+            merge_blocks.push_back(MergeBB); // Push to merge_blocks.
 
-            Builder.CreateCondBr(CondV, ThenBB, ElifBB);
+            Builder.CreateCondBr(CondV, ThenBB, ElifBB); // Create a conditional branch.
 
             // Emit then value.
             Builder.SetInsertPoint(ThenBB);
 
-            // Generate code for "then" block
-            llvm::Value* ExitStmt = ast_compile(t->second);
-
+            // Generate code for "then" block.
+            llvm::Value* ExitStmt = ast_compile(t->second); // Compile sequence of statements.\
+                                                              The llvm::Value of the last statement is returned.
+            // Only escape statements return a non-null value. These are: EXIT, RETURN, CONTINUE, BREAK.
             if (!ExitStmt)
                 Builder.CreateBr(MergeBB);
 
             // Emit elif block.
-            TheFunction->getBasicBlockList().push_back(ElifBB); // ??
+            TheFunction->getBasicBlockList().push_back(ElifBB); // TODO: WHAT TO WRITE HERE?
             Builder.SetInsertPoint(ElifBB);
 
             // Generate code for "elif list" blocks
             ast_compile(t->third);
 
-            Builder.CreateBr(MergeBB);
+            Builder.CreateBr(MergeBB);  // Create branch to the merge basic block.
 
             // Emit merge block.
-            TheFunction->getBasicBlockList().push_back(MergeBB); // ??
+            TheFunction->getBasicBlockList().push_back(MergeBB);
             Builder.SetInsertPoint(MergeBB);
 
-            merge_blocks.pop_back();
+            merge_blocks.pop_back(); // Remove this last merge basic block.
             return nullptr;
         }
         case ELIF:
         {
-            llvm::Value* CondV = ast_compile(t->first);
+        /*
+        * ELIF STATEMENT
+        * t->first is the condition of the elif statement.
+        * t->second is a block (sequence of statements).
+        * t->third is an elif_list (list of elif statements).
+        */
+            llvm::Value* CondV = ast_compile(t->first); // Compile the condition.
 
             if (!CondV)
                 return nullptr;
 
             Type expr_type = t->first->type;
+            // Check if condition is an integer or a character.
             if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
 
@@ -662,51 +708,62 @@ llvm::Value* ast_compile(ast t)
 
             // Create blocks for the then and else cases.  Insert the 'then' block at the
             // end of the function.
-            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "elifthen", TheFunction); // ??
+            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "elifthen", TheFunction);
             llvm::BasicBlock* ElifBB = llvm::BasicBlock::Create(TheContext, "elif");
             llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "elifcont");
 //            llvm::BasicBlock* MergeBB = Builder.GetInsertBlock();
 
-            Builder.CreateCondBr(CondV, ThenBB, ElifBB);
+            Builder.CreateCondBr(CondV, ThenBB, ElifBB); // Create a conditional branch.
 
             // Emit then value.
             Builder.SetInsertPoint(ThenBB);
 
             // Generate code for "elifthen" block
-            auto ElifExitStmt = static_cast<llvm::ConstantInt *>(ast_compile(t->second));
-
+            auto ElifExitStmt = static_cast<llvm::ConstantInt *>(ast_compile(t->second));// Compile sequence of statements.\
+                                                                                            The llvm::Value of the last statement is returned.
+            // Only escape statements return a value. These are: EXIT, RETURN, CONTINUE, BREAK.
             if (!ElifExitStmt)
                 Builder.CreateBr(merge_blocks.back());
 
             // Emit else block.
-            TheFunction->getBasicBlockList().push_back(ElifBB); // ??
+            TheFunction->getBasicBlockList().push_back(ElifBB);
             Builder.SetInsertPoint(ElifBB);
 
             // Generate code for "elif list" blocks
-            auto ElifListExitStmt = static_cast<llvm::ConstantInt *>(ast_compile(t->third));
+            auto ElifListExitStmt = static_cast<llvm::ConstantInt *>(ast_compile(t->third));// Compile sequence of statements.\
+                                                                                                The llvm::Value of the last statement is returned.
 
-            Builder.CreateBr(MergeBB);
+            Builder.CreateBr(MergeBB);  // Create branch to MergeBB.
 
             // Emit merge block.
-            TheFunction->getBasicBlockList().push_back(MergeBB); // ??
+            TheFunction->getBasicBlockList().push_back(MergeBB);
             Builder.SetInsertPoint(MergeBB);
 
-            if (t->third == nullptr)
+            if (t->third == nullptr) // No more elif statements. So return the value of the last elif statement.
                 return ElifExitStmt;
             else if (ElifExitStmt != nullptr && ElifListExitStmt != nullptr &&
                      ElifExitStmt->getSExtValue() == 0 && ElifListExitStmt->getSExtValue() == 0)
+                //  That means that all of the elif statements return either EXIT or RETURN
                 return c16(0);
             else return nullptr;
 
         }
         case IF_ELSE:
         {
-            llvm::Value* CondV = ast_compile(t->first);
+        /*
+         * IF STATEMENT (without an else)
+         * t->first is the condition of the if statement.
+         * t->second is the block(sequence of statements) of the if statement.
+         * t->third is an elif_list (list of elif statements).
+         * t->last is the block(sequence of statements) of the else statement.
+         */
+            llvm::Value* CondV = ast_compile(t->first);  // Compile the condition.
 
             if (!CondV)
                 return nullptr;
 
             Type expr_type = t->first->type;
+            // Check if condition is an integer or a character.
             if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
 
@@ -721,55 +778,58 @@ llvm::Value* ast_compile(ast t)
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
-            // Create blocks for the then and else cases.  Insert the 'then' block at the
+            // Create blocks for the then, elif and else cases.  Insert the 'then' block at the
             // end of the function.
-            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "then", TheFunction); // ??
+            llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "then", TheFunction);
             llvm::BasicBlock* ElifBB = llvm::BasicBlock::Create(TheContext, "elif");
             llvm::BasicBlock* ElseBB = llvm::BasicBlock::Create(TheContext, "else");
             llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "ifcont");
 
-            merge_blocks.push_back(MergeBB);
+            merge_blocks.push_back(MergeBB);  // Push to merge_blocks.
 
-            Builder.CreateCondBr(CondV, ThenBB, ElifBB);
+            Builder.CreateCondBr(CondV, ThenBB, ElifBB); // Create a conditional branch.
 
             // Emit then value.
             Builder.SetInsertPoint(ThenBB);
 
             // Generate code for "then" block
-            auto ThenExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->second));
-
+            auto ThenExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->second));// Compile sequence of statements.\
+                                                                                           The llvm::Value of the last statement is returned.
+            // Only escape statements return a non-null value. These are: EXIT, RETURN, CONTINUE, BREAK.
             if (!ThenExitStmt)
                 // Create branch to "ifcont"
                 Builder.CreateBr(MergeBB);
 
             // Emit elif block.
-            TheFunction->getBasicBlockList().push_back(ElifBB); // ??
+            TheFunction->getBasicBlockList().push_back(ElifBB);
             Builder.SetInsertPoint(ElifBB);
 
             // Generate code for "elif list" blocks
             auto ElifExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->third));
 
-            if (t->third == nullptr) ElifExitStmt = c16(0);
+            if (t->third == nullptr) ElifExitStmt = c16(0); // If there is no elif, then we regard it as an exit stmt. TODO: WHY?
 
-            Builder.CreateBr(ElseBB);
+            Builder.CreateBr(ElseBB);  // Create branch to the else basic block.
 
             // Emit else block.
-            TheFunction->getBasicBlockList().push_back(ElseBB); // ??
+            TheFunction->getBasicBlockList().push_back(ElseBB);
             Builder.SetInsertPoint(ElseBB);
 
             // Generate code for "else" block
-            auto ElseExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->last));
+            auto ElseExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->last));// Compile sequence of statements.\
+                                                                                         The llvm::Value of the last statement is returned.
+            // Only escape statements return a non-null value. These are: EXIT, RETURN, CONTINUE, BREAK.
 
             if (!ElseExitStmt)
                 // Create branch to "ifcont"
                 Builder.CreateBr(MergeBB);
 
            // Emit merge block.
-            TheFunction->getBasicBlockList().push_back(MergeBB); // ??
+            TheFunction->getBasicBlockList().push_back(MergeBB);
             Builder.SetInsertPoint(MergeBB);
 
-            merge_blocks.pop_back();
-
+            merge_blocks.pop_back(); // Remove this last merge basic block.
+            // If all the returned statements are EXIT or RETURN then "if cont" will never be reached so create unreachable.
             if (ThenExitStmt != nullptr && ElifExitStmt != nullptr && ElseExitStmt != nullptr &&
                 ThenExitStmt->getSExtValue() == ElifExitStmt->getSExtValue() == ElseExitStmt->getSExtValue() == 0) {
                 Builder.CreateUnreachable();
@@ -780,34 +840,42 @@ llvm::Value* ast_compile(ast t)
         }
         case LOOP:
         {
+        /*
+         * LOOP STATEMENT
+         * t->id is the name of the loop(can be null).
+         * t->first is the block(sequence of statements) of the loop.
+         */
             if (t->id != nullptr)
                 if (look_up_loop(t->id)) {
                     error("Loop identifier already exists!\n");
                     exit(1);
                 }
-            auto new_LR = new struct loop_record_tag;
+            auto new_LR = new struct loop_record_tag; // Create new loop record.
+            // Add it to the linked list.
             new_LR->id = t->id;
             new_LR->previous = current_LR;
 
-            // Make the new basic block for the loop header, inserting after current
-            // block.
+            // Make the new basic block for the loop header, inserting after current block.
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
             llvm::BasicBlock* LoopBB =
                     llvm::BasicBlock::Create(TheContext, "loop", TheFunction);
             llvm::BasicBlock* AfterBB =
                     llvm::BasicBlock::Create(TheContext, "afterloop");
 
-            Builder.CreateBr(LoopBB);
+            Builder.CreateBr(LoopBB); // Create branch to loop basic block.
 
             // Start insertion in LoopBB.
             Builder.SetInsertPoint(LoopBB);
 
+            // Add the basic blocks to the loop record list.
             new_LR->loop_block = LoopBB;
             new_LR->after_block = AfterBB;
-            current_LR = new_LR;
+            current_LR = new_LR; // Set pointer of current loop record.
 
             // Emit the body of the loop.
-            auto ExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->first));
+            auto ExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->first));  // Compile sequence of statements.\
+                                                                                        The llvm::Value of the last statement is returned.
+            // Only escape statements return a non-null value. These are: EXIT, RETURN, CONTINUE, BREAK.
 
             if (!ExitStmt) {
                 // Insert the unconditional branch into the end of LoopBB.
@@ -818,9 +886,10 @@ llvm::Value* ast_compile(ast t)
             // Any new code will be inserted in AfterBB.
             Builder.SetInsertPoint(AfterBB);
 
-            current_LR = current_LR->previous;
+            current_LR = current_LR->previous; // Set pointer of current loop record.
             free(new_LR);
 
+            // If the returned statements is EXIT or RETURN then AfterBB will never be reached, so create unreachable.
             if (ExitStmt != nullptr && ExitStmt->getSExtValue() == 0) {
                 Builder.CreateUnreachable();
                 return c16(0);
@@ -831,57 +900,75 @@ llvm::Value* ast_compile(ast t)
         case FPAR_DEF:break;
         case BREAK:
         {
+        /*
+         * BREAK STATEMENT
+         * t->id(can be null) is the name of the loop to be broken out of.
+         */
             loop_record lr;
-            if (t->id != nullptr) {
-                lr = look_up_loop(t->id);
+            if (t->id != nullptr) {  // If break statement has a name.
+                lr = look_up_loop(t->id);  // Find the loop.
                 if (!lr) {
                     error("Loop identifier does not exist!\n");
                     exit(1);
                 }
-                Builder.CreateBr(lr->after_block);
-                return c16(1);
+                Builder.CreateBr(lr->after_block);  // Create branch to after block of the selected loop.
+                return c16(1);  // Escape statement
             }
             else if (current_LR == nullptr)
                 error("No loop to break");
             else {
-                Builder.CreateBr(current_LR->after_block);
-                return c16(1);
+                Builder.CreateBr(current_LR->after_block); // Create branch to after block of the current loop.
+                return c16(1);  // Escape statement
             }
         }
         case CONTINUE:
         {
+        /*
+        * CONTINUE STATEMENT
+        * t->id(can be null) is the name of the loop to continue from.
+        */
             loop_record lr;
-            if (t->id != nullptr) {
-                lr = look_up_loop(t->id);
+            if (t->id != nullptr) {  // If break statement has a name.
+                lr = look_up_loop(t->id);  // Find the loop.
                 if (!lr) {
                     error("Loop identifier does not exist!\n");
                     exit(1);
                 }
-                Builder.CreateBr(lr->loop_block);
-                return c16(1);
+                Builder.CreateBr(lr->loop_block);  // Create branch to loop block of the selected loop.
+                return c16(1);  // Escape statement
             }
             else if (current_LR == nullptr)
                 error("No loop to continue");
             else {
-                Builder.CreateBr(current_LR->loop_block);
-                return c16(1);
+                Builder.CreateBr(current_LR->loop_block);  // Create branch to loop block of the current loop.
+                return c16(1);  // Escape statement
             }
         }
         case EXIT:
         {
-            SymbolEntry* curr_func = lookup(curr_func_name);
+        /*
+         * EXIT STATEMENT
+         */
+            SymbolEntry* curr_func = lookup(curr_func_name);  // Find the procedure in the Symbol entry.
+            // Check if it is a procedure(has no return value).
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = typeVoid;
             check_result_type(curr_func_type, return_type, curr_func_name);
 
-            Builder.CreateRetVoid();
+            Builder.CreateRetVoid();  // Create a return void.
 
-            return c16(0);
+            return c16(0);  // Escape but also terminating statement
         }
         case RETURN:
         {
+        /*
+         * RETURN STATEMENT
+         * t->first is an expression
+         */
+            // Compile the expression.
             llvm::Value* RetV = ast_compile(t->first);
-            SymbolEntry* curr_func = lookup(curr_func_name);
+            SymbolEntry* curr_func = lookup(curr_func_name);  // Find the function in the Symbol entry.
+            // Check if the type of the expression is the same as that of the function.
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = t->first->type;
             check_result_type(curr_func_type, return_type, curr_func_name);
@@ -890,9 +977,9 @@ llvm::Value* ast_compile(ast t)
             if (equalType(curr_func_type, typeInteger) && equalType(return_type, typeChar))
                 RetV = Builder.CreateIntCast(RetV, llvm_int, true);
 
-            Builder.CreateRet(RetV);
+            Builder.CreateRet(RetV); // Create return value.
 
-            return c16(0);
+            return c16(0);  // Escape but also terminating statement
         }
         case TRUE:
         {
