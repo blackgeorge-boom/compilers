@@ -7,19 +7,26 @@
 #include "logger.h"
 #include "symbol.h"
 
+// Keep the loop records.
 loop_record current_LR = nullptr;
+// Save a code list of every function.
 function_code_list current_CL = nullptr;
+// A flag for function mode.
 enum {
     FUNC_DECLARATION,
     FUNC_DEFINITION
 } func_mode;
+// A vector of all the functions that we are inside of.
 std::vector<char*> func_names;
+// The current function name
 char* curr_func_name;
+// A vector of all the function names that are defined in our library
 std::vector<std::string> lib_names{"writeInteger", "writeByte", "writeChar", "writeString",
                                    "readInteger", "readByte", "readChar", "readString",
                                    "extend", "shrink",
                                    "strlen", "strcmp", "strcpy", "strcat"};
-
+// With ast make we create the abstract syntax tree (ast)
+// Not every item of the struct ast will have a value. Some will be null pointer.
 static ast ast_make(kind k, char* s, int n, ast first, ast second, ast third, ast last, Type t) {
     ast p;
     if ((p = new struct node) == nullptr)
@@ -213,7 +220,7 @@ inline llvm::ConstantInt* c8(char c) {
   return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, false));
 }
 
-inline llvm::ConstantInt* c32(int n) {
+inline llvm::ConstantInt* c16(int n) {
   return llvm::ConstantInt::get(TheContext, llvm::APInt(16, n, false));
 }
 
@@ -242,8 +249,15 @@ llvm::Value* ast_compile(ast t)
 
     switch (t->k) {
 
+
         case PROGRAM:
         {
+            /* PROGRAM
+             * Case program is only reached at the beginning of ast_compile
+             * So the function name is (or is converted to main)
+             *
+             * t->first is the definition of main function (FUNC_DEF).
+             */
             openScope();
 
             // Outer function should be called "main"
@@ -260,26 +274,42 @@ llvm::Value* ast_compile(ast t)
         }
         case FUNC_DECL:
         {
-            func_mode = FUNC_DECLARATION;
+            /* FUNCTION DECLARATION
+             * The declaration of a function.
+             *
+             * t->first is the header (HEADER)
+             */
+            func_mode = FUNC_DECLARATION; // Set the flag for header
 
-            llvm::Function* V = static_cast<llvm::Function*>(ast_compile(t->first));
+            llvm::Function* V = static_cast<llvm::Function*>(ast_compile(t->first)); // Compile the header
             closeScope();
 
             return nullptr;
         }
+
         case FUNC_DEF:
         {
-            func_mode = FUNC_DEFINITION;
+            /*
+             * FUNCTION DEFINITION
+             * The definition of a function.
+             *
+             * t->first is the header (HEADER)
+             * t->second is the local definition list(local_def_list),
+             *           which is a sequence of local_defs, meaning FUNC_DEF, FUNC_DECL, VAR_DEF.
+             * t->third is the sequence of statements
+             */
+            func_mode = FUNC_DEFINITION;  // Set the flag for header
 
-            curr_func_name = t->first->id;
-            func_names.push_back(curr_func_name);
+            curr_func_name = t->first->id;  // Set the current function name
+            func_names.push_back(curr_func_name);  // Put the function name on the function name list
 
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
 
-            if (!TheFunction)
+            if (!TheFunction)   // If the function is not previously declared, we create it from scratch,\
+                                // by compiling the header.
                 TheFunction = static_cast<llvm::Function*>(ast_compile(t->first));
             else
-                ast_compile(t->first);
+                ast_compile(t->first);  // Else we just compile the header.
 
             if (!TheFunction)
                 return nullptr;
@@ -287,49 +317,54 @@ llvm::Value* ast_compile(ast t)
             if (!TheFunction->empty())
                 return (llvm::Function*)LogErrorV("Function cannot be redefined.") ;
 
-            if (StackFrames.empty())
+            if (StackFrames.empty()) // That means this is the definition of main.
                 currentScope->negOffset = 0;
-
+            // Save the last basic block, in order to return to it.
             llvm::BasicBlock* OldBB = Builder.GetInsertBlock();
 
             // Create a new basic block to start insertion into.
             llvm::BasicBlock* BB = llvm::BasicBlock::Create(TheContext, "entry", TheFunction);
             Builder.SetInsertPoint(BB);
 
+            // A vector that will hold all of the llvm types, necessary for creating the Stack frame of the function.
             std::vector<llvm::Type*> members;
-
+            // For every function argument we will push their type to the members vector.
             for (auto& Arg : TheFunction->args()) {
-
+                //Check the selected type is the type of the Stack Frame of the previous function
                 if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0)) {
-                    members.push_back(Arg.getType());
+                    members.push_back(Arg.getType());  // Push to members the type of the argument.
                     continue;
                 }
-
+                // Get the name of the argument.
                 std::string ArgName(Arg.getName());
                 char var_id[ArgName.size() + 1];
-                strcpy(var_id, ArgName.c_str()); // ArgName is const
-                SymbolEntry* se = lookup(var_id);
+                strcpy(var_id, ArgName.c_str());  // ArgName is const.
+                SymbolEntry* se = lookup(var_id); // Look up the argument in the Symbol Table.
 
                 if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
+                    /* If the case of the type of the argument is of unknown size array type,
+                     * then push to members a pointer to to the array type.
+                     * e.g. int[][10] -> *int[10] will be pushed TODO: CHECK1
+                     */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
 //                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
                     members.push_back(llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1), 0));
                     continue;
                 }
 
-                members.push_back(Arg.getType());
+                members.push_back(Arg.getType());  // Push to members the type of the argument.
             }
-
+            // Find all the llvm types of the function's local variables and push them to members.
             std::vector<llvm::Type*> local_vars = var_members(t->second);
             members.insert(members.end(), local_vars.begin(), local_vars.end());
 
-            // Create type for the current stack frame
+            // Create type for the current stack frame.
             llvm::StructType* CurStackFrameType =
                     llvm::StructType::create(TheContext,
                                               llvm::ArrayRef<llvm::Type*>(members),
                                               std::string(curr_func_name) + "_type");
             StackFrameTypes.push_back(CurStackFrameType);
-
+            // Create the current stack frame.
             llvm::AllocaInst* CurStackFrame =
                     CreateEntryBlockAlloca(TheFunction,
                                            std::string(curr_func_name) + "_frame",
@@ -337,37 +372,44 @@ llvm::Value* ast_compile(ast t)
             StackFrames.push_back(CurStackFrame);
 
             llvm::Value* StructPtr;
+            // For every function argument we will create the appropriate llvm command, which means store every
+            // argument to the stack frame.
             for (auto& Arg : TheFunction->args()) {
 
                 auto n = StackFrames.size();
-
+                // Check if the argument is the stack frame of the previous function.
+                // We just pushed the n-1 element to the StackFrames. So the n-2 is the previous one.
                 if (n > 1 && static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes[n - 2]->getPointerTo(0)) {
                     StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, 0, "");
-                    Builder.CreateStore(&Arg, StructPtr);
+                    Builder.CreateStore(&Arg, StructPtr); // Store the pointer of the previous Stack Frame
                     continue;
                 }
-
+                // Get the name of the argument.
                 std::string ArgName(Arg.getName());
                 char id[ArgName.size() + 1];
-                strcpy(id, ArgName.c_str());
-                SymbolEntry* se = lookup(id);
-
+                strcpy(id, ArgName.c_str());  // ArgName is const.
+                SymbolEntry* se = lookup(id);  // Look up the argument in the Symbol Table.
+                // Create a pointer to the position of the argument in the frame structure.
                 int offset = se->u.eVariable.offset;
                 StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, offset, ArgName + "_pos");
 
                 if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
+                    /* If the case of the type of the argument is of unknown size array type,
+                     * then we need to do a bitcast to pointer to the array type
+                     * e.g. int[][10] -> *int[10]  TODO: CHECK2
+                     */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
                     auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
-                    Builder.CreateStore(Tmp, StructPtr);
+                    Builder.CreateStore(Tmp, StructPtr);  // Store the value to the right position of the frame
                 }
                 else
-                    Builder.CreateStore(&Arg, StructPtr);
+                    Builder.CreateStore(&Arg, StructPtr);  // Store the value to the right position of the frame
             }
 
             if (strcmp(t->first->id, "main") == 0)
-                declare_dana_libs();
+                declare_dana_libs();  // Declare all the required libraries for dana.
 
-            // Local def lists
+            // Compile Local def lists
             ast_compile(t->second);
 
             Builder.SetInsertPoint(BB);
@@ -380,9 +422,9 @@ llvm::Value* ast_compile(ast t)
                     // Finish off the proc.
                     Builder.CreateRetVoid();
                 }
-            }
+            } // TODO: ELSE DO SOMETHING????
 
-            // Reset curr func name
+            // Reset current function name.
             func_names.pop_back();
             curr_func_name = func_names.back();
 
@@ -390,32 +432,42 @@ llvm::Value* ast_compile(ast t)
 //            llvm::verifyFunction(*TheFunction); # TODO: Same as verify module?
 
 //            TheFPM->run(*TheFunction);
-
+            // Remove the frame from the vector of stack frames.
             StackFrames.pop_back();
             StackFrameTypes.pop_back();
 
             closeScope();
             if (OldBB)
-                Builder.SetInsertPoint(OldBB);
+                Builder.SetInsertPoint(OldBB); // Return to previous builder block.
             return TheFunction;
         }
         case HEADER:
         {
-            Type func_type = typeVoid;
-            llvm::Type* llvm_func_type = llvm_void;
+            /*
+             * HEADER
+             * The header of a function definition or declaration.
+             *
+             * t-> id is the name of the function.
+             * t-> first is the first batch of function parameters(fpar_def).
+             * t-> second is the list of the other batches of function parameters(fpar_def_list).
+             * t-> type is the type of the function.
+             */
+            Type func_type = typeVoid;  // The symbolic type of the function.
+            llvm::Type* llvm_func_type = llvm_void;  // The llvm type of the function.
 
             if (t->type != nullptr) {
                 func_type = t->type;    // Check func or proc
                 llvm_func_type = to_llvm_type(t->type);
             }
 
-            SymbolEntry* f = newFunction(t->id);
+            SymbolEntry* f = newFunction(t->id);  // Create new symbol entry of the function.
             if (func_mode == FUNC_DECLARATION)
                 forwardFunction(f);
 
-            std::vector<llvm::Type*> Params;
-            std::vector<std::string> Args;
+            std::vector<llvm::Type*> Params;  // A vector for the function parameters
+            std::vector<std::string> Args;  // A vector for the function parameters' types
 
+            // Push the previous stack frame.
             if (!StackFrameTypes.empty()) {
                 Params.push_back(StackFrameTypes.back()->getPointerTo());
                 Args.push_back(StackFrames.back()->getName());
@@ -427,18 +479,24 @@ llvm::Value* ast_compile(ast t)
             openScope();
 
             ast par_def = t->first;         // First is fpar_def
-            ast fpar_def_list = t->second;
+            ast fpar_def_list = t->second;  // Second is fpar_def_list
 
             Type par_type = nullptr;
             llvm::Type* llvm_par_ty= llvm_void;
 
             while (par_def != nullptr) {
-
+                /* The parameter definition batch (fpar_def):
+                 *
+                 * t -> id is a name of the first parameter
+                 * t -> first is a list of all the other parameters in the batch(if they exist).
+                 * t -> second is the type of these function parameters
+                 */
+                // Compile the par_def->second in order to find the fpar_type.
                 ast_compile(par_def->second);           // Second is fpar_type
                 par_type = par_def->second->type;
                 llvm_par_ty = to_llvm_type(par_type);   // Get corresponding llvm type
 
-                if (par_type->kind == Type_tag::TYPE_ARRAY)
+                if (par_type->kind == Type_tag::TYPE_ARRAY)  // TODO: Dont remember why..
                     llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
 //                else if (par_type->kind == Type_tag::TYPE_IARRAY)
 //                    llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
@@ -460,12 +518,12 @@ llvm::Value* ast_compile(ast t)
                     break;
                 }
 
-                par_def = fpar_def_list->first;        // Now for the rest of fpar_defs.
-                fpar_def_list = fpar_def_list->second;
+                par_def = fpar_def_list->first;  // Now for the rest of fpar_defs. (Next batch of function parameters)
+                fpar_def_list = fpar_def_list->second; // The rest of the list of batches.
             }
 
-            endFunctionHeader(f, func_type);
-
+            endFunctionHeader(f, func_type);  // Finilize function in Symbol table
+            // Create function in llvm
             llvm::FunctionType* FT =
                     llvm::FunctionType::get(llvm_func_type, Params, false);
 
@@ -514,7 +572,7 @@ llvm::Value* ast_compile(ast t)
         case CONST:
         {
             t->type = typeInteger;
-            return c32(t->num);
+            return c16(t->num);
         }
         case CHAR:
         {
@@ -541,7 +599,7 @@ llvm::Value* ast_compile(ast t)
             // Convert condition to a bool by comparing non-equal to 0.0.
             CondV = Builder.CreateICmpNE(
                     CondV,
-                    c32(0), "ifcond");
+                    c16(0), "ifcond");
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -598,7 +656,7 @@ llvm::Value* ast_compile(ast t)
             // Convert condition to a bool by comparing non-equal to 0.0.
             CondV = Builder.CreateICmpNE(
                     CondV,
-                    c32(0), "elifcond");
+                    c16(0), "elifcond");
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -637,7 +695,7 @@ llvm::Value* ast_compile(ast t)
                 return ElifExitStmt;
             else if (ElifExitStmt != nullptr && ElifListExitStmt != nullptr &&
                      ElifExitStmt->getSExtValue() == 0 && ElifListExitStmt->getSExtValue() == 0)
-                return c32(0);
+                return c16(0);
             else return nullptr;
 
         }
@@ -659,7 +717,7 @@ llvm::Value* ast_compile(ast t)
             // Convert condition to a bool by comparing non-equal to 0.0.
             CondV = Builder.CreateICmpNE(
                     CondV,
-                    c32(0), "ifcond");
+                    c16(0), "ifcond");
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -691,7 +749,7 @@ llvm::Value* ast_compile(ast t)
             // Generate code for "elif list" blocks
             auto ElifExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->third));
 
-            if (t->third == nullptr) ElifExitStmt = c32(0);
+            if (t->third == nullptr) ElifExitStmt = c16(0);
 
             Builder.CreateBr(ElseBB);
 
@@ -715,7 +773,7 @@ llvm::Value* ast_compile(ast t)
             if (ThenExitStmt != nullptr && ElifExitStmt != nullptr && ElseExitStmt != nullptr &&
                 ThenExitStmt->getSExtValue() == ElifExitStmt->getSExtValue() == ElseExitStmt->getSExtValue() == 0) {
                 Builder.CreateUnreachable();
-                return c32(0);
+                return c16(0);
             }
 
             return nullptr;
@@ -765,7 +823,7 @@ llvm::Value* ast_compile(ast t)
 
             if (ExitStmt != nullptr && ExitStmt->getSExtValue() == 0) {
                 Builder.CreateUnreachable();
-                return c32(0);
+                return c16(0);
             }
 
             return nullptr;
@@ -781,13 +839,13 @@ llvm::Value* ast_compile(ast t)
                     exit(1);
                 }
                 Builder.CreateBr(lr->after_block);
-                return c32(1);
+                return c16(1);
             }
             else if (current_LR == nullptr)
                 error("No loop to break");
             else {
                 Builder.CreateBr(current_LR->after_block);
-                return c32(1);
+                return c16(1);
             }
         }
         case CONTINUE:
@@ -800,13 +858,13 @@ llvm::Value* ast_compile(ast t)
                     exit(1);
                 }
                 Builder.CreateBr(lr->loop_block);
-                return c32(1);
+                return c16(1);
             }
             else if (current_LR == nullptr)
                 error("No loop to continue");
             else {
                 Builder.CreateBr(current_LR->loop_block);
-                return c32(1);
+                return c16(1);
             }
         }
         case EXIT:
@@ -818,7 +876,7 @@ llvm::Value* ast_compile(ast t)
 
             Builder.CreateRetVoid();
 
-            return c32(0);
+            return c16(0);
         }
         case RETURN:
         {
@@ -834,7 +892,7 @@ llvm::Value* ast_compile(ast t)
 
             Builder.CreateRet(RetV);
 
-            return c32(0);
+            return c16(0);
         }
         case TRUE:
         {
@@ -851,14 +909,14 @@ llvm::Value* ast_compile(ast t)
             llvm::Value* S = ast_compile(t->second);
             // UN_PLUS operand must be integer
             t->type = check_op_type(t->second->type, typeInteger, "unary +");
-            return Builder.CreateAdd(c32(0), S, "uaddtmp");
+            return Builder.CreateAdd(c16(0), S, "uaddtmp");
         }
         case UN_MINUS:
         {
             llvm::Value* S = ast_compile(t->second);
             // UN_MINUS operand must be integer
             t->type = check_op_type(t->second->type, typeInteger, "unary -");
-            return Builder.CreateSub(c32(0), S, "usubtmp");
+            return Builder.CreateSub(c16(0), S, "usubtmp");
         }
         case PLUS:
         {
@@ -936,7 +994,7 @@ llvm::Value* ast_compile(ast t)
             // Convert condition to a bool by comparing non-equal to 0.0.
             CondV = Builder.CreateICmpNE(
                     CondV,
-                    c32(0), "inttobit");
+                    c16(0), "inttobit");
 
             t->type = typeChar;
 
@@ -965,7 +1023,7 @@ llvm::Value* ast_compile(ast t)
             // Convert condition to a bool by comparing non-equal to 0.0.
             F = Builder.CreateICmpEQ(
                     F,
-                    c32(0), "finttobit");
+                    c16(0), "finttobit");
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -1003,7 +1061,7 @@ llvm::Value* ast_compile(ast t)
                 S = Builder.CreateIntCast(S, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
-            S = Builder.CreateICmpNE(S, c32(0), "sinttobit");
+            S = Builder.CreateICmpNE(S, c16(0), "sinttobit");
 
             Builder.CreateBr(MergeBB);
             // codegen of 'Else' can change the current block, update ElseBB for the PHI.
@@ -1042,7 +1100,7 @@ llvm::Value* ast_compile(ast t)
                 F = Builder.CreateIntCast(F, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
-            F = Builder.CreateICmpNE(F, c32(0), "finttobit");
+            F = Builder.CreateICmpNE(F, c16(0), "finttobit");
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -1080,7 +1138,7 @@ llvm::Value* ast_compile(ast t)
                 S = Builder.CreateIntCast(S, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
-            S = Builder.CreateICmpNE(S,c32(0), "sinttobit");
+            S = Builder.CreateICmpNE(S,c16(0), "sinttobit");
 
             Builder.CreateBr(MergeBB);
             // codegen of 'Else' can change the current block, update ElseBB for the PHI.
@@ -1256,7 +1314,7 @@ llvm::Value* ast_compile(ast t)
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
 
                     llvm::Value* Pointer;
-                    std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
+                    std::vector<llvm::Value*> indexList{ c16(0), c16(0) };
                     llvm::Value* Id = ast_compile(param->first);
                     llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
@@ -1334,7 +1392,7 @@ llvm::Value* ast_compile(ast t)
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
 
                     llvm::Value* Pointer;
-                    std::vector<llvm::Value*> indexList{ c32(0), c32(0) };
+                    std::vector<llvm::Value*> indexList{ c16(0), c16(0) };
                     llvm::Value* Id = ast_compile(param->first);
                     llvm::Type* PointeeType = Id->getType()->getPointerElementType();
 
@@ -1402,7 +1460,7 @@ llvm::Value* ast_compile(ast t)
                 indexList.push_back(ast_compile(ast_iter->second));
                 ast_iter = ast_iter->first;
             }
-            indexList.push_back(c32(0));
+            indexList.push_back(c16(0));
             std::reverse(indexList.begin(), indexList.end());
 
             llvm::Value* Id = ast_compile(ast_iter);
@@ -1422,7 +1480,7 @@ llvm::Value* ast_compile(ast t)
             t->type = t->first->type;
 
             if (t->first->k == STR)     // String as rvalue does not need to create a load. Just return the pointer
-                return llvm::GetElementPtrInst::Create(LValue->getType()->getPointerElementType(), LValue, llvm::ArrayRef<llvm::Value*>(std::vector<llvm::Value*>{c32(0), c32(0)}), "str_ptr", Builder.GetInsertBlock());
+                return llvm::GetElementPtrInst::Create(LValue->getType()->getPointerElementType(), LValue, llvm::ArrayRef<llvm::Value*>(std::vector<llvm::Value*>{c16(0), c16(0)}), "str_ptr", Builder.GetInsertBlock());
             else
                 return Builder.CreateLoad(LValue, "rvalue");
         }
