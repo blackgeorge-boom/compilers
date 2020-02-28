@@ -743,8 +743,8 @@ llvm::Value* ast_compile(ast t)
                 return ElifExitStmt;
             else if (ElifExitStmt != nullptr && ElifListExitStmt != nullptr &&
                      ElifExitStmt->getSExtValue() == 0 && ElifListExitStmt->getSExtValue() == 0)
-                //  That means that all of the elif statements return either EXIT or RETURN
-                return c16(0);
+                //  That means that all of the elif statements return either EXIT or RETURN(terminating statements).
+                return c16(0); // Escape but also terminating statement.
             else return nullptr;
 
         }
@@ -807,7 +807,7 @@ llvm::Value* ast_compile(ast t)
             // Generate code for "elif list" blocks
             auto ElifExitStmt = static_cast<llvm::ConstantInt*>(ast_compile(t->third));
 
-            if (t->third == nullptr) ElifExitStmt = c16(0); // If there is no elif, then we regard it as an exit stmt. TODO: WHY?
+            if (t->third == nullptr) ElifExitStmt = c16(0); // If there is no elif, then we regard it as a terminating statement
 
             Builder.CreateBr(ElseBB);  // Create branch to the else basic block.
 
@@ -833,7 +833,7 @@ llvm::Value* ast_compile(ast t)
             if (ThenExitStmt != nullptr && ElifExitStmt != nullptr && ElseExitStmt != nullptr &&
                 ThenExitStmt->getSExtValue() == ElifExitStmt->getSExtValue() == ElseExitStmt->getSExtValue() == 0) {
                 Builder.CreateUnreachable();
-                return c16(0);
+                return c16(0);  // Escape but also terminating statement.
             }
 
             return nullptr;
@@ -889,10 +889,10 @@ llvm::Value* ast_compile(ast t)
             current_LR = current_LR->previous; // Set pointer of current loop record.
             free(new_LR);
 
-            // If the returned statements is EXIT or RETURN then AfterBB will never be reached, so create unreachable.
+            // If the returned statements is EXIT or RETURN(terminating), then AfterBB will never be reached, so create unreachable.
             if (ExitStmt != nullptr && ExitStmt->getSExtValue() == 0) {
                 Builder.CreateUnreachable();
-                return c16(0);
+                return c16(0);  // Escape but also terminating statement.
             }
 
             return nullptr;
@@ -912,13 +912,13 @@ llvm::Value* ast_compile(ast t)
                     exit(1);
                 }
                 Builder.CreateBr(lr->after_block);  // Create branch to after block of the selected loop.
-                return c16(1);  // Escape statement
+                return c16(1);  // Escape statement.
             }
             else if (current_LR == nullptr)
                 error("No loop to break");
             else {
                 Builder.CreateBr(current_LR->after_block); // Create branch to after block of the current loop.
-                return c16(1);  // Escape statement
+                return c16(1);  // Escape statement.
             }
         }
         case CONTINUE:
@@ -935,13 +935,13 @@ llvm::Value* ast_compile(ast t)
                     exit(1);
                 }
                 Builder.CreateBr(lr->loop_block);  // Create branch to loop block of the selected loop.
-                return c16(1);  // Escape statement
+                return c16(1);  // Escape statement.
             }
             else if (current_LR == nullptr)
                 error("No loop to continue");
             else {
                 Builder.CreateBr(current_LR->loop_block);  // Create branch to loop block of the current loop.
-                return c16(1);  // Escape statement
+                return c16(1);  // Escape statement.
             }
         }
         case EXIT:
@@ -957,7 +957,7 @@ llvm::Value* ast_compile(ast t)
 
             Builder.CreateRetVoid();  // Create a return void.
 
-            return c16(0);  // Escape but also terminating statement
+            return c16(0);  // Escape but also terminating statement.
         }
         case RETURN:
         {
@@ -993,78 +993,150 @@ llvm::Value* ast_compile(ast t)
         }
         case UN_PLUS:
         {
-            llvm::Value* S = ast_compile(t->second);
+        /*
+         * UN_PLUS EXPRESSION
+         * t->second is the expression
+         */
+            llvm::Value* S = ast_compile(t->second);  // Compile the expression.
             // UN_PLUS operand must be integer
             t->type = check_op_type(t->second->type, typeInteger, "unary +");
-            return Builder.CreateAdd(c16(0), S, "uaddtmp");
+            return Builder.CreateAdd(c16(0), S, "uaddtmp");  // Create addition instruction of (0 + expression) TODO: Why we do this?
         }
         case UN_MINUS:
         {
-            llvm::Value* S = ast_compile(t->second);
+        /*
+         * UN_MINUS EXPRESSION
+         * t->second is the expression
+         */
+            llvm::Value* S = ast_compile(t->second);  // Compile the expression.
             // UN_MINUS operand must be integer
             t->type = check_op_type(t->second->type, typeInteger, "unary -");
-            return Builder.CreateSub(c16(0), S, "usubtmp");
+            return Builder.CreateSub(c16(0), S, "usubtmp");  // Create subtraction instruction of (0 - expression)
         }
         case PLUS:
         {
+        /*
+         * PLUS EXPRESSION
+         * t->first is the  first expression
+         * t->second is the second expression
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
+            // Check both expressions are of the same type and set type of final expression.
             t->type = check_op_type(t->first->type, t->second->type, "+");
-            return Builder.CreateAdd(F, S, "addtmp");
+            return Builder.CreateAdd(F, S, "addtmp"); // Create addition instruction (first expression + second expression)
         }
         case MINUS:
         {
+        /*
+         * MINUS EXPRESSION
+         * t->first is the  first expression
+         * t->second is the second expression
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
+            // Check both expressions are of the same type and set type of final expression.
             t->type = check_op_type(t->first->type, t->second->type, "-");
+            // Create subtraction instruction (first expression - second expression)
             return Builder.CreateBinOp(llvm::Instruction::Sub, F, S, "subtmp");
         }
         case TIMES:
         {
+        /*
+         * TIMES EXPRESSION
+         * t->first is the  first expression
+         * t->second is the second expression
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
+            // Check both expressions are of the same type and set type of final expression.
             t->type = check_op_type(t->first->type, t->second->type, "*");
+            // Create multiplication instruction (first expression * second expression)
             return Builder.CreateMul(F, S, "multmp");
         }
         case DIV:
         {
+        /*
+         * DIVISION EXPRESSION
+         * t->first is the  first expression
+         * t->second is the second expression
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
+            // Check both expressions are of the same type and set type of final expression.
             t->type = check_op_type(t->first->type, t->second->type, "/");
+            // Create multiplication instruction (first expression / second expression)
             return Builder.CreateSDiv(F, S, "divtmp");
         }
         case MOD:
         {
+        /*
+         * MODULO EXPRESSION
+         * t->first is the  first expression
+         * t->second is the second expression
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
+            // Check both expressions are of the same type and set type of final expression.
             t->type = check_op_type(t->first->type, t->second->type, "%");
+            // Create modulo operation ((first expression) mod (second expression))
             return Builder.CreateSRem(F, S, "modtmp");
         }
         case BIT_NOT:
         {
+        /*
+         * BIT NOT EXPRESSION TODO: MAYBE WRITE IT BETTER
+         * t->first is the expression
+         */
+            // Compile the expression.
             llvm::Value* F = ast_compile(t->first);
+            // Check expression to be type of character and set type of final expression as character.
             check_op_type(t->first->type, typeChar, "!");
             t->type = t->first->type;
-            return Builder.CreateNot(F, "bitnot");
+            return Builder.CreateNot(F, "bitnot");  // Create bit not operation.
         }
         case BIT_AND:
         {
+        /*
+         * BIT AND EXPRESSION
+         * t->first is the first expression
+         * t->second is the second expression
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
+            // Check both expressions are of the type character and set type of final expression as character.
             check_op_type(t->first->type, typeChar, "&");
             t->type = check_op_type(t->first->type, t->second->type, "&");
-            return Builder.CreateAnd(F, S, "bitand");
+            return Builder.CreateAnd(F, S, "bitand");  // Create bit and operation.
         }
         case BIT_OR:
         {
+        /*
+         * BIT OR EXPRESSION
+         * t->first is the first expression.
+         * t->second is the second expression.
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
+            // Check both expressions are of the type character and set type of final expression as character.
             check_op_type(t->first->type, typeChar, "|");
             t->type = check_op_type(t->first->type, t->second->type, "|");
-            return Builder.CreateOr(F, S, "bitor");
+            return Builder.CreateOr(F, S, "bitor");  // Create bit or operation.
         }
         case BOOL_NOT:
         {
+        /*
+         * BOOL NOT CONDITION
+         * t->first is the condition
+         */
+            // Compile the condition.
             llvm::Value* CondV = ast_compile(t->first);
 
             if (!CondV)
@@ -1085,16 +1157,20 @@ llvm::Value* ast_compile(ast t)
 
             t->type = typeChar;
 
-            return Builder.CreateNot(CondV, "boolnot");
+            return Builder.CreateNot(CondV, "boolnot");  // Create not operation of the condition.
         }
         case BOOL_AND:
         {
-            /*
-             * We compute the first operand.
-             * If it is zero, result is zero.
-             * Else result is (1 and second operand) = second operand.
-             */
-            llvm::Value* F = ast_compile(t->first);
+        /*
+         * BOOL AND CONDITION
+         * t->first is the first condition
+         * t->second is the second condition
+         *
+         * We compute the first operand.
+         * If it is zero, result is zero.
+         * Else result is (1 and second operand) = second operand.
+         */
+            llvm::Value* F = ast_compile(t->first);  // Compile first operand.
 
             if (!F)
                 return nullptr;
@@ -1134,7 +1210,7 @@ llvm::Value* ast_compile(ast t)
             TheFunction->getBasicBlockList().push_back(ElseBB);
             Builder.SetInsertPoint(ElseBB);
 
-            llvm::Value* S = ast_compile(t->second);
+            llvm::Value* S = ast_compile(t->second);  // Compile second operand.
 
             if (!S)
                 return nullptr;
@@ -1168,12 +1244,16 @@ llvm::Value* ast_compile(ast t)
         }
         case BOOL_OR:
         {
-            /*
-             * We compute the first operand.
-             * If it is one, result is one.
-             * Else result is (0 or second operand) = second operand.
-             */
-            llvm::Value* F = ast_compile(t->first);
+        /*
+         * BOOL OR X_CONDITION
+         * t->first is the first condition.
+         * t->second is the second condition.
+         *
+         * We compute the first operand.
+         * If it is one, result is one.
+         * Else result is (0 or second operand) = second operand.
+         */
+            llvm::Value* F = ast_compile(t->first);  // Compile first operand.
 
             if (!F)
                 return nullptr;
@@ -1205,13 +1285,13 @@ llvm::Value* ast_compile(ast t)
             Builder.CreateBr(MergeBB);
 
             // Codegen of 'Then' can change the current block, update ThenBB for the PHI.
-            ThenBB = Builder.GetInsertBlock(); // ??
+            ThenBB = Builder.GetInsertBlock();
 
             // Emit else block.
             TheFunction->getBasicBlockList().push_back(ElseBB);
             Builder.SetInsertPoint(ElseBB);
 
-            llvm::Value* S = ast_compile(t->second);
+            llvm::Value* S = ast_compile(t->second);  // Compile second operand.
 
             if (!S)
                 return nullptr;
@@ -1245,9 +1325,16 @@ llvm::Value* ast_compile(ast t)
         }
         case EQ:
         {
+        /*
+         * EQUAL X_CONDITION
+         * t->first is the first expression.
+         * t->second is the second expression.
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
+            // Check both expressions are of the same type and set type of final expression.
             check_op_type(t->first->type, t->second->type, "=");
 
             t->type = typeChar;
@@ -1256,9 +1343,16 @@ llvm::Value* ast_compile(ast t)
         }
         case NE:
         {
+        /*
+         * NOT EQUAL X_CONDITION
+         * t->first is the first expression.
+         * t->second is the second expression.
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
+            // Check both expressions are of the same type and set type of final expression.
             check_op_type(t->first->type, t->second->type, "<>");
 
             t->type = typeChar;
@@ -1267,13 +1361,21 @@ llvm::Value* ast_compile(ast t)
         }
         case LT:
         {
+        /*
+         * LESS THAN X_CONDITION
+         * t->first is the first expression.
+         * t->second is the second expression.
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
+            // Check both expressions are of the same type and set type of final expression.
             check_op_type(t->first->type, t->second->type, "<");
 
             t->type = typeChar;
-
+            // Type char is unsigned, but type int is signed. So check which of those two types is the expression
+            // and create unsigned "less than" operation or signed "less than" operation accordingly.
             if (t->first->type == typeChar)
                 return  Builder.CreateICmpULT(F, S, "lt");
             else
@@ -1281,13 +1383,21 @@ llvm::Value* ast_compile(ast t)
         }
         case GT:
         {
+        /*
+         * GREATER THAN X_CONDITION
+         * t->first is the first expression.
+         * t->second is the second expression.
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
+            // Check both expressions are of the same type and set type of final expression.
             check_op_type(t->first->type, t->second->type, ">");
 
             t->type = typeChar;
-
+            // Type char is unsigned, but type int is signed. So check which of those two types is the expression
+            // and create unsigned "greater than" operation or signed "greater than" operation accordingly.
             if (t->first->type == typeChar)
                 return  Builder.CreateICmpUGT(F, S, "gt");
             else
@@ -1295,13 +1405,21 @@ llvm::Value* ast_compile(ast t)
         }
         case LE:
         {
+        /*
+         * LESS THAN OR EQUAL TO X_CONDITION
+         * t->first is the first expression.
+         * t->second is the second expression.
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
+            // Check both expressions are of the same type and set type of final expression.
             check_op_type(t->first->type, t->second->type, "<=");
 
             t->type = typeChar;
-
+            // Type char is unsigned, but type int is signed. So check which of those two types is the expression
+            // and create unsigned "less than or equal to" operation or signed "less than or equal to" operation accordingly.
             if (t->first->type == typeChar)
                 return  Builder.CreateICmpULE(F, S, "le");
             else
@@ -1309,13 +1427,21 @@ llvm::Value* ast_compile(ast t)
         }
         case GE:
         {
+        /*
+         * GREATER THAN OR EQUAL TO X_CONDITION
+         * t->first is the first expression.
+         * t->second is the second expression.
+         */
+            // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
+            // Check both expressions are of the same type and set type of final expression.
             check_op_type(t->first->type, t->second->type, ">=");
 
             t->type = typeChar;
-
+            // Type char is unsigned, but type int is signed. So check which of those two types is the expression
+            // and create unsigned "greater than or equal to" operation or signed "greater than or equal to" operation accordingly.
             if (t->first->type == typeChar)
                 return  Builder.CreateICmpUGE(F, S, "ge");
             else
