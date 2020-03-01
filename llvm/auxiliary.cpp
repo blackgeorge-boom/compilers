@@ -138,15 +138,38 @@ Type var_def_type (Type t, ast f) {
     return typeArray(f->num, var_def_type(t, f->first));
 }
 
+/*
+ * A tree of l_value will be like:
+ * case a)
+ *           id
+ * case b)
+ *              l_value
+ *          l_value '[' expr ']'
+ *      l_value '[' expr ']' '[' expr ']'
+ *                ...
+ * id '[' expr ']' ... '[' expr ']' '[' expr ']'
+ * case c)
+ *          l_value
+ *      l_value '[' expr ']'
+ *      str '[' expr ']'
+ * case d)
+ *        str
+ *
+ * Keeping that in mind the l_value type will set correctly the type of the f tree.
+ * f will be the current ast tree.
+ * count will be the number of expressions that we have in brackets until now.
+ * Function l_value_type will be called retrospectively traversing the tree as shown above.
+ */
 ast l_value_type (ast f, int count)
 {
     if (f->k == ID) {
 
-        SymbolEntry*  e = lookup(f->id);
+        SymbolEntry*  e = lookup(f->id);  // Find name in symbol table.
         if (e == nullptr) error("l_value_type - Undeclared variable : %s", f->id);
 
         int i;
         Type temp = e->u.eVariable.type;
+        // If count is greater than 0 then the ID was an array, so traverse the symbol table to find the type.
         for (i = count; i > 0; --i) {
             if (temp->refType == nullptr)
                 error("Too many dimensions");
@@ -157,6 +180,7 @@ ast l_value_type (ast f, int count)
         if ((p = new struct node) == nullptr)
             exit(1);
         p->type = temp;
+        // Set nesting difference and offset.
         p->nesting_diff = currentScope->nestingLevel - e->nestingLevel;
         p->offset = e->u.eVariable.offset;
         return p;
@@ -167,7 +191,7 @@ ast l_value_type (ast f, int count)
         if (count > 1) {
             error("Too many dimensions for string");
         }
-        else if (count == 1) {
+        else if (count == 1) {  // This will mean that the type is a character. TODO: IS THIS TRUE?
             temp = temp->refType;
         }
 
@@ -179,10 +203,11 @@ ast l_value_type (ast f, int count)
         return p;
     }
 
-    ast_sem(f->second);
+    ast_sem(f->second);  // Semantic check of the expression inside the brackets.
     if (f->second->type != typeInteger && f->second->type != typeChar)
         error("Array index must be of type int or byte");
-    return l_value_type(f->first, count + 1);
+    return l_value_type(f->first, count + 1);  // Return after calling the l_value type again,
+                                                      // until f->k is STR or ID
 }
 
 /*

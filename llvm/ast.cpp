@@ -1447,13 +1447,18 @@ llvm::Value* ast_compile(ast t)
             else
                 return  Builder.CreateICmpSGE(F, S, "ge");
         }
-        case INT_CONST_LIST:break;
-        case ID_LIST:break;
+        case INT_CONST_LIST:break;  // This case will never be reached.
+        case ID_LIST:break;  // This case will never be reached.
         case LET:
         {
-            llvm::Value* LVal = ast_compile(t->first);
+        /*
+         * LET statement
+         * t->first is the l_value
+         * t->second is the expression
+         */
+            llvm::Value* LVal = ast_compile(t->first);  // Compile the l_value.
 
-            llvm::Value* Expr = ast_compile(t->second);
+            llvm::Value* Expr = ast_compile(t->second); // Compile the expression.
             if (!Expr) return nullptr;
 
             // TODO: maybe "and not array"
@@ -1462,16 +1467,23 @@ llvm::Value* ast_compile(ast t)
             t->nesting_diff = t->first->nesting_diff;
             t->offset = t->first->offset;
 
-            Builder.CreateStore(Expr, LVal);
+            Builder.CreateStore(Expr, LVal); // Create store command.
 
             return nullptr;
         }
         case VAR_DEF:
         {
+        /*
+         * VARIABLE DEFINITION
+         * t->id is the id
+         * t->first is the id_list
+         * t->second is the type tree.
+         */
             // Type is computed at var_members
             auto var_type = t->second->type;
-            insertVariable(t->id, var_type);
+            insertVariable(t->id, var_type);  // Insert first Variable to Symbol table.
 
+            // Traverse the id_list and insert every id to the Symbol table.
             ast temp = t->first;
             while (temp != nullptr) {
                 insertVariable(temp->id, var_type);
@@ -1481,13 +1493,21 @@ llvm::Value* ast_compile(ast t)
         }
         case PROC_CALL:
         {
-            SymbolEntry* proc = lookup(t->id);
+        /*
+         * PROCEDURE CALL
+         * t->id is the name(id) of the function.
+         * t->first is the first expression.
+         * t->second is the expression list.
+         */
+            SymbolEntry* proc = lookup(t->id);  // Find the procedure in the Symblol table.
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
 
             // TODO: check if necessary
+            // Semantic check of expressions. (Sets correct type of expressions)
             ast_sem(t->first);
             ast_sem(t->second);
+            // Check if all parameters(expressions) to the procedure are of the correct type.
             check_parameters(proc, t->first, t->second, "proc");
 
             // Look up the name in the global module table.
@@ -1495,6 +1515,7 @@ llvm::Value* ast_compile(ast t)
             if (!CalleeF)
                 return LogErrorV("Unknown procedure referenced");
 
+            // Argsv will hold the frame and the arguments of the callee procedure.
             std::vector<llvm::Value*> ArgsV;
             auto n = StackFrames.size();
 
@@ -1502,7 +1523,8 @@ llvm::Value* ast_compile(ast t)
             // there is no parent frame
             if (strcmp(t->id, "main") != 0 &&
                 std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
-                SymbolEntry* se = lookup(t->id);
+                SymbolEntry* se = lookup(t->id);  // Find function in Symbol table.  TODO: se propably not needed. We have proc.
+                // If function is at a different nesting level then load its stack frame  TODO: DO NOT REMEMBER
                 if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                     ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
@@ -1511,21 +1533,21 @@ llvm::Value* ast_compile(ast t)
                     ArgsV.push_back(StackFrames.back());
             }
 
-            ast param = t->first;         // First is expr
-            ast param_list = t->second;
+            ast param = t->first;        // The first expression.
+            ast param_list = t->second;  // The exrpession list.
 
             SymbolEntry* func_param = proc->u.eFunction.firstArgument;
             bool passByReference;
-
+            // For every parameter (argument of the procedure) do:
             while (param != nullptr) {
 
                 passByReference = func_param->u.eParameter.mode == PASS_BY_REFERENCE ||
                                   func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
 
                 if (passByReference)
-                    ArgsV.push_back(ast_compile(param->first));
+                    ArgsV.push_back(ast_compile(param->first)); // Compile the l_value of the expression and push it to the vector.
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
-
+                    // If it's an IARRAY then create pointer to the l_value. TODO: I DONT REMEMBER THE SECOND PART OF THE CONDITION.
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c16(0), c16(0) };
                     llvm::Value* Id = ast_compile(param->first);
@@ -1535,28 +1557,38 @@ llvm::Value* ast_compile(ast t)
                     ArgsV.push_back(Pointer);
                 }
                 else
+                    // Compile the expression and put it in the Vector.
                     ArgsV.push_back(ast_compile(param));
 
                 if (!param_list)
                     break;
 
-                param = param_list->first;        // Now for the rest of paramams.
+                param = param_list->first;        // Now for the rest of parameters.
                 param_list = param_list->second;
 
                 func_param = func_param->u.eParameter.next;
             }
 
-            Builder.CreateCall(CalleeF, ArgsV, "");
+            Builder.CreateCall(CalleeF, ArgsV, "");  // Create a call to this procedure with the arguments from the vector.
 
             return nullptr;
         }
         case FUNC_CALL:
         {
-            SymbolEntry* func = lookup(t->id);
+            /*
+             * FUNCTION CALL
+             * t->id is the name(id) of the function.
+             * t->first is the first expression.
+             * t->second is the expression list.
+             */
+            SymbolEntry* func = lookup(t->id);  // Find the function in the Symbol table.
             if (func->u.eFunction.resultType == typeVoid)
                 fatal("Function must have a return type\n");
+
+            // Semantic check of expressions. (Sets correct type of expressions)
             ast_sem(t->first);
             ast_sem(t->second);
+            // Check if all parameters(expressions) to the procedure are of the correct type.
             check_parameters(func, t->first, t->second, "func");
             t->type = func->u.eFunction.resultType;
 
@@ -1565,6 +1597,7 @@ llvm::Value* ast_compile(ast t)
             if (!CalleeF)
                 return LogErrorV("Unknown function referenced");
 
+            // Argsv will hold the frame and the arguments of the callee procedure.
             std::vector<llvm::Value*> ArgsV;
             auto n = StackFrames.size();
 
@@ -1572,7 +1605,8 @@ llvm::Value* ast_compile(ast t)
             // there is no parent frame
             if (strcmp(t->id, "main") != 0 &&
                 std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
-                SymbolEntry* se = lookup(t->id);
+                SymbolEntry* se = lookup(t->id);  // Find function in Symbol table.
+                // If function is at a different nesting level then load its stack frame.
                 if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                     ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
@@ -1589,21 +1623,21 @@ llvm::Value* ast_compile(ast t)
 //            else if (std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names))
 //                ArgsV.push_back(StackFrames.back());
 
-            ast param = t->first;         // First is expr
-            ast param_list = t->second;
+            ast param = t->first;        // The first expression.
+            ast param_list = t->second;  // The expression list.
 
             SymbolEntry* func_param = func->u.eFunction.firstArgument;
             bool passByReference;
-
+            // For every parameter (argument of the function) do:
             while (param != nullptr) {
 
                 passByReference = func_param->u.eParameter.mode == PASS_BY_REFERENCE ||
                                   func_param->u.eParameter.type->kind == Type_tag::TYPE_ARRAY;
 
                 if (passByReference)
-                    ArgsV.push_back(ast_compile(param->first));
+                    ArgsV.push_back(ast_compile(param->first));  // Compile the l_value of the expression and push it to the vector.
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
-
+                    // If it's an IARRAY then create pointer to the l_value.
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c16(0), c16(0) };
                     llvm::Value* Id = ast_compile(param->first);
@@ -1613,39 +1647,46 @@ llvm::Value* ast_compile(ast t)
                     ArgsV.push_back(Pointer);
                 }
                 else
+                    // Compile the expression and put it in the Vector.
                     ArgsV.push_back(ast_compile(param));
 
                 if (!param_list)
                     break;
 
-                param = param_list->first;        // Now for the rest of paramams.
+                param = param_list->first;        // Now for the rest of parameters.
                 param_list = param_list->second;
 
                 func_param = func_param->u.eParameter.next;
             }
 
-            return Builder.CreateCall(CalleeF, ArgsV, "fcalltmp");
+            return Builder.CreateCall(CalleeF, ArgsV, "fcalltmp");  // Create a call to this function with the arguments from the vector.
         }
         case ID:
         {
-            SymbolEntry* se = lookup(t->id);
+            /*
+             * ID of a variable.
+             * t->id is the id(name) of the variable.
+             */
+            SymbolEntry* se = lookup(t->id);  // Look up the variable in the symbol table.
 
             t->type = se->u.eVariable.type;
-            // TODO: see if unnecessary
+            // TODO: see if unnecessary ??????/ DEN KSERW TI ENNOEIS NIKO MAVR
+            // Find the nesting difference and the offset of the variable
+            // in order to load it correctly from the stack frame.
             t->nesting_diff = int(currentScope->nestingLevel) - se->nestingLevel;
             t->offset = se->u.eVariable.offset;
 
             llvm::Value* CurStackFrame = StackFrames.back();
             llvm::Type* CurStackFrameType = StackFrameTypes.back();
-
+            // Load the correct stack frame, by loading sequantially from the current stack frame.
             for (auto i = t->nesting_diff; i > 0; --i) {
                 llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, 0);
                 CurStackFrame = Builder.CreateLoad(CurStackFramePtr, "");
                 CurStackFrameType = CurStackFrame->getType()->getPointerElementType();
             }
-
+            // Through the offset, find  the correct place of the variable in the stack frame.
             llvm::Value* Id = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, t->offset);
-
+            // And load the variable from the correct place.
             if (llvm::dyn_cast<llvm::PointerType>(Id->getType()->getPointerElementType()))
                 Id = Builder.CreateLoad(Id, "temp");
 
@@ -1653,8 +1694,12 @@ llvm::Value* ast_compile(ast t)
         }
         case STR:
         {
+        /*
+         * STRING
+         * t->id is the string.
+         */
             std::string s(t->id);
-            std::vector<unsigned int> StringVector;
+            std::vector<unsigned int> StringVector;  // TODO: IS STRING VECTOR NECESSARY?
             for (char c : s)
                 StringVector.push_back(c);
             StringVector.push_back(0);
@@ -1663,18 +1708,26 @@ llvm::Value* ast_compile(ast t)
         }
         case L_VALUE:
         {
-            ast p = l_value_type(t, 0);
+            /*
+             * L_VALUE
+             * t->first is another l_value, meaning kind l_value or id or string.
+             * t->second is an expression inside the brackets.
+             */
+            ast p = l_value_type(t, 0);  // Find the type of the l_value.
             t->type = p->type;
             free(p);
 
             std::vector<llvm::Value*> indexList;
+            // Compile every expression that may exist in the l_value tree and push it to the vector.
+            // Because of the way we traverse the l_value tree the indexList we will need later to reverse it.
+            // If e.g. we have {id} [expr1] [expr2] [expr3], indexList will be {expr3, expr2, expr1}
             ast ast_iter = t;
             while (ast_iter->first != nullptr) {
                 indexList.push_back(ast_compile(ast_iter->second));
                 ast_iter = ast_iter->first;
             }
-            indexList.push_back(c16(0));
-            std::reverse(indexList.begin(), indexList.end());
+            indexList.push_back(c16(0));  // We push 0 to the list, because it is needed for the GetElementPtrInst.
+            std::reverse(indexList.begin(), indexList.end());  // Reverse the list.
 
             llvm::Value* Id = ast_compile(ast_iter);
 
@@ -1682,6 +1735,7 @@ llvm::Value* ast_compile(ast t)
 //
 //                return Id;
 //            }
+            // Get correct pointer to the element, using the indexList.
             llvm::Type* PointeeType = Id->getType()->getPointerElementType();
             llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
 
@@ -1689,13 +1743,17 @@ llvm::Value* ast_compile(ast t)
         };
         case R_VALUE:
         {
-            llvm::Value* LValue = ast_compile(t->first);
+        /*
+         * R_VALUE
+         * t->first is the l_value.
+         */
+            llvm::Value* LValue = ast_compile(t->first); // Compile l_value.
             t->type = t->first->type;
 
             if (t->first->k == STR)     // String as rvalue does not need to create a load. Just return the pointer
                 return llvm::GetElementPtrInst::Create(LValue->getType()->getPointerElementType(), LValue, llvm::ArrayRef<llvm::Value*>(std::vector<llvm::Value*>{c16(0), c16(0)}), "str_ptr", Builder.GetInsertBlock());
             else
-                return Builder.CreateLoad(LValue, "rvalue");
+                return Builder.CreateLoad(LValue, "rvalue");  // Create Load to this l_value.
         }
     }
 }
@@ -1707,7 +1765,7 @@ void llvm_compile_and_dump(ast t)
     TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
 
     TheFPM = std::make_unique<llvm::legacy::FunctionPassManager>(TheModule.get());
-
+    
     TheFPM->add(llvm::createCFGSimplificationPass());
     TheFPM->add(llvm::createDeadStoreEliminationPass());
     TheFPM->add(llvm::createDeadInstEliminationPass());
