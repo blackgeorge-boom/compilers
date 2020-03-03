@@ -12,21 +12,6 @@ extern "C" {
 #include "auxiliary.h"
 #include "symbol.h"
 
-void print_loop_list ()
-{
-    loop_record t = current_LR;
-
-    printf("===== Loop Records : =====\n");
-
-    while (t != nullptr) {
-        if (t->id == nullptr) printf("Unamed loop\n");
-        else printf("%s\n", t->id);
-        std::cout << t->after_block << std::endl;
-        t = t->previous;
-    }
-
-    printf("==========================\n");
-}
 
 loop_record look_up_loop (char* s)
 {
@@ -41,10 +26,10 @@ loop_record look_up_loop (char* s)
     return nullptr;
 }
 
-ast find_code (char* func_name)
+ast find_code(char* func_name)
 {
     function_code_list temp = current_CL;
-    while (temp != nullptr) { // TODO maybe optimize
+    while (temp != nullptr) {
         if (strcmp(temp->name, func_name) == 0) return temp->code;
         temp = temp->next;
     }
@@ -52,19 +37,9 @@ ast find_code (char* func_name)
     return nullptr;
 }
 
-void print_code_list ()
+
+void insert_func_code(char* func_name, ast code)
 {
-    function_code_list temp = current_CL;
-    printf("===== Current Code List =====\n");
-    while (temp != nullptr) {
-        printf("%s\n", temp->name);
-        temp = temp->next;
-    }
-    printf("=============================\n");
-}
-
-void insert_func_code (char* func_name, ast code) {
-
     auto new_code = new struct function_code_list_t;
     new_code->name = func_name;
     new_code->code = code;
@@ -72,32 +47,36 @@ void insert_func_code (char* func_name, ast code) {
     current_CL = new_code;
 }
 
-SymbolEntry* lookup(char* s) {
+SymbolEntry* lookup(char* s)
+{
     char* name;
     name = s;
     return lookupEntry(name, LOOKUP_ALL_SCOPES, true);
 }
 
-SymbolEntry* insertVariable(char* s, Type t) {
+SymbolEntry* insertVariable(char* s, Type t)
+{
     char* name;
     name = s;
     return newVariable(name, t);
 }
 
-SymbolEntry* insertFunction(char* s, Type t) {
+SymbolEntry* insertFunction(char* s, Type t)
+{
     char* name;
     name = s;
     if (lookupEntry(name, LOOKUP_ALL_SCOPES, false)) {
         if (find_code(name)) fatal("Function %s already defined", name);
         return nullptr;
     }
-//    printf("inserted function %s\n", name);
+
     SymbolEntry* e = newFunction(name);
     e->u.eFunction.resultType = t;
     return e;
 }
 
-SymbolEntry* insertParameter(char* s, Type t, SymbolEntry* f) {
+SymbolEntry* insertParameter(char* s, Type t, SymbolEntry* f)
+{
     char* name;
     name = s;
     PassMode mode = PASS_BY_VALUE;
@@ -109,31 +88,8 @@ SymbolEntry* insertParameter(char* s, Type t, SymbolEntry* f) {
     return e;
 }
 
-void print_ast_node (ast f) {
-
-    printf("====== Node Info =====\n");
-    if (f == nullptr) {
-        printf("nullptr node\n");
-        printf("======================\n");
-        return;
-    }
-
-    printf(" Kind : %d\n", f->k);
-    printf(" Id : %s\n", f->id);
-    printf(" Num : %d\n", f->num);
-    if (f->type == nullptr) printf(" Type : nullptr\n");
-    else {
-        printf(" Type : %d\n", f->type->kind);
-        if (f->type->refType != nullptr)
-            printf("    with refType : %d\n", f->type->refType->kind);
-    }
-    printf(" Num vars : %d\n", f->num_vars);
-    printf("======================\n");
-
-}
-
-
-Type var_def_type (Type t, ast f) {
+Type var_def_type (Type t, ast f)
+{
     if (f == nullptr) return t;
     return typeArray(f->num, var_def_type(t, f->first));
 }
@@ -141,24 +97,24 @@ Type var_def_type (Type t, ast f) {
 /*
  * A tree of l_value will be like:
  * case a)
- *           id
+ *          id
  * case b)
- *              l_value
+ *          l_value
  *          l_value '[' expr ']'
- *      l_value '[' expr ']' '[' expr ']'
+ *          l_value '[' expr ']' '[' expr ']'
  *                ...
- * id '[' expr ']' ... '[' expr ']' '[' expr ']'
+ *          id '[' expr ']' ... '[' expr ']' '[' expr ']'
  * case c)
  *          l_value
- *      l_value '[' expr ']'
- *      str '[' expr ']'
+ *          l_value '[' expr ']'
+ *          str '[' expr ']'
  * case d)
- *        str
+ *          str
  *
  * Keeping that in mind the l_value type will set correctly the type of the f tree.
  * f will be the current ast tree.
  * count will be the number of expressions that we have in brackets until now.
- * Function l_value_type will be called retrospectively traversing the tree as shown above.
+ * Function l_value_type will be called recursively traversing the tree as shown above.
  */
 ast l_value_type (ast f, int count)
 {
@@ -169,6 +125,7 @@ ast l_value_type (ast f, int count)
 
         int i;
         Type temp = e->u.eVariable.type;
+
         // If count is greater than 0 then the ID was an array, so traverse the symbol table to find the type.
         for (i = count; i > 0; --i) {
             if (temp->refType == nullptr)
@@ -191,7 +148,7 @@ ast l_value_type (ast f, int count)
         if (count > 1) {
             error("Too many dimensions for string");
         }
-        else if (count == 1) {  // This will mean that the type is a character. TODO: IS THIS TRUE?
+        else if (count == 1) {  // This will mean that the type is a character.
             temp = temp->refType;
         }
 
@@ -207,7 +164,7 @@ ast l_value_type (ast f, int count)
     if (f->second->type != typeInteger && f->second->type != typeChar)
         error("Array index must be of type int or byte");
     return l_value_type(f->first, count + 1);  // Return after calling the l_value type again,
-                                                      // until f->k is STR or ID
+                                                     // until f->k is STR or ID
 }
 
 /*
@@ -243,8 +200,8 @@ void check_result_type (Type first, Type second, std::string func_name)
     }
 }
 
-void check_parameters (SymbolEntry* f, ast first, ast second, const std::string& call_type) {
-
+void check_parameters (SymbolEntry* f, ast first, ast second, const std::string& call_type)
+{
     ast real_param = first;
     ast real_param_list = second;
     SymbolEntry* func_param = f->u.eFunction.firstArgument;
@@ -275,6 +232,7 @@ void check_parameters (SymbolEntry* f, ast first, ast second, const std::string&
     if (real_param != nullptr || func_param != nullptr)
         fatal("Incorrect number of parameters at %s call", call_type.c_str());
 }
+
 /**
  * Dive into local definitions and create
  * a vector with the llvm types of all function's local variables,
@@ -309,58 +267,4 @@ std::vector<llvm::Type*> var_members(ast t)
         local_def_list = local_def_list->second;
     }
     return result;
-}
-
-std::vector<std::string> fix_arg_names(ast t)
-{
-    SymbolEntry* f = lookup(t->id);
-    destroyEntry(f);
-    Type func_type = typeVoid;
-
-    if (t->type != nullptr) {
-        func_type = t->type;    // Check func or proc
-    }
-
-    f = insertFunction(t->id, func_type);
-    if (f == nullptr) {
-        error("agamisou");    // f == nullptr means, function was declared before
-    }                      // The rest has already been done
-    openScope();
-
-    ast par_def = t->first;         // First is fpar_def
-    ast fpar_def_list = t->second;
-
-    Type par_type = nullptr;
-    std::vector<std::string> Args;
-
-//    SymbolEntry* args = f->u.eFunction.firstArgument;
-
-    while (par_def != nullptr) {
-
-        ast_compile(par_def->second);           // Second is fpar_type
-        par_type = par_def->second->type;
-
-//        args->id = par_def->id;
-        insertParameter(par_def->id, par_type, f);
-
-        Args.emplace_back(par_def->id);
-
-        ast par_list = par_def->first;
-        while (par_list != nullptr) {           // Insert the rest parameters
-//            args = args->u.eParameter.next;
-//            args->id = par_list->id;
-            insertParameter(par_list->id, par_type, f);
-            Args.emplace_back(par_list->id);
-            par_list = par_list->first;         // First is the rest of T_ids.
-        }
-
-        if (fpar_def_list == nullptr)
-            break;
-
-        par_def = fpar_def_list->first;        // Now for the rest of fpar_defs.
-        fpar_def_list = fpar_def_list->second;
-
-//        args = args->u.eParameter.next;
-    }
-    return Args;
 }

@@ -44,8 +44,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast_sem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast_sem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -265,7 +267,10 @@
       <workItem from="1581690227893" duration="11760000" />
       <workItem from="1581968304550" duration="166000" />
       <workItem from="1582299447619" duration="8580000" />
-      <workItem from="1582490143164" duration="3769000" />
+      <workItem from="1582490143164" duration="3923000" />
+      <workItem from="1582552090623" duration="611000" />
+      <workItem from="1582799733397" duration="183000" />
+      <workItem from="1583272658332" duration="2176000" />
     </task>
     <servers />
   </component>
@@ -345,34 +350,34 @@
     <state x="1302" y="182" key="FileChooserDialogImpl/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582494318725" />
     <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580560303817" />
     <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778365860" />
-    <state width="1028" height="649" key="GridCell.Tab.0.bottom" timestamp="1582308173721">
+    <state width="1027" height="653" key="GridCell.Tab.0.bottom" timestamp="1583273680539">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="1028" height="649" key="GridCell.Tab.0.bottom/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582308173721" />
+    <state width="1027" height="653" key="GridCell.Tab.0.bottom/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583273680539" />
     <state width="512" height="334" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
     <state width="1190" height="420" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
     <state width="624" height="428" key="GridCell.Tab.0.bottom/47.27.1319.741@47.27.1319.741" timestamp="1581018247491" />
     <state width="532" height="571" key="GridCell.Tab.0.bottom/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="1028" height="649" key="GridCell.Tab.0.center" timestamp="1582308173721">
+    <state width="1027" height="653" key="GridCell.Tab.0.center" timestamp="1583273680539">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="1028" height="649" key="GridCell.Tab.0.center/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582308173721" />
+    <state width="1027" height="653" key="GridCell.Tab.0.center/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583273680539" />
     <state width="512" height="334" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872787" />
     <state width="624" height="428" key="GridCell.Tab.0.center/47.27.1319.741@47.27.1319.741" timestamp="1581018247489" />
     <state width="532" height="571" key="GridCell.Tab.0.center/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="1028" height="649" key="GridCell.Tab.0.left" timestamp="1582308173721">
+    <state width="1027" height="653" key="GridCell.Tab.0.left" timestamp="1583273680538">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="1028" height="649" key="GridCell.Tab.0.left/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582308173721" />
+    <state width="1027" height="653" key="GridCell.Tab.0.left/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583273680538" />
     <state width="512" height="334" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872786" />
     <state width="624" height="428" key="GridCell.Tab.0.left/47.27.1319.741@47.27.1319.741" timestamp="1581018247488" />
     <state width="532" height="571" key="GridCell.Tab.0.left/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665908" />
-    <state width="1028" height="649" key="GridCell.Tab.0.right" timestamp="1582308173721">
+    <state width="1027" height="653" key="GridCell.Tab.0.right" timestamp="1583273680539">
       <screen x="1024" y="0" width="1680" height="1050" />
     </state>
-    <state width="1028" height="649" key="GridCell.Tab.0.right/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582308173721" />
+    <state width="1027" height="653" key="GridCell.Tab.0.right/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583273680539" />
     <state width="512" height="334" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
     <state width="1190" height="420" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
     <state width="624" height="428" key="GridCell.Tab.0.right/47.27.1319.741@47.27.1319.741" timestamp="1581018247490" />
@@ -434,13 +439,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>256</line>
-          <option name="timeStamp" value="195" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

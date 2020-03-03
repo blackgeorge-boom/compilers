@@ -330,6 +330,7 @@ llvm::Value* ast_compile(ast t)
 
             // A vector that will hold all of the llvm types, necessary for creating the Stack frame of the function.
             std::vector<llvm::Type*> members;
+
             // For every function argument we will push their type to the members vector.
             for (auto& Arg : TheFunction->args()) {
                 //Check the selected type is the type of the Stack Frame of the previous function
@@ -344,9 +345,10 @@ llvm::Value* ast_compile(ast t)
                 SymbolEntry* se = lookup(var_id); // Look up the argument in the Symbol Table.
 
                 if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
-                    /* If the case of the type of the argument is of unknown size array type,
-                     * then push to members a pointer to to the array type.
-                     * e.g. int[][10] -> *int[10] will be pushed TODO: CHECK1
+                    /*
+                     * If the case of the type of the argument is of unknown size array type,
+                     * then push to 'members" a pointer to a single-element array of the array type.
+                     * e.g. int[][10] -> *int[1][10] will be pushed TODO: CHECK1
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
 //                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
@@ -396,9 +398,10 @@ llvm::Value* ast_compile(ast t)
                 StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, offset, ArgName + "_pos");
 
                 if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
-                    /* If the case of the type of the argument is of unknown size array type,
+                    /*
+                     * If the case of the type of the argument is of unknown size array type,
                      * then we need to do a bitcast to pointer to the array type
-                     * e.g. int[][10] -> *int[10]  TODO: CHECK2
+                     * e.g. int[][10] -> *int[1][10]  TODO: CHECK2
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
                     auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
@@ -424,14 +427,14 @@ llvm::Value* ast_compile(ast t)
                     // Finish off the proc.
                     Builder.CreateRetVoid();
                 }
-            } // TODO: ELSE DO SOMETHING????
+            } // TODO: ELSE DO SOMETHING???? I think not.
 
             // Reset current function name.
             func_names.pop_back();
             curr_func_name = func_names.back();
 
             // Validate the generated code, checking for consistency.
-//            llvm::verifyFunction(*TheFunction); # TODO: Same as verify module?
+//            llvm::verifyFunction(*TheFunction); # TODO: Same as verify module? -> I think yes practically.
 
 //            TheFPM->run(*TheFunction);
             // Remove the frame from the vector of stack frames.

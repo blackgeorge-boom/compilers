@@ -21,7 +21,7 @@ void ast_sem(ast t) {
             //if (t->second != nullptr)
             ast_sem(t->second);
             return;
-        case ID: { //TODO for n-dimensional array
+        case ID: {
             SymbolEntry* e = lookup(t->id);
 
             if (e == nullptr)
