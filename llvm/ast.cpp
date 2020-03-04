@@ -348,7 +348,7 @@ llvm::Value* ast_compile(ast t)
                     /*
                      * If the case of the type of the argument is of unknown size array type,
                      * then push to 'members" a pointer to a single-element array of the array type.
-                     * e.g. int[][10] -> *int[1][10] will be pushed TODO: CHECK1
+                     * e.g. int[][10] -> int*[1][10] will be pushed TODO: CHECK1
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
 //                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
@@ -401,7 +401,7 @@ llvm::Value* ast_compile(ast t)
                     /*
                      * If the case of the type of the argument is of unknown size array type,
                      * then we need to do a bitcast to pointer to the array type
-                     * e.g. int[][10] -> *int[1][10]  TODO: CHECK2
+                     * e.g. int[][10] -> int*[1][10]  TODO: CHECK2
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
                     auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
@@ -452,10 +452,10 @@ llvm::Value* ast_compile(ast t)
          * HEADER
          * The header of a function definition or declaration.
          *
-         * t-> id is the name of the function.
-         * t-> first is the first batch of function parameters(fpar_def).
-         * t-> second is the list of the other batches of function parameters(fpar_def_list).
-         * t-> type is the type of the function.
+         * t->id is the name of the function.
+         * t->first is the first batch of function parameters(fpar_def).
+         * t->second is the list of the other batches of function parameters(fpar_def_list).
+         * t->type is the type of the function.
          */
             Type func_type = typeVoid;  // The symbolic type of the function.
             llvm::Type* llvm_func_type = llvm_void;  // The llvm type of the function.
@@ -490,18 +490,19 @@ llvm::Value* ast_compile(ast t)
             llvm::Type* llvm_par_ty= llvm_void;
 
             while (par_def != nullptr) {
-            /* The parameter definition batch (fpar_def):
+            /*
+             * The parameter definition batch (fpar_def):
              *
-             * t -> id is a name of the first parameter
-             * t -> first is a list of all the other parameters in the batch(if they exist).
-             * t -> second is the type of these function parameters
+             * t-> id is a name of the first parameter
+             * t-> first is a list of all the other parameters in the batch(if they exist).
+             * t-> second is the type of these function parameters
              */
                 // Compile the par_def->second in order to find the fpar_type.
                 ast_compile(par_def->second);           // Second is fpar_type
                 par_type = par_def->second->type;
                 llvm_par_ty = to_llvm_type(par_type);   // Get corresponding llvm type
 
-                if (par_type->kind == Type_tag::TYPE_ARRAY)  // TODO: Dont remember why..
+                if (par_type->kind == Type_tag::TYPE_ARRAY)  // TODO: Dont remember why.. -> I think because arrays are always passed by reference, not by value
                     llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
 //                else if (par_type->kind == Type_tag::TYPE_IARRAY)
 //                    llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
@@ -527,7 +528,7 @@ llvm::Value* ast_compile(ast t)
                 fpar_def_list = fpar_def_list->second; // The rest of the list of batches.
             }
 
-            endFunctionHeader(f, func_type);  // Finilize function in Symbol table.
+            endFunctionHeader(f, func_type);  // Finalize function in Symbol table.
             // Create function in llvm.
             llvm::FunctionType* FT =
                     llvm::FunctionType::get(llvm_func_type, Params, false);
@@ -660,12 +661,13 @@ llvm::Value* ast_compile(ast t)
             // Generate code for "then" block.
             llvm::Value* ExitStmt = ast_compile(t->second); // Compile sequence of statements.\
                                                               The llvm::Value of the last statement is returned.
+
             // Only escape statements return a non-null value. These are: EXIT, RETURN, CONTINUE, BREAK.
             if (!ExitStmt)
                 Builder.CreateBr(MergeBB);
 
             // Emit elif block.
-            TheFunction->getBasicBlockList().push_back(ElifBB); // TODO: WHAT TO WRITE HERE?
+            TheFunction->getBasicBlockList().push_back(ElifBB); // Add elif block to the function TODO: (only "then" block has been added so far)
             Builder.SetInsertPoint(ElifBB);
 
             // Generate code for "elif list" blocks
@@ -1003,7 +1005,7 @@ llvm::Value* ast_compile(ast t)
             llvm::Value* S = ast_compile(t->second);  // Compile the expression.
             // UN_PLUS operand must be integer
             t->type = check_op_type(t->second->type, typeInteger, "unary +");
-            return Builder.CreateAdd(c16(0), S, "uaddtmp");  // Create addition instruction of (0 + expression) TODO: Why we do this?
+            return Builder.CreateAdd(c16(0), S, "uaddtmp");  // Create addition instruction of (0 + expression) TODO: Why we do this? I think for consistency
         }
         case UN_MINUS:
         {
@@ -1093,7 +1095,7 @@ llvm::Value* ast_compile(ast t)
         case BIT_NOT:
         {
         /*
-         * BIT NOT EXPRESSION TODO: MAYBE WRITE IT BETTER
+         * BIT NOT EXPRESSION TODO: MAYBE WRITE IT BETTER -> Maybe Not
          * t->first is the expression
          */
             // Compile the expression.
@@ -1464,7 +1466,7 @@ llvm::Value* ast_compile(ast t)
             llvm::Value* Expr = ast_compile(t->second); // Compile the expression.
             if (!Expr) return nullptr;
 
-            // TODO: maybe "and not array"
+            // TODO: maybe "and not array" -> I think it kinda works with arrays
             if (!equalType(t->first->type, t->second->type))
                 error("Type mismatch in assignment");
             t->nesting_diff = t->first->nesting_diff;
@@ -1506,7 +1508,6 @@ llvm::Value* ast_compile(ast t)
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
 
-            // TODO: check if necessary
             // Semantic check of expressions. (Sets correct type of expressions)
             ast_sem(t->first);
             ast_sem(t->second);
@@ -1518,7 +1519,7 @@ llvm::Value* ast_compile(ast t)
             if (!CalleeF)
                 return LogErrorV("Unknown procedure referenced");
 
-            // Argsv will hold the frame and the arguments of the callee procedure.
+            // ArgsV will hold the frame and the arguments of the callee procedure.
             std::vector<llvm::Value*> ArgsV;
             auto n = StackFrames.size();
 
@@ -1526,12 +1527,16 @@ llvm::Value* ast_compile(ast t)
             // there is no parent frame
             if (strcmp(t->id, "main") != 0 &&
                 std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
-                SymbolEntry* se = lookup(t->id);  // Find function in Symbol table.  TODO: se propably not needed. We have proc.
-                // If function is at a different nesting level then load its stack frame  TODO: DO NOT REMEMBER
-                if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
+                /*
+                 * When the caller's nesting level is greater than callee's, it means that they are declared by the same
+                 * outer function (e.g. during mutual recursion). Then, the caller should not provide the callee with his
+                 * own frame, but with his parent frame. So, the caller and the callee will have the same parent frame. TODO
+                 */
+                if (currentScope->nestingLevel > proc->nestingLevel && n > 1) {
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                     ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
                 }
+                // Else the caller must provide his own frame as parent frame for the callee.
                 else
                     ArgsV.push_back(StackFrames.back());
             }
@@ -1550,7 +1555,8 @@ llvm::Value* ast_compile(ast t)
                 if (passByReference)
                     ArgsV.push_back(ast_compile(param->first)); // Compile the l_value of the expression and push it to the vector.
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
-                    // If it's an IARRAY then create pointer to the l_value. TODO: I DONT REMEMBER THE SECOND PART OF THE CONDITION.
+                    // If it's an IARRAY then create pointer to the l_value. TODO: I DONT REMEMBER THE SECOND PART OF THE CONDITION. -> STR is treated by the third case I think.
+                    //                                                              It is treated not like a pointer but like a global string. see: STR case
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c16(0), c16(0) };
                     llvm::Value* Id = ast_compile(param->first);
@@ -1618,14 +1624,6 @@ llvm::Value* ast_compile(ast t)
                     ArgsV.push_back(StackFrames.back());
             }
 
-            // TODO: for all lib functions
-//            if (strcmp(curr_func_name, t->id) == 0 && n > 1) {
-//                llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
-//                ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
-//            }
-//            else if (std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names))
-//                ArgsV.push_back(StackFrames.back());
-
             ast param = t->first;        // The first expression.
             ast param_list = t->second;  // The expression list.
 
@@ -1673,7 +1671,7 @@ llvm::Value* ast_compile(ast t)
             SymbolEntry* se = lookup(t->id);  // Look up the variable in the symbol table.
 
             t->type = se->u.eVariable.type;
-            // TODO: see if unnecessary ??????/ DEN KSERW TI ENNOEIS NIKO MAVR
+
             // Find the nesting difference and the offset of the variable
             // in order to load it correctly from the stack frame.
             t->nesting_diff = int(currentScope->nestingLevel) - se->nestingLevel;
@@ -1702,11 +1700,6 @@ llvm::Value* ast_compile(ast t)
          * t->id is the string.
          */
             std::string s(t->id);
-            std::vector<unsigned int> StringVector;  // TODO: IS STRING VECTOR NECESSARY?
-            for (char c : s)
-                StringVector.push_back(c);
-            StringVector.push_back(0);
-
             return Builder.CreateGlobalString(s, "str");
         }
         case L_VALUE:
@@ -1772,12 +1765,13 @@ void llvm_compile_and_dump(ast t)
     TheFPM->add(llvm::createCFGSimplificationPass());
     TheFPM->add(llvm::createDeadStoreEliminationPass());
     TheFPM->add(llvm::createDeadInstEliminationPass());
-    TheFPM->add(llvm::createMergedLoadStoreMotionPass()); // TODO: check
+    TheFPM->add(llvm::createMergedLoadStoreMotionPass());
     TheFPM->add(llvm::createGVNPass());
     TheFPM->add(llvm::createInstructionCombiningPass());
     TheFPM->add(llvm::createLICMPass()); // Loop Invariant Code Move
     TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
     TheFPM->add(llvm::createConstantHoistingPass());
+
 //    TheFPM->add(llvm::createAggressiveDCEPass());
 //    TheFPM->add(llvm::createReassociatePass());
 //    TheFPM->add(llvm::createEarlyCSEPass());
@@ -1788,14 +1782,12 @@ void llvm_compile_and_dump(ast t)
 //    TheFPM->add(llvm::createSimpleLoopUnrollPass());
 //    TheFPM->add(llvm::createLoopUnrollPass());
 //    TheFPM->add(llvm::createLCSSAPass());
-//    TheFPM->add(llvm::createIndVarSimplifyPass()); // TODO: check
+//    TheFPM->add(llvm::createIndVarSimplifyPass());
 
 //    TheFPM->add(llvm::createCorrelatedValuePropagationPass());
 //    TheFPM->add(llvm::createVerifierPass());
 //    TheFPM->add(llvm::createTailCallEliminationPass());
 //    TheFPM->add(llvm::createLoopIdiomPass());
-
-//    declare_dana_libs();
 
     ast_compile(t);
 
@@ -1807,8 +1799,6 @@ void llvm_compile_and_dump(ast t)
         TheModule->print(llvm::outs(), nullptr);
         return;
     }
-
-//    TheFPM->run(TheModule);
 
     TheModule->print(llvm::errs(), nullptr);
 }

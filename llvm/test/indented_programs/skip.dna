@@ -1,25 +1,30 @@
 def main
-    def baz: z as int[]
+    def baz: z as int[][20], x as int[10]
         var i is int
 
         i := 0
-        if z[i] > z[i+1]:
-            writeInteger: z[i]
-            writeString: " is greater than "
-            writeInteger: z[i+1]
-            writeString:"\n"
-        else:
-            writeInteger: z[i+1]
-            writeString: " is greater than "
-            writeInteger: z[i]
-            writeString:"\n"
+       # if z[i] > z[i+1]:
+       #     writeInteger: z[i]
+       #     writeString: " is greater than "
+       #     writeInteger: z[i+1]
+       #     writeString:"\n"
+       # else:
+       #     writeInteger: z[i+1]
+       #     writeString: " is greater than "
+       #     writeInteger: z[i]
+       #     writeString:"\n"
 
-    var x is int[4]
+    var x y is int[4]
     var i is int
     var b is byte
 
+    y[0] := 1
+    writeInteger: y[0]
+    x := y
+    writeInteger: x[0]
+
     i := 1
-    b := readByte()
-    writeInteger: extend(b)
-    writeChar: b
-    writeByte: b
+    #b := readByte()
+    #writeInteger: extend(b)
+    #writeChar: b
+    #writeByte: b
