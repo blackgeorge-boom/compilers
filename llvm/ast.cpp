@@ -217,11 +217,11 @@ static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
 
 // Useful LLVM helper functions.
 inline llvm::ConstantInt* c8(char c) {
-  return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, false));
+    return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, false));
 }
 
 inline llvm::ConstantInt* c16(int n) {
-  return llvm::ConstantInt::get(TheContext, llvm::APInt(16, n, false));
+    return llvm::ConstantInt::get(TheContext, llvm::APInt(16, n, false));
 }
 
 inline llvm::ConstantPointerNull* llvm_null(llvm::PointerType* llvm_type) {
@@ -365,8 +365,8 @@ llvm::Value* ast_compile(ast t)
             // Create type for the current stack frame.
             llvm::StructType* CurStackFrameType =
                     llvm::StructType::create(TheContext,
-                                              llvm::ArrayRef<llvm::Type*>(members),
-                                              std::string(curr_func_name) + "_type");
+                                             llvm::ArrayRef<llvm::Type*>(members),
+                                             std::string(curr_func_name) + "_type");
             StackFrameTypes.push_back(CurStackFrameType);
             // Create the current stack frame.
             llvm::AllocaInst* CurStackFrame =
@@ -422,19 +422,16 @@ llvm::Value* ast_compile(ast t)
             // TheBody should normally be nullptr after ast_compile()
             auto TheBody = static_cast<llvm::ConstantInt*>(ast_compile(t->third));
 
-            if (TheBody == nullptr) {
-                if (TheFunction->getReturnType() == llvm_void) {
+            if (TheBody == nullptr) {  // That happens if at the end of the function there was no terminating statement.
+                if (TheFunction->getReturnType() == llvm_void) {  // In a procedure it is allowed to end without an exit statement.
                     // Finish off the proc.
                     Builder.CreateRetVoid();
                 }
-            } // TODO: ELSE DO SOMETHING???? I think not.
+            }
 
             // Reset current function name.
             func_names.pop_back();
             curr_func_name = func_names.back();
-
-            // Validate the generated code, checking for consistency.
-//            llvm::verifyFunction(*TheFunction); # TODO: Same as verify module? -> I think yes practically.
 
 //            TheFPM->run(*TheFunction);
             // Remove the frame from the vector of stack frames.
@@ -448,15 +445,15 @@ llvm::Value* ast_compile(ast t)
         }
         case HEADER:
         {
-        /*
-         * HEADER
-         * The header of a function definition or declaration.
-         *
-         * t->id is the name of the function.
-         * t->first is the first batch of function parameters(fpar_def).
-         * t->second is the list of the other batches of function parameters(fpar_def_list).
-         * t->type is the type of the function.
-         */
+            /*
+             * HEADER
+             * The header of a function definition or declaration.
+             *
+             * t->id is the name of the function.
+             * t->first is the first batch of function parameters(fpar_def).
+             * t->second is the list of the other batches of function parameters(fpar_def_list).
+             * t->type is the type of the function.
+             */
             Type func_type = typeVoid;  // The symbolic type of the function.
             llvm::Type* llvm_func_type = llvm_void;  // The llvm type of the function.
 
@@ -490,19 +487,19 @@ llvm::Value* ast_compile(ast t)
             llvm::Type* llvm_par_ty= llvm_void;
 
             while (par_def != nullptr) {
-            /*
-             * The parameter definition batch (fpar_def):
-             *
-             * t-> id is a name of the first parameter
-             * t-> first is a list of all the other parameters in the batch(if they exist).
-             * t-> second is the type of these function parameters
-             */
+                /*
+                 * The parameter definition batch (fpar_def):
+                 *
+                 * t-> id is a name of the first parameter
+                 * t-> first is a list of all the other parameters in the batch(if they exist).
+                 * t-> second is the type of these function parameters
+                 */
                 // Compile the par_def->second in order to find the fpar_type.
                 ast_compile(par_def->second);           // Second is fpar_type
                 par_type = par_def->second->type;
                 llvm_par_ty = to_llvm_type(par_type);   // Get corresponding llvm type
 
-                if (par_type->kind == Type_tag::TYPE_ARRAY)  // TODO: Dont remember why.. -> I think because arrays are always passed by reference, not by value
+                if (par_type->kind == Type_tag::TYPE_ARRAY)  // Create a pointer to the array because arrays are always passed by reference, not by value.
                     llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
 //                else if (par_type->kind == Type_tag::TYPE_IARRAY)
 //                    llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
@@ -547,14 +544,14 @@ llvm::Value* ast_compile(ast t)
         }
         case SEQ:
         {
-        /*
-         * SEQUENCE
-         * Compile
-         * t->first and then t->second
-         * whatever they are. They can be:
-         * local_def local_def_list, fpar_def fpar_def_list, stmt stmt_list, expr expr_list,
-         * respectively.
-         */
+            /*
+             * SEQUENCE
+             * Compile
+             * t->first and then t->second
+             * whatever they are. They can be:
+             * local_def local_def_list, fpar_def fpar_def_list, stmt stmt_list, expr expr_list,
+             * respectively.
+             */
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
 
@@ -569,62 +566,62 @@ llvm::Value* ast_compile(ast t)
         }
         case TYPE:
         {
-        /*
-         * TYPE
-         * Set t->type correctly with var_def_type function.
-         */
+            /*
+             * TYPE
+             * Set t->type correctly with var_def_type function.
+             */
             t->type = var_def_type(t->type, t->first);
             return nullptr;
         }
         case REF_TYPE:
         {
-        /*
-         * REFERENCE TYPE
-         * Set t->type pointer of datatype.
-         */
+            /*
+             * REFERENCE TYPE
+             * Set t->type pointer of datatype.
+             */
             t->type = typePointer(t->type);
             return nullptr;
         }
         case IARRAY_TYPE:
         {
-        /*
-         * UKNOWN SIZE ARRAY TYPE
-         * Set t->type correctly with var_def_type function
-         * and then set it to unknown size array type.
-         */
+            /*
+             * UKNOWN SIZE ARRAY TYPE
+             * Set t->type correctly with var_def_type function
+             * and then set it to unknown size array type.
+             */
             Type my_type = var_def_type(t->type, t->first);
             t->type = typeIArray(my_type);
             return nullptr;
         }
         case CONST:
         {
-        /*
-         * CONSTANT
-         * Set type as integer for symbol table and
-         * constant int of 16 bits in llvm.
-         */
+            /*
+             * CONSTANT
+             * Set type as integer for symbol table and
+             * constant int of 16 bits in llvm.
+             */
             t->type = typeInteger;
             return c16(t->num);
         }
         case CHAR:
         {
-        /*
-        * CHARACTER
-        * Set type as character for symbol table and
-        * constant int of 8 bits(1 byte) in llvm.
-        */
+            /*
+            * CHARACTER
+            * Set type as character for symbol table and
+            * constant int of 8 bits(1 byte) in llvm.
+            */
             t->type = typeChar;
             return c8(t->num);
         }
 
         case IF:
         {
-        /*
-         * IF STATEMENT (without an else)
-         * t->first is the condition of the if statement.
-         * t->second is a block (sequence of statements).
-         * t->third is an elif_list (list of elif statements).
-         */
+            /*
+             * IF STATEMENT (without an else)
+             * t->first is the condition of the if statement.
+             * t->second is a block (sequence of statements).
+             * t->third is an elif_list (list of elif statements).
+             */
             llvm::Value* CondV = ast_compile(t->first);  // Compile the condition.
 
             if (!CondV)
@@ -667,7 +664,7 @@ llvm::Value* ast_compile(ast t)
                 Builder.CreateBr(MergeBB);
 
             // Emit elif block.
-            TheFunction->getBasicBlockList().push_back(ElifBB); // Add elif block to the function TODO: (only "then" block has been added so far)
+            TheFunction->getBasicBlockList().push_back(ElifBB); // Add elif block to the function. (only "then" block has been added so far)
             Builder.SetInsertPoint(ElifBB);
 
             // Generate code for "elif list" blocks
@@ -684,12 +681,12 @@ llvm::Value* ast_compile(ast t)
         }
         case ELIF:
         {
-        /*
-        * ELIF STATEMENT
-        * t->first is the condition of the elif statement.
-        * t->second is a block (sequence of statements).
-        * t->third is an elif_list (list of elif statements).
-        */
+            /*
+            * ELIF STATEMENT
+            * t->first is the condition of the elif statement.
+            * t->second is a block (sequence of statements).
+            * t->third is an elif_list (list of elif statements).
+            */
             llvm::Value* CondV = ast_compile(t->first); // Compile the condition.
 
             if (!CondV)
@@ -755,13 +752,13 @@ llvm::Value* ast_compile(ast t)
         }
         case IF_ELSE:
         {
-        /*
-         * IF STATEMENT (without an else)
-         * t->first is the condition of the if statement.
-         * t->second is the block(sequence of statements) of the if statement.
-         * t->third is an elif_list (list of elif statements).
-         * t->last is the block(sequence of statements) of the else statement.
-         */
+            /*
+             * IF STATEMENT (without an else)
+             * t->first is the condition of the if statement.
+             * t->second is the block(sequence of statements) of the if statement.
+             * t->third is an elif_list (list of elif statements).
+             * t->last is the block(sequence of statements) of the else statement.
+             */
             llvm::Value* CondV = ast_compile(t->first);  // Compile the condition.
 
             if (!CondV)
@@ -829,7 +826,7 @@ llvm::Value* ast_compile(ast t)
                 // Create branch to "ifcont"
                 Builder.CreateBr(MergeBB);
 
-           // Emit merge block.
+            // Emit merge block.
             TheFunction->getBasicBlockList().push_back(MergeBB);
             Builder.SetInsertPoint(MergeBB);
 
@@ -845,11 +842,11 @@ llvm::Value* ast_compile(ast t)
         }
         case LOOP:
         {
-        /*
-         * LOOP STATEMENT
-         * t->id is the name of the loop(can be null).
-         * t->first is the block(sequence of statements) of the loop.
-         */
+            /*
+             * LOOP STATEMENT
+             * t->id is the name of the loop(can be null).
+             * t->first is the block(sequence of statements) of the loop.
+             */
             if (t->id != nullptr)
                 if (look_up_loop(t->id)) {
                     error("Loop identifier already exists!\n");
@@ -905,10 +902,10 @@ llvm::Value* ast_compile(ast t)
         case FPAR_DEF:break;
         case BREAK:
         {
-        /*
-         * BREAK STATEMENT
-         * t->id(can be null) is the name of the loop to be broken out of.
-         */
+            /*
+             * BREAK STATEMENT
+             * t->id(can be null) is the name of the loop to be broken out of.
+             */
             loop_record lr;
             if (t->id != nullptr) {  // If break statement has a name.
                 lr = look_up_loop(t->id);  // Find the loop.
@@ -928,10 +925,10 @@ llvm::Value* ast_compile(ast t)
         }
         case CONTINUE:
         {
-        /*
-        * CONTINUE STATEMENT
-        * t->id(can be null) is the name of the loop to continue from.
-        */
+            /*
+            * CONTINUE STATEMENT
+            * t->id(can be null) is the name of the loop to continue from.
+            */
             loop_record lr;
             if (t->id != nullptr) {  // If break statement has a name.
                 lr = look_up_loop(t->id);  // Find the loop.
@@ -951,9 +948,9 @@ llvm::Value* ast_compile(ast t)
         }
         case EXIT:
         {
-        /*
-         * EXIT STATEMENT
-         */
+            /*
+             * EXIT STATEMENT
+             */
             SymbolEntry* curr_func = lookup(curr_func_name);  // Find the procedure in the Symbol entry.
             // Check if it is a procedure(has no return value).
             Type curr_func_type = curr_func->u.eFunction.resultType;
@@ -966,10 +963,10 @@ llvm::Value* ast_compile(ast t)
         }
         case RETURN:
         {
-        /*
-         * RETURN STATEMENT
-         * t->first is an expression
-         */
+            /*
+             * RETURN STATEMENT
+             * t->first is an expression
+             */
             // Compile the expression.
             llvm::Value* RetV = ast_compile(t->first);
             SymbolEntry* curr_func = lookup(curr_func_name);  // Find the function in the Symbol entry.
@@ -998,21 +995,21 @@ llvm::Value* ast_compile(ast t)
         }
         case UN_PLUS:
         {
-        /*
-         * UN_PLUS EXPRESSION
-         * t->second is the expression
-         */
+            /*
+             * UN_PLUS EXPRESSION
+             * t->second is the expression
+             */
             llvm::Value* S = ast_compile(t->second);  // Compile the expression.
             // UN_PLUS operand must be integer
             t->type = check_op_type(t->second->type, typeInteger, "unary +");
-            return Builder.CreateAdd(c16(0), S, "uaddtmp");  // Create addition instruction of (0 + expression) TODO: Why we do this? I think for consistency
+            return Builder.CreateAdd(c16(0), S, "uaddtmp");  // Create addition instruction of (0 + expression)
         }
         case UN_MINUS:
         {
-        /*
-         * UN_MINUS EXPRESSION
-         * t->second is the expression
-         */
+            /*
+             * UN_MINUS EXPRESSION
+             * t->second is the expression
+             */
             llvm::Value* S = ast_compile(t->second);  // Compile the expression.
             // UN_MINUS operand must be integer
             t->type = check_op_type(t->second->type, typeInteger, "unary -");
@@ -1020,11 +1017,11 @@ llvm::Value* ast_compile(ast t)
         }
         case PLUS:
         {
-        /*
-         * PLUS EXPRESSION
-         * t->first is the  first expression
-         * t->second is the second expression
-         */
+            /*
+             * PLUS EXPRESSION
+             * t->first is the  first expression
+             * t->second is the second expression
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1034,11 +1031,11 @@ llvm::Value* ast_compile(ast t)
         }
         case MINUS:
         {
-        /*
-         * MINUS EXPRESSION
-         * t->first is the  first expression
-         * t->second is the second expression
-         */
+            /*
+             * MINUS EXPRESSION
+             * t->first is the  first expression
+             * t->second is the second expression
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1049,11 +1046,11 @@ llvm::Value* ast_compile(ast t)
         }
         case TIMES:
         {
-        /*
-         * TIMES EXPRESSION
-         * t->first is the  first expression
-         * t->second is the second expression
-         */
+            /*
+             * TIMES EXPRESSION
+             * t->first is the  first expression
+             * t->second is the second expression
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1064,11 +1061,11 @@ llvm::Value* ast_compile(ast t)
         }
         case DIV:
         {
-        /*
-         * DIVISION EXPRESSION
-         * t->first is the  first expression
-         * t->second is the second expression
-         */
+            /*
+             * DIVISION EXPRESSION
+             * t->first is the  first expression
+             * t->second is the second expression
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1079,11 +1076,11 @@ llvm::Value* ast_compile(ast t)
         }
         case MOD:
         {
-        /*
-         * MODULO EXPRESSION
-         * t->first is the  first expression
-         * t->second is the second expression
-         */
+            /*
+             * MODULO EXPRESSION
+             * t->first is the  first expression
+             * t->second is the second expression
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1094,10 +1091,10 @@ llvm::Value* ast_compile(ast t)
         }
         case BIT_NOT:
         {
-        /*
-         * BIT NOT EXPRESSION TODO: MAYBE WRITE IT BETTER -> Maybe Not
-         * t->first is the expression
-         */
+            /*
+             * BIT NOT EXPRESSION
+             * t->first is the expression
+             */
             // Compile the expression.
             llvm::Value* F = ast_compile(t->first);
             // Check expression to be type of character and set type of final expression as character.
@@ -1107,11 +1104,11 @@ llvm::Value* ast_compile(ast t)
         }
         case BIT_AND:
         {
-        /*
-         * BIT AND EXPRESSION
-         * t->first is the first expression
-         * t->second is the second expression
-         */
+            /*
+             * BIT AND EXPRESSION
+             * t->first is the first expression
+             * t->second is the second expression
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1122,11 +1119,11 @@ llvm::Value* ast_compile(ast t)
         }
         case BIT_OR:
         {
-        /*
-         * BIT OR EXPRESSION
-         * t->first is the first expression.
-         * t->second is the second expression.
-         */
+            /*
+             * BIT OR EXPRESSION
+             * t->first is the first expression.
+             * t->second is the second expression.
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1137,10 +1134,10 @@ llvm::Value* ast_compile(ast t)
         }
         case BOOL_NOT:
         {
-        /*
-         * BOOL NOT CONDITION
-         * t->first is the condition
-         */
+            /*
+             * BOOL NOT CONDITION
+             * t->first is the condition
+             */
             // Compile the condition.
             llvm::Value* CondV = ast_compile(t->first);
 
@@ -1166,15 +1163,15 @@ llvm::Value* ast_compile(ast t)
         }
         case BOOL_AND:
         {
-        /*
-         * BOOL AND CONDITION
-         * t->first is the first condition
-         * t->second is the second condition
-         *
-         * We compute the first operand.
-         * If it is zero, result is zero.
-         * Else result is (1 and second operand) = second operand.
-         */
+            /*
+             * BOOL AND CONDITION
+             * t->first is the first condition
+             * t->second is the second condition
+             *
+             * We compute the first operand.
+             * If it is zero, result is zero.
+             * Else result is (1 and second operand) = second operand.
+             */
             llvm::Value* F = ast_compile(t->first);  // Compile first operand.
 
             if (!F)
@@ -1249,15 +1246,15 @@ llvm::Value* ast_compile(ast t)
         }
         case BOOL_OR:
         {
-        /*
-         * BOOL OR X_CONDITION
-         * t->first is the first condition.
-         * t->second is the second condition.
-         *
-         * We compute the first operand.
-         * If it is one, result is one.
-         * Else result is (0 or second operand) = second operand.
-         */
+            /*
+             * BOOL OR X_CONDITION
+             * t->first is the first condition.
+             * t->second is the second condition.
+             *
+             * We compute the first operand.
+             * If it is one, result is one.
+             * Else result is (0 or second operand) = second operand.
+             */
             llvm::Value* F = ast_compile(t->first);  // Compile first operand.
 
             if (!F)
@@ -1330,11 +1327,11 @@ llvm::Value* ast_compile(ast t)
         }
         case EQ:
         {
-        /*
-         * EQUAL X_CONDITION
-         * t->first is the first expression.
-         * t->second is the second expression.
-         */
+            /*
+             * EQUAL X_CONDITION
+             * t->first is the first expression.
+             * t->second is the second expression.
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1348,11 +1345,11 @@ llvm::Value* ast_compile(ast t)
         }
         case NE:
         {
-        /*
-         * NOT EQUAL X_CONDITION
-         * t->first is the first expression.
-         * t->second is the second expression.
-         */
+            /*
+             * NOT EQUAL X_CONDITION
+             * t->first is the first expression.
+             * t->second is the second expression.
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1366,11 +1363,11 @@ llvm::Value* ast_compile(ast t)
         }
         case LT:
         {
-        /*
-         * LESS THAN X_CONDITION
-         * t->first is the first expression.
-         * t->second is the second expression.
-         */
+            /*
+             * LESS THAN X_CONDITION
+             * t->first is the first expression.
+             * t->second is the second expression.
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1388,11 +1385,11 @@ llvm::Value* ast_compile(ast t)
         }
         case GT:
         {
-        /*
-         * GREATER THAN X_CONDITION
-         * t->first is the first expression.
-         * t->second is the second expression.
-         */
+            /*
+             * GREATER THAN X_CONDITION
+             * t->first is the first expression.
+             * t->second is the second expression.
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1410,11 +1407,11 @@ llvm::Value* ast_compile(ast t)
         }
         case LE:
         {
-        /*
-         * LESS THAN OR EQUAL TO X_CONDITION
-         * t->first is the first expression.
-         * t->second is the second expression.
-         */
+            /*
+             * LESS THAN OR EQUAL TO X_CONDITION
+             * t->first is the first expression.
+             * t->second is the second expression.
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1432,11 +1429,11 @@ llvm::Value* ast_compile(ast t)
         }
         case GE:
         {
-        /*
-         * GREATER THAN OR EQUAL TO X_CONDITION
-         * t->first is the first expression.
-         * t->second is the second expression.
-         */
+            /*
+             * GREATER THAN OR EQUAL TO X_CONDITION
+             * t->first is the first expression.
+             * t->second is the second expression.
+             */
             // Compile the expressions.
             llvm::Value* F = ast_compile(t->first);
             llvm::Value* S = ast_compile(t->second);
@@ -1456,17 +1453,16 @@ llvm::Value* ast_compile(ast t)
         case ID_LIST:break;  // This case will never be reached.
         case LET:
         {
-        /*
-         * LET statement
-         * t->first is the l_value
-         * t->second is the expression
-         */
+            /*
+             * LET statement
+             * t->first is the l_value
+             * t->second is the expression
+             */
             llvm::Value* LVal = ast_compile(t->first);  // Compile the l_value.
 
             llvm::Value* Expr = ast_compile(t->second); // Compile the expression.
             if (!Expr) return nullptr;
 
-            // TODO: maybe "and not array" -> I think it kinda works with arrays
             if (!equalType(t->first->type, t->second->type))
                 error("Type mismatch in assignment");
             t->nesting_diff = t->first->nesting_diff;
@@ -1478,12 +1474,12 @@ llvm::Value* ast_compile(ast t)
         }
         case VAR_DEF:
         {
-        /*
-         * VARIABLE DEFINITION
-         * t->id is the id
-         * t->first is the id_list
-         * t->second is the type tree.
-         */
+            /*
+             * VARIABLE DEFINITION
+             * t->id is the id
+             * t->first is the id_list
+             * t->second is the type tree.
+             */
             // Type is computed at var_members
             auto var_type = t->second->type;
             insertVariable(t->id, var_type);  // Insert first Variable to Symbol table.
@@ -1494,16 +1490,16 @@ llvm::Value* ast_compile(ast t)
                 insertVariable(temp->id, var_type);
                 temp = temp->first;
             }
-           return nullptr;
+            return nullptr;
         }
         case PROC_CALL:
         {
-        /*
-         * PROCEDURE CALL
-         * t->id is the name(id) of the function.
-         * t->first is the first expression.
-         * t->second is the expression list.
-         */
+            /*
+             * PROCEDURE CALL
+             * t->id is the name(id) of the function.
+             * t->first is the first expression.
+             * t->second is the expression list.
+             */
             SymbolEntry* proc = lookup(t->id);  // Find the procedure in the Symblol table.
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
@@ -1536,7 +1532,7 @@ llvm::Value* ast_compile(ast t)
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                     ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
                 }
-                // Else the caller must provide his own frame as parent frame for the callee.
+                    // Else the caller must provide his own frame as parent frame for the callee.
                 else
                     ArgsV.push_back(StackFrames.back());
             }
@@ -1555,8 +1551,7 @@ llvm::Value* ast_compile(ast t)
                 if (passByReference)
                     ArgsV.push_back(ast_compile(param->first)); // Compile the l_value of the expression and push it to the vector.
                 else if (func_param->u.eParameter.type->kind == Type_tag::TYPE_IARRAY && param->first->k != STR) {
-                    // If it's an IARRAY then create pointer to the l_value. TODO: I DONT REMEMBER THE SECOND PART OF THE CONDITION. -> STR is treated by the third case I think.
-                    //                                                              It is treated not like a pointer but like a global string. see: STR case
+                    // If it's an IARRAY then create pointer to the l_value. STR is treated by the third case.
                     llvm::Value* Pointer;
                     std::vector<llvm::Value*> indexList{ c16(0), c16(0) };
                     llvm::Value* Id = ast_compile(param->first);
@@ -1695,10 +1690,10 @@ llvm::Value* ast_compile(ast t)
         }
         case STR:
         {
-        /*
-         * STRING
-         * t->id is the string.
-         */
+            /*
+             * STRING
+             * t->id is the string.
+             */
             std::string s(t->id);
             return Builder.CreateGlobalString(s, "str");
         }
@@ -1739,10 +1734,10 @@ llvm::Value* ast_compile(ast t)
         };
         case R_VALUE:
         {
-        /*
-         * R_VALUE
-         * t->first is the l_value.
-         */
+            /*
+             * R_VALUE
+             * t->first is the l_value.
+             */
             llvm::Value* LValue = ast_compile(t->first); // Compile l_value.
             t->type = t->first->type;
 
@@ -1761,7 +1756,7 @@ void llvm_compile_and_dump(ast t)
     TheModule = llvm::make_unique<llvm::Module>("dana program", TheContext);
 
     TheFPM = std::make_unique<llvm::legacy::FunctionPassManager>(TheModule.get());
-    
+
     TheFPM->add(llvm::createCFGSimplificationPass());
     TheFPM->add(llvm::createDeadStoreEliminationPass());
     TheFPM->add(llvm::createDeadInstEliminationPass());
@@ -1927,7 +1922,7 @@ void declare_dana_libs()
     llvm::FunctionType* writeString_type =
             llvm::FunctionType::get(llvm_void,
                                     std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0) },
-                                   false);
+                                    false);
     TheWriteString =
             llvm::Function::Create(writeString_type, llvm::Function::ExternalLinkage,
                                    "writeString", TheModule.get());
@@ -1995,7 +1990,7 @@ void declare_dana_libs()
     llvm::FunctionType* readString_type =
             llvm::FunctionType::get(llvm_void,
                                     std::vector<llvm::Type*>{ llvm_int, llvm::PointerType::get(llvm_byte, 0) },
-                                   false);
+                                    false);
     TheReadString =
             llvm::Function::Create(readString_type, llvm::Function::ExternalLinkage,
                                    "readString", TheModule.get());
@@ -2066,7 +2061,7 @@ void declare_dana_libs()
     llvm::FunctionType* strcmp_type =
             llvm::FunctionType::get(llvm_int,
                                     std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0),
-                                                                      llvm::PointerType::get(llvm_byte, 0) },
+                                                              llvm::PointerType::get(llvm_byte, 0) },
                                     false);
     TheStrcmp =
             llvm::Function::Create(strcmp_type, llvm::Function::ExternalLinkage,
