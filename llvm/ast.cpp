@@ -333,7 +333,7 @@ llvm::Value* ast_compile(ast t)
 
             // For every function argument we will push their type to the members vector.
             for (auto& Arg : TheFunction->args()) {
-                //Check the selected type is the type of the Stack Frame of the previous function
+                // Check if the selected type is the type of the pointer to the Stack Frame of the previous function.
                 if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0)) {
                     members.push_back(Arg.getType());  // Push to members the type of the argument.
                     continue;
@@ -347,8 +347,8 @@ llvm::Value* ast_compile(ast t)
                 if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
                     /*
                      * If the case of the type of the argument is of unknown size array type,
-                     * then push to 'members" a pointer to a single-element array of the array type.
-                     * e.g. int[][10] -> int*[1][10] will be pushed TODO: CHECK1
+                     * then push to "members" a pointer to a single-element array of the array type.
+                     * e.g. int[][10] -> int*[1][10] will be pushed.
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
 //                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
@@ -401,7 +401,11 @@ llvm::Value* ast_compile(ast t)
                     /*
                      * If the case of the type of the argument is of unknown size array type,
                      * then we need to do a bitcast to pointer to the array type
-                     * e.g. int[][10] -> int*[1][10]  TODO: CHECK2
+                     * e.g. int*[10] -> int*[1][10] LAST TODO
+                     * The reason we do this is because we want to be able to use the get element pointer(GEP)
+                     * instruction afterwards.
+                     * Meaning if we had an iarray of int[][10] then by converting it to type of *int[1][10] we can
+                     * load (*int[i][10]) , where i can be greater than 1.
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
                     auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
@@ -469,7 +473,8 @@ llvm::Value* ast_compile(ast t)
             std::vector<llvm::Type*> Params;  // A vector for the function parameters
             std::vector<std::string> Args;  // A vector for the function parameters' types
 
-            // Push the previous stack frame.
+            // Push a pointer to the previous stack frame type
+            // and the previous stack frame.
             if (!StackFrameTypes.empty()) {
                 Params.push_back(StackFrameTypes.back()->getPointerTo());
                 Args.push_back(StackFrames.back()->getName());
@@ -497,7 +502,7 @@ llvm::Value* ast_compile(ast t)
                 // Compile the par_def->second in order to find the fpar_type.
                 ast_compile(par_def->second);           // Second is fpar_type
                 par_type = par_def->second->type;
-                llvm_par_ty = to_llvm_type(par_type);   // Get corresponding llvm type
+                llvm_par_ty = to_llvm_type(par_type);   // Get corresponding llvm type. IArray becomes pointer to array.
 
                 if (par_type->kind == Type_tag::TYPE_ARRAY)  // Create a pointer to the array because arrays are always passed by reference, not by value.
                     llvm_par_ty = llvm::PointerType::get(llvm_par_ty, 0);
@@ -1799,6 +1804,12 @@ void llvm_compile_and_dump(ast t)
 }
 
 llvm::Type* to_llvm_type(Type type) {
+    /*
+     * Get corresponding llvm type.
+     * Special case:
+     * IARRAY returns a pointer to the part of the array that is known.
+     * (e.g. int[][20] -> *int[20])
+     */
     switch(type->kind) {
         case Type_tag::TYPE_VOID:
             return llvm_void;
