@@ -401,7 +401,7 @@ llvm::Value* ast_compile(ast t)
                     /*
                      * If the case of the type of the argument is of unknown size array type,
                      * then we need to do a bitcast to pointer to the array type
-                     * e.g. int*[10] -> int*[1][10] LAST TODO
+                     * e.g. int*[10] -> int*[1][10]
                      * The reason we do this is because we want to be able to use the get element pointer(GEP)
                      * instruction afterwards.
                      * Meaning if we had an iarray of int[][10] then by converting it to type of *int[1][10] we can
