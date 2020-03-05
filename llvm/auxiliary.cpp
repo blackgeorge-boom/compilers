@@ -94,7 +94,7 @@ Type var_def_type (Type t, ast f)
     return typeArray(f->num, var_def_type(t, f->first));
 }
 
-/*
+/**
  * A tree of l_value will be like:
  * case a)
  *          id
@@ -167,7 +167,7 @@ ast l_value_type (ast f, int count)
                                                      // until f->k is STR or ID
 }
 
-/*
+/**
  * Operands must be either both Integer or both Byte
  */
 Type check_op_type(Type first, Type second, std::string op)

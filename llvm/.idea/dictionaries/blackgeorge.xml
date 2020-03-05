@@ -6,7 +6,9 @@
       <w>cstr</w>
       <w>elif</w>
       <w>iarray</w>
+      <w>ifcont</w>
       <w>irreader</w>
+      <w>pointee</w>
       <w>strcat</w>
       <w>strcpy</w>
       <w>strlen</w>

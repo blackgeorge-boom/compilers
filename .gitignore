@@ -122,3 +122,5 @@ tags
 
 ##################
 llvm/llc_test/parser_i
+!llvm/lib.a
+!llvm/our_libs.a

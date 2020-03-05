@@ -9,22 +9,28 @@
 
 // Keep the loop records.
 loop_record current_LR = nullptr;
+
 // Save a code list of every function.
 function_code_list current_CL = nullptr;
+
 // A flag for function mode.
 enum {
     FUNC_DECLARATION,
     FUNC_DEFINITION
 } func_mode;
+
 // A vector of all the functions that we are inside of.
 std::vector<char*> func_names;
+
 // The current function name
 char* curr_func_name;
+
 // A vector of all the function names that are defined in our library
 std::vector<std::string> lib_names{"writeInteger", "writeByte", "writeChar", "writeString",
                                    "readInteger", "readByte", "readChar", "readString",
                                    "extend", "shrink",
                                    "strlen", "strcmp", "strcpy", "strcat"};
+
 // With ast make we create the abstract syntax tree (ast)
 // Not every item of the struct ast will have a value. Some will be null pointer.
 static ast ast_make(kind k, char* s, int n, ast first, ast second, ast third, ast last, Type t) {
@@ -228,8 +234,10 @@ inline llvm::ConstantPointerNull* llvm_null(llvm::PointerType* llvm_type) {
     return llvm::ConstantPointerNull::get(llvm_type);
 }
 
-// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of
-// the function.  This is used for mutable variables etc.
+/**
+ * Create an alloca instruction in the entry block of
+ * the function. This is used for mutable variables etc.
+ */
 static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function* TheFunction,
                                                 const std::string& VarName,
                                                 llvm::Type* VarType)
@@ -251,10 +259,9 @@ llvm::Value* ast_compile(ast t)
 
     switch (t->k) {
 
-
         case PROGRAM:
         {
-            /* PROGRAM
+            /** PROGRAM
              * Case program is only reached at the beginning of ast_compile
              * So the function name is (or is converted to main)
              *
@@ -276,7 +283,7 @@ llvm::Value* ast_compile(ast t)
         }
         case FUNC_DECL:
         {
-            /* FUNCTION DECLARATION
+            /** FUNCTION DECLARATION
              * The declaration of a function.
              *
              * t->first is the header (HEADER)
@@ -291,7 +298,7 @@ llvm::Value* ast_compile(ast t)
 
         case FUNC_DEF:
         {
-            /*
+            /**
              * FUNCTION DEFINITION
              * The definition of a function.
              *
@@ -307,7 +314,7 @@ llvm::Value* ast_compile(ast t)
 
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
 
-            if (!TheFunction)   // If the function is not previously declared, we create it from scratch,\
+            if (!TheFunction)   // If the function is not previously declared, we create it from scratch,
                                 // by compiling the header.
                 TheFunction = static_cast<llvm::Function*>(ast_compile(t->first));
             else
@@ -321,6 +328,7 @@ llvm::Value* ast_compile(ast t)
 
             if (StackFrames.empty()) // That means this is the definition of main.
                 currentScope->negOffset = 0;
+
             // Save the last basic block, in order to return to it.
             llvm::BasicBlock* OldBB = Builder.GetInsertBlock();
 
@@ -333,11 +341,13 @@ llvm::Value* ast_compile(ast t)
 
             // For every function argument we will push their type to the members vector.
             for (auto& Arg : TheFunction->args()) {
+
                 // Check if the selected type is the type of the pointer to the Stack Frame of the previous function.
                 if (static_cast<llvm::PointerType*>(Arg.getType()) == StackFrameTypes.back()->getPointerTo(0)) {
                     members.push_back(Arg.getType());  // Push to members the type of the argument.
                     continue;
                 }
+
                 // Get the name of the argument.
                 std::string ArgName(Arg.getName());
                 char var_id[ArgName.size() + 1];
@@ -345,19 +355,19 @@ llvm::Value* ast_compile(ast t)
                 SymbolEntry* se = lookup(var_id); // Look up the argument in the Symbol Table.
 
                 if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
-                    /*
+                    /**
                      * If the case of the type of the argument is of unknown size array type,
                      * then push to "members" a pointer to a single-element array of the array type.
                      * e.g. int[][10] -> int*[1][10] will be pushed.
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
-//                    auto Tmp = new llvm::BitCastInst(&Arg, llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1),0), "cast", BB);
                     members.push_back(llvm::PointerType::get(llvm::ArrayType::get(PointeeType, 1), 0));
                     continue;
                 }
 
                 members.push_back(Arg.getType());  // Push to members the type of the argument.
             }
+
             // Find all the llvm types of the function's local variables and push them to members.
             std::vector<llvm::Type*> local_vars = var_members(t->second);
             members.insert(members.end(), local_vars.begin(), local_vars.end());
@@ -368,6 +378,7 @@ llvm::Value* ast_compile(ast t)
                                              llvm::ArrayRef<llvm::Type*>(members),
                                              std::string(curr_func_name) + "_type");
             StackFrameTypes.push_back(CurStackFrameType);
+
             // Create the current stack frame.
             llvm::AllocaInst* CurStackFrame =
                     CreateEntryBlockAlloca(TheFunction,
@@ -376,6 +387,7 @@ llvm::Value* ast_compile(ast t)
             StackFrames.push_back(CurStackFrame);
 
             llvm::Value* StructPtr;
+
             // For every function argument we will create the appropriate llvm command, which means store every
             // argument to the stack frame.
             for (auto& Arg : TheFunction->args()) {
@@ -388,6 +400,7 @@ llvm::Value* ast_compile(ast t)
                     Builder.CreateStore(&Arg, StructPtr); // Store the pointer of the previous Stack Frame
                     continue;
                 }
+
                 // Get the name of the argument.
                 std::string ArgName(Arg.getName());
                 char id[ArgName.size() + 1];
@@ -398,13 +411,13 @@ llvm::Value* ast_compile(ast t)
                 StructPtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, offset, ArgName + "_pos");
 
                 if (se->u.eParameter.type->kind == Type_tag::TYPE_IARRAY) {
-                    /*
+                    /**
                      * If the case of the type of the argument is of unknown size array type,
-                     * then we need to do a bitcast to pointer to the array type
+                     * then we need to do a bitcast to pointer to the array type.
                      * e.g. int*[10] -> int*[1][10]
                      * The reason we do this is because we want to be able to use the get element pointer(GEP)
                      * instruction afterwards.
-                     * Meaning if we had an iarray of int[][10] then by converting it to type of *int[1][10] we can
+                     * Meaning that, if we had an iarray of int[][10] then by converting it to type of *int[1][10] we can
                      * load (*int[i][10]) , where i can be greater than 1.
                      */
                     auto PointeeType = to_llvm_type(se->u.eParameter.type->refType);
@@ -438,6 +451,7 @@ llvm::Value* ast_compile(ast t)
             curr_func_name = func_names.back();
 
 //            TheFPM->run(*TheFunction);
+
             // Remove the frame from the vector of stack frames.
             StackFrames.pop_back();
             StackFrameTypes.pop_back();
@@ -449,7 +463,7 @@ llvm::Value* ast_compile(ast t)
         }
         case HEADER:
         {
-            /*
+            /**
              * HEADER
              * The header of a function definition or declaration.
              *
@@ -492,7 +506,7 @@ llvm::Value* ast_compile(ast t)
             llvm::Type* llvm_par_ty= llvm_void;
 
             while (par_def != nullptr) {
-                /*
+                /**
                  * The parameter definition batch (fpar_def):
                  *
                  * t-> id is a name of the first parameter
@@ -549,7 +563,7 @@ llvm::Value* ast_compile(ast t)
         }
         case SEQ:
         {
-            /*
+            /**
              * SEQUENCE
              * Compile
              * t->first and then t->second
@@ -571,7 +585,7 @@ llvm::Value* ast_compile(ast t)
         }
         case TYPE:
         {
-            /*
+            /**
              * TYPE
              * Set t->type correctly with var_def_type function.
              */
@@ -580,7 +594,7 @@ llvm::Value* ast_compile(ast t)
         }
         case REF_TYPE:
         {
-            /*
+            /**
              * REFERENCE TYPE
              * Set t->type pointer of datatype.
              */
@@ -589,7 +603,7 @@ llvm::Value* ast_compile(ast t)
         }
         case IARRAY_TYPE:
         {
-            /*
+            /**
              * UKNOWN SIZE ARRAY TYPE
              * Set t->type correctly with var_def_type function
              * and then set it to unknown size array type.
@@ -600,7 +614,7 @@ llvm::Value* ast_compile(ast t)
         }
         case CONST:
         {
-            /*
+            /**
              * CONSTANT
              * Set type as integer for symbol table and
              * constant int of 16 bits in llvm.
@@ -610,7 +624,7 @@ llvm::Value* ast_compile(ast t)
         }
         case CHAR:
         {
-            /*
+            /**
             * CHARACTER
             * Set type as character for symbol table and
             * constant int of 8 bits(1 byte) in llvm.
@@ -621,7 +635,7 @@ llvm::Value* ast_compile(ast t)
 
         case IF:
         {
-            /*
+            /**
              * IF STATEMENT (without an else)
              * t->first is the condition of the if statement.
              * t->second is a block (sequence of statements).
@@ -632,6 +646,7 @@ llvm::Value* ast_compile(ast t)
             if (!CondV)
                 return nullptr;
             Type expr_type = t->first->type;
+
             // Check if condition is an integer or a character.
             if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -686,7 +701,7 @@ llvm::Value* ast_compile(ast t)
         }
         case ELIF:
         {
-            /*
+            /**
             * ELIF STATEMENT
             * t->first is the condition of the elif statement.
             * t->second is a block (sequence of statements).
@@ -698,6 +713,7 @@ llvm::Value* ast_compile(ast t)
                 return nullptr;
 
             Type expr_type = t->first->type;
+
             // Check if condition is an integer or a character.
             if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -718,7 +734,6 @@ llvm::Value* ast_compile(ast t)
             llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(TheContext, "elifthen", TheFunction);
             llvm::BasicBlock* ElifBB = llvm::BasicBlock::Create(TheContext, "elif");
             llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(TheContext, "elifcont");
-//            llvm::BasicBlock* MergeBB = Builder.GetInsertBlock();
 
             Builder.CreateCondBr(CondV, ThenBB, ElifBB); // Create a conditional branch.
 
@@ -757,8 +772,8 @@ llvm::Value* ast_compile(ast t)
         }
         case IF_ELSE:
         {
-            /*
-             * IF STATEMENT (without an else)
+            /**
+             * IF-ELSE STATEMENT (with an else)
              * t->first is the condition of the if statement.
              * t->second is the block(sequence of statements) of the if statement.
              * t->third is an elif_list (list of elif statements).
@@ -770,6 +785,7 @@ llvm::Value* ast_compile(ast t)
                 return nullptr;
 
             Type expr_type = t->first->type;
+
             // Check if condition is an integer or a character.
             if (!equalType(expr_type, typeInteger) && !equalType(expr_type, typeChar))
                 error("Condition must be Integer or Byte!");
@@ -847,7 +863,7 @@ llvm::Value* ast_compile(ast t)
         }
         case LOOP:
         {
-            /*
+            /**
              * LOOP STATEMENT
              * t->id is the name of the loop(can be null).
              * t->first is the block(sequence of statements) of the loop.
@@ -907,7 +923,7 @@ llvm::Value* ast_compile(ast t)
         case FPAR_DEF:break;
         case BREAK:
         {
-            /*
+            /**
              * BREAK STATEMENT
              * t->id(can be null) is the name of the loop to be broken out of.
              */
@@ -930,7 +946,7 @@ llvm::Value* ast_compile(ast t)
         }
         case CONTINUE:
         {
-            /*
+            /**
             * CONTINUE STATEMENT
             * t->id(can be null) is the name of the loop to continue from.
             */
@@ -953,7 +969,7 @@ llvm::Value* ast_compile(ast t)
         }
         case EXIT:
         {
-            /*
+            /**
              * EXIT STATEMENT
              */
             SymbolEntry* curr_func = lookup(curr_func_name);  // Find the procedure in the Symbol entry.
@@ -968,7 +984,7 @@ llvm::Value* ast_compile(ast t)
         }
         case RETURN:
         {
-            /*
+            /**
              * RETURN STATEMENT
              * t->first is an expression
              */
@@ -1000,7 +1016,7 @@ llvm::Value* ast_compile(ast t)
         }
         case UN_PLUS:
         {
-            /*
+            /**
              * UN_PLUS EXPRESSION
              * t->second is the expression
              */
@@ -1011,7 +1027,7 @@ llvm::Value* ast_compile(ast t)
         }
         case UN_MINUS:
         {
-            /*
+            /**
              * UN_MINUS EXPRESSION
              * t->second is the expression
              */
@@ -1022,7 +1038,7 @@ llvm::Value* ast_compile(ast t)
         }
         case PLUS:
         {
-            /*
+            /**
              * PLUS EXPRESSION
              * t->first is the  first expression
              * t->second is the second expression
@@ -1036,7 +1052,7 @@ llvm::Value* ast_compile(ast t)
         }
         case MINUS:
         {
-            /*
+            /**
              * MINUS EXPRESSION
              * t->first is the  first expression
              * t->second is the second expression
@@ -1051,7 +1067,7 @@ llvm::Value* ast_compile(ast t)
         }
         case TIMES:
         {
-            /*
+            /**
              * TIMES EXPRESSION
              * t->first is the  first expression
              * t->second is the second expression
@@ -1066,7 +1082,7 @@ llvm::Value* ast_compile(ast t)
         }
         case DIV:
         {
-            /*
+            /**
              * DIVISION EXPRESSION
              * t->first is the  first expression
              * t->second is the second expression
@@ -1081,7 +1097,7 @@ llvm::Value* ast_compile(ast t)
         }
         case MOD:
         {
-            /*
+            /**
              * MODULO EXPRESSION
              * t->first is the  first expression
              * t->second is the second expression
@@ -1096,7 +1112,7 @@ llvm::Value* ast_compile(ast t)
         }
         case BIT_NOT:
         {
-            /*
+            /**
              * BIT NOT EXPRESSION
              * t->first is the expression
              */
@@ -1109,7 +1125,7 @@ llvm::Value* ast_compile(ast t)
         }
         case BIT_AND:
         {
-            /*
+            /**
              * BIT AND EXPRESSION
              * t->first is the first expression
              * t->second is the second expression
@@ -1124,7 +1140,7 @@ llvm::Value* ast_compile(ast t)
         }
         case BIT_OR:
         {
-            /*
+            /**
              * BIT OR EXPRESSION
              * t->first is the first expression.
              * t->second is the second expression.
@@ -1139,7 +1155,7 @@ llvm::Value* ast_compile(ast t)
         }
         case BOOL_NOT:
         {
-            /*
+            /**
              * BOOL NOT CONDITION
              * t->first is the condition
              */
@@ -1168,7 +1184,7 @@ llvm::Value* ast_compile(ast t)
         }
         case BOOL_AND:
         {
-            /*
+            /**
              * BOOL AND CONDITION
              * t->first is the first condition
              * t->second is the second condition
@@ -1235,7 +1251,7 @@ llvm::Value* ast_compile(ast t)
 
             Builder.CreateBr(MergeBB);
             // codegen of 'Else' can change the current block, update ElseBB for the PHI.
-            ElseBB = Builder.GetInsertBlock(); // ??
+            ElseBB = Builder.GetInsertBlock(); // From this point on, after we exit BOOL_AND instructions are inserted here
 
             // Emit merge block.
             TheFunction->getBasicBlockList().push_back(MergeBB);
@@ -1251,7 +1267,7 @@ llvm::Value* ast_compile(ast t)
         }
         case BOOL_OR:
         {
-            /*
+            /**
              * BOOL OR X_CONDITION
              * t->first is the first condition.
              * t->second is the second condition.
@@ -1316,7 +1332,7 @@ llvm::Value* ast_compile(ast t)
 
             Builder.CreateBr(MergeBB);
             // codegen of 'Else' can change the current block, update ElseBB for the PHI.
-            ElseBB = Builder.GetInsertBlock(); // ??
+            ElseBB = Builder.GetInsertBlock(); // From this point on, after we exit BOOL_OR instructions are inserted here
 
             // Emit merge block.
             TheFunction->getBasicBlockList().push_back(MergeBB);
@@ -1332,7 +1348,7 @@ llvm::Value* ast_compile(ast t)
         }
         case EQ:
         {
-            /*
+            /**
              * EQUAL X_CONDITION
              * t->first is the first expression.
              * t->second is the second expression.
@@ -1350,7 +1366,7 @@ llvm::Value* ast_compile(ast t)
         }
         case NE:
         {
-            /*
+            /**
              * NOT EQUAL X_CONDITION
              * t->first is the first expression.
              * t->second is the second expression.
@@ -1368,7 +1384,7 @@ llvm::Value* ast_compile(ast t)
         }
         case LT:
         {
-            /*
+            /**
              * LESS THAN X_CONDITION
              * t->first is the first expression.
              * t->second is the second expression.
@@ -1390,7 +1406,7 @@ llvm::Value* ast_compile(ast t)
         }
         case GT:
         {
-            /*
+            /**
              * GREATER THAN X_CONDITION
              * t->first is the first expression.
              * t->second is the second expression.
@@ -1412,7 +1428,7 @@ llvm::Value* ast_compile(ast t)
         }
         case LE:
         {
-            /*
+            /**
              * LESS THAN OR EQUAL TO X_CONDITION
              * t->first is the first expression.
              * t->second is the second expression.
@@ -1434,7 +1450,7 @@ llvm::Value* ast_compile(ast t)
         }
         case GE:
         {
-            /*
+            /**
              * GREATER THAN OR EQUAL TO X_CONDITION
              * t->first is the first expression.
              * t->second is the second expression.
@@ -1458,7 +1474,7 @@ llvm::Value* ast_compile(ast t)
         case ID_LIST:break;  // This case will never be reached.
         case LET:
         {
-            /*
+            /**
              * LET statement
              * t->first is the l_value
              * t->second is the expression
@@ -1479,7 +1495,7 @@ llvm::Value* ast_compile(ast t)
         }
         case VAR_DEF:
         {
-            /*
+            /**
              * VARIABLE DEFINITION
              * t->id is the id
              * t->first is the id_list
@@ -1499,7 +1515,7 @@ llvm::Value* ast_compile(ast t)
         }
         case PROC_CALL:
         {
-            /*
+            /**
              * PROCEDURE CALL
              * t->id is the name(id) of the function.
              * t->first is the first expression.
@@ -1528,16 +1544,16 @@ llvm::Value* ast_compile(ast t)
             // there is no parent frame
             if (strcmp(t->id, "main") != 0 &&
                 std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
-                /*
+                /**
                  * When the caller's nesting level is greater than callee's, it means that they are declared by the same
                  * outer function (e.g. during mutual recursion). Then, the caller should not provide the callee with his
-                 * own frame, but with his parent frame. So, the caller and the callee will have the same parent frame. TODO
+                 * own frame, but with his parent frame. So, the caller and the callee will have the same parent frame.
                  */
                 if (currentScope->nestingLevel > proc->nestingLevel && n > 1) {
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                     ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
                 }
-                    // Else the caller must provide his own frame as parent frame for the callee.
+                // Else the caller must provide his own frame as parent frame for the callee.
                 else
                     ArgsV.push_back(StackFrames.back());
             }
@@ -1584,7 +1600,7 @@ llvm::Value* ast_compile(ast t)
         }
         case FUNC_CALL:
         {
-            /*
+            /**
              * FUNCTION CALL
              * t->id is the name(id) of the function.
              * t->first is the first expression.
@@ -1615,11 +1631,16 @@ llvm::Value* ast_compile(ast t)
             if (strcmp(t->id, "main") != 0 &&
                 std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
                 SymbolEntry* se = lookup(t->id);  // Find function in Symbol table.
-                // If function is at a different nesting level then load its stack frame.
+                /**
+                 * When the caller's nesting level is greater than callee's, it means that they are declared by the same
+                 * outer function (e.g. during mutual recursion). Then, the caller should not provide the callee with his
+                 * own frame, but with his parent frame. So, the caller and the callee will have the same parent frame.
+                 */
                 if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                     ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
                 }
+                // Else the caller must provide his own frame as parent frame for the callee.
                 else
                     ArgsV.push_back(StackFrames.back());
             }
@@ -1664,7 +1685,7 @@ llvm::Value* ast_compile(ast t)
         }
         case ID:
         {
-            /*
+            /**
              * ID of a variable.
              * t->id is the id(name) of the variable.
              */
@@ -1677,15 +1698,17 @@ llvm::Value* ast_compile(ast t)
             t->nesting_diff = int(currentScope->nestingLevel) - se->nestingLevel;
             t->offset = se->u.eVariable.offset;
 
-            llvm::Value* CurStackFrame = StackFrames.back();
+            llvm::Value* CurStackFrame = StackFrames.back(); // A pointer to stack frame struct
             llvm::Type* CurStackFrameType = StackFrameTypes.back();
-            // Load the correct stack frame, by loading sequantially from the current stack frame.
+            // Load the correct stack frame, by loading sequentially from the current stack frame.
             for (auto i = t->nesting_diff; i > 0; --i) {
+                // CurStackFramePtr is a pointer at position 0 of current stack frame which contains a pointer to the parent stack frame
                 llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, 0);
                 CurStackFrame = Builder.CreateLoad(CurStackFramePtr, "");
                 CurStackFrameType = CurStackFrame->getType()->getPointerElementType();
             }
-            // Through the offset, find  the correct place of the variable in the stack frame.
+
+            // Through the offset, find the correct place of the variable in the stack frame.
             llvm::Value* Id = Builder.CreateStructGEP(CurStackFrameType, CurStackFrame, t->offset);
             // And load the variable from the correct place.
             if (llvm::dyn_cast<llvm::PointerType>(Id->getType()->getPointerElementType()))
@@ -1695,7 +1718,7 @@ llvm::Value* ast_compile(ast t)
         }
         case STR:
         {
-            /*
+            /**
              * STRING
              * t->id is the string.
              */
@@ -1704,7 +1727,7 @@ llvm::Value* ast_compile(ast t)
         }
         case L_VALUE:
         {
-            /*
+            /**
              * L_VALUE
              * t->first is another l_value, meaning kind l_value or id or string.
              * t->second is an expression inside the brackets.
@@ -1727,10 +1750,6 @@ llvm::Value* ast_compile(ast t)
 
             llvm::Value* Id = ast_compile(ast_iter);
 
-//            if (ast_iter->k == STR) {
-//
-//                return Id;
-//            }
             // Get correct pointer to the element, using the indexList.
             llvm::Type* PointeeType = Id->getType()->getPointerElementType();
             llvm::Value* Pointer = llvm::GetElementPtrInst::Create(PointeeType, Id, llvm::ArrayRef<llvm::Value*>(indexList), "lvalue_ptr", Builder.GetInsertBlock());
@@ -1739,7 +1758,7 @@ llvm::Value* ast_compile(ast t)
         };
         case R_VALUE:
         {
-            /*
+            /**
              * R_VALUE
              * t->first is the l_value.
              */
@@ -1804,7 +1823,7 @@ void llvm_compile_and_dump(ast t)
 }
 
 llvm::Type* to_llvm_type(Type type) {
-    /*
+    /**
      * Get corresponding llvm type.
      * Special case:
      * IARRAY returns a pointer to the part of the array that is known.
@@ -1823,7 +1842,6 @@ llvm::Type* to_llvm_type(Type type) {
             return llvm::ArrayType::get(to_llvm_type(type->refType),type->size);
         case Type_tag::TYPE_IARRAY:
             return llvm::PointerType::get(to_llvm_type(type->refType),0);
-//            return llvm::ArrayType::get(to_llvm_type(type->refType), 1);
         default:
             return nullptr;
     }

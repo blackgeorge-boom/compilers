@@ -32,7 +32,7 @@
 
 ```shell script
 cd llvm
-mkdir build-dir
+mkdir cmake-build-debug
 cmake ..
 make
 ```
@@ -40,7 +40,7 @@ make
 ### Run
 
 ```shell script
-
+cd llvm
 ./dana [-indent] [-Olevel] [-i] [-f] inputfile
 
 -indent   Offside rule trigger
