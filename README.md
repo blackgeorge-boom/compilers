@@ -53,5 +53,6 @@ cd llvm
 
 ## Authors
 
-Makaris Nikolaos - 03113108
-Mavrogeorgis Nikolaos - 03113087
+[Makaris Nikolaos](https://github.com/Maknikolas) - 03113108
+
+[Mavrogeorgis Nikolaos](https://github.com/blackgeorge-boom) - 03113087
