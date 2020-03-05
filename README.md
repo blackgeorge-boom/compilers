@@ -21,13 +21,14 @@
 * Flex/Bison for the AST (in C)
 * LLVM for the IR code
 
-### Dependencies
+### Dependencies (on Ubuntu 18.04.4 64-bit)
 
 * flex
 * bison
-* cmake 3.12
+* cmake 3.12 (at least)
 * llvm-3.9
-* clang-3.9/clang++-3.9
+* clang-3.9
+* lib32z1-dev
 
 ### Build
 
