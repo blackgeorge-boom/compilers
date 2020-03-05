@@ -25,6 +25,7 @@
 
 * flex
 * bison
+* cmake 3.12
 * llvm-3.9
 * clang-3.9/clang++-3.9
 
