@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="BuildServerSettings">
     <option name="LOGIN" value="" />
     <option name="SERVER_URL" value="http://buildserver" />
@@ -33,8 +51,8 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="dana_llvm" targetName="dana_compiler_indent" />
       <config projectName="dana_llvm" targetName="dana_compiler" />
+      <config projectName="dana_llvm" targetName="dana_compiler_indent" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -44,11 +62,50 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/blackgeorge.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/Untitled Folder/hanoi.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/Untitled Folder/hanoi.dna.orig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/arrayTr.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/bubble.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/hanoi.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/hello.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/length.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/pinakes.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/prwtoi.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/reverse.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/skip.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/string.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/to_be_checked.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/vizener.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/indented/wordBox.dna" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/unindented/bubble.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/unindented/hanoi.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/unindented/hello.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/unindented/my_example.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/unindented/prwtoi.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/unindented/reverse.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented_programs/skip.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lexer.l" beforeDir="false" afterPath="$PROJECT_DIR$/lexer.l" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/Untitled Folder/hanoi.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/Untitled Folder/hanoi.dna.orig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/arrayTr.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/bubble.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/hanoi.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/hello.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/length.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/pinakes.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/prwtoi.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/reverse.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/skip.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/string.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/to_be_checked.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/vizener.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented_programs/wordBox.dna" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unindented_programs/bubble.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unindented_programs/hanoi.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unindented_programs/hello.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unindented_programs/my_example.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unindented_programs/prwtoi.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unindented_programs/reverse.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,25 +130,26 @@
     <select />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
-  <component name="FavoritesManager">
-    <favorites_list name="dana_llvm" />
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectId" id="1P0phsqog4qVGsZq4wUT2bxPvpv" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../README.md" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/test/fail" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -106,27 +164,29 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/test/fail" />
+      <recent name="$PROJECT_DIR$/test/indented" />
       <recent name="$PROJECT_DIR$/llc_test" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/cmake-build-debug" />
     </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-    </key>
   </component>
-  <component name="RunManager" selected="CMake Application.dana_compiler">
-    <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
+  <component name="RunManager" selected="CMake Application.dana_compiler_indent">
+    <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dana_compiler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/gcj2008/triangle_areas.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler">
+    <configuration name="dana_compiler" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented/hanoi.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented_programs/skip.dna" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
+    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented/skip.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -136,18 +196,6 @@
       <item itemvalue="CMake Application.dana_compiler" />
       <item itemvalue="CMake Application.dana_compiler_indent" />
     </list>
-  </component>
-  <component name="ServiceViewManager">
-    <option name="viewStates">
-      <list>
-        <serviceView>
-          <treeState>
-            <expand />
-            <select />
-          </treeState>
-        </serviceView>
-      </list>
-    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -276,11 +324,13 @@
       <workItem from="1583327481339" duration="3763000" />
       <workItem from="1583332424890" duration="3603000" />
       <workItem from="1583407161203" duration="11287000" />
+      <workItem from="1592040513969" duration="5000" />
+      <workItem from="1592040798123" duration="10653000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="2" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -299,7 +349,6 @@
                   </entry>
                 </map>
               </option>
-              <option name="COLUMN_ORDER" />
             </State>
           </value>
         </entry>
@@ -325,122 +374,62 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="1439" y="88" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1582491001723">
-      <screen x="1024" y="0" width="1680" height="1050" />
+    <state x="2452" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592051387370">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="1439" y="88" key="#com.intellij.execution.impl.EditConfigurationsDialog/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582491001723" />
-    <state x="1504" y="27" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580062619967" />
-    <state x="1998" y="121" key="#com.intellij.execution.impl.EditConfigurationsDialog/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489029330" />
-    <state x="453" y="113" key="#com.intellij.execution.impl.EditConfigurationsDialog/51.27.1629.1023@51.27.1629.1023" timestamp="1581255561770" />
-    <state x="1678" y="383" width="576" height="390" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1581706719832">
-      <screen x="1024" y="0" width="1680" height="1050" />
+    <state x="2452" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592051387370" />
+    <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1592044388075">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="1678" y="383" width="576" height="390" key="#com.intellij.fileTypes.FileTypeChooser/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581706719832" />
-    <state x="2361" y="524" width="559" height="390" key="#com.intellij.fileTypes.FileTypeChooser/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489281874" />
-    <state x="560" y="297" width="598" height="210" key="#com.intellij.fileTypes.FileTypeChooser/47.27.1319.741@47.27.1319.741" timestamp="1581006090775" />
-    <state x="685" y="400" width="586" height="390" key="#com.intellij.fileTypes.FileTypeChooser/51.27.1629.1023@51.27.1629.1023" timestamp="1581254428017" />
-    <state x="2382" y="575" width="518" height="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1580489452213">
-      <screen x="1366" y="0" width="2560" height="1440" />
-    </state>
-    <state x="2382" y="575" width="518" height="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489452213" />
-    <state x="1466" y="98" width="1150" height="570" maximized="true" key="DiffContextDialog" timestamp="1580061581006">
-      <screen x="1366" y="0" width="1360" height="768" />
-    </state>
-    <state x="1466" y="98" width="1150" height="570" maximized="true" key="DiffContextDialog/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580061581006" />
-    <state x="1302" y="182" width="374" height="380" key="FileChooserDialogImpl" timestamp="1582494318725">
-      <screen x="1024" y="0" width="1680" height="1050" />
-    </state>
-    <state x="1302" y="182" key="FileChooserDialogImpl/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582494318725" />
-    <state x="1591" y="133" width="374" height="380" key="FileChooserDialogImpl/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580560303817" />
-    <state x="1789" y="477" width="424" height="484" key="FileChooserDialogImpl/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579778365860" />
-    <state width="742" height="484" key="GridCell.Tab.0.bottom" timestamp="1583419019173">
-      <screen x="1024" y="0" width="1680" height="1050" />
+    <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592044388075" />
+    <state width="645" height="594" key="GridCell.Tab.0.bottom" timestamp="1592051865968">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state width="742" height="484" key="GridCell.Tab.0.bottom/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583419019173" />
-    <state width="512" height="334" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
-    <state width="1190" height="420" key="GridCell.Tab.0.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
-    <state width="624" height="428" key="GridCell.Tab.0.bottom/47.27.1319.741@47.27.1319.741" timestamp="1581018247491" />
-    <state width="532" height="571" key="GridCell.Tab.0.bottom/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="742" height="484" key="GridCell.Tab.0.center" timestamp="1583419019172">
-      <screen x="1024" y="0" width="1680" height="1050" />
+    <state width="645" height="594" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592051865968" />
+    <state width="645" height="594" key="GridCell.Tab.0.center" timestamp="1592051865968">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state width="742" height="484" key="GridCell.Tab.0.center/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583419019172" />
-    <state width="512" height="334" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
-    <state width="1190" height="420" key="GridCell.Tab.0.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872787" />
-    <state width="624" height="428" key="GridCell.Tab.0.center/47.27.1319.741@47.27.1319.741" timestamp="1581018247489" />
-    <state width="532" height="571" key="GridCell.Tab.0.center/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="742" height="484" key="GridCell.Tab.0.left" timestamp="1583419019172">
-      <screen x="1024" y="0" width="1680" height="1050" />
+    <state width="645" height="594" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592051865968" />
+    <state width="645" height="594" key="GridCell.Tab.0.left" timestamp="1592051865968">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state width="742" height="484" key="GridCell.Tab.0.left/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583419019172" />
-    <state width="512" height="334" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
-    <state width="1190" height="420" key="GridCell.Tab.0.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872786" />
-    <state width="624" height="428" key="GridCell.Tab.0.left/47.27.1319.741@47.27.1319.741" timestamp="1581018247488" />
-    <state width="532" height="571" key="GridCell.Tab.0.left/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665908" />
-    <state width="742" height="484" key="GridCell.Tab.0.right" timestamp="1583419019172">
-      <screen x="1024" y="0" width="1680" height="1050" />
+    <state width="645" height="594" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592051865968" />
+    <state width="645" height="594" key="GridCell.Tab.0.right" timestamp="1592051865968">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state width="742" height="484" key="GridCell.Tab.0.right/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583419019172" />
-    <state width="512" height="334" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188135" />
-    <state width="1190" height="420" key="GridCell.Tab.0.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580490872788" />
-    <state width="624" height="428" key="GridCell.Tab.0.right/47.27.1319.741@47.27.1319.741" timestamp="1581018247490" />
-    <state width="532" height="571" key="GridCell.Tab.0.right/51.27.1629.1023@51.27.1629.1023" timestamp="1581257665909" />
-    <state width="512" height="334" key="GridCell.Tab.1.bottom" timestamp="1580070188136">
-      <screen x="1366" y="0" width="1360" height="768" />
+    <state width="645" height="594" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592051865968" />
+    <state width="1634" height="342" key="GridCell.Tab.1.bottom" timestamp="1592047707478">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="512" height="334" key="GridCell.Tab.1.bottom/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
-    <state width="981" height="1289" key="GridCell.Tab.1.bottom/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
-    <state width="512" height="334" key="GridCell.Tab.1.center" timestamp="1580070188136">
-      <screen x="1366" y="0" width="1360" height="768" />
+    <state width="1634" height="342" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592047707478" />
+    <state width="1634" height="342" key="GridCell.Tab.1.center" timestamp="1592047707478">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="512" height="334" key="GridCell.Tab.1.center/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
-    <state width="981" height="1289" key="GridCell.Tab.1.center/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
-    <state width="512" height="334" key="GridCell.Tab.1.left" timestamp="1580070188136">
-      <screen x="1366" y="0" width="1360" height="768" />
+    <state width="1634" height="342" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592047707478" />
+    <state width="1634" height="342" key="GridCell.Tab.1.left" timestamp="1592047707477">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="512" height="334" key="GridCell.Tab.1.left/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
-    <state width="981" height="1289" key="GridCell.Tab.1.left/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
-    <state width="512" height="334" key="GridCell.Tab.1.right" timestamp="1580070188136">
-      <screen x="1366" y="0" width="1360" height="768" />
+    <state width="1634" height="342" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592047707477" />
+    <state width="1634" height="342" key="GridCell.Tab.1.right" timestamp="1592047707478">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="512" height="334" key="GridCell.Tab.1.right/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188136" />
-    <state width="981" height="1289" key="GridCell.Tab.1.right/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579782296608" />
-    <state x="418" y="42" key="SettingsEditor" timestamp="1581250582994">
-      <screen x="51" y="27" width="1629" height="1023" />
+    <state width="1634" height="342" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592047707478" />
+    <state x="2450" y="263" width="620" height="522" key="find.popup" timestamp="1592047277274">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2135" y="354" key="SettingsEditor/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489509992" />
-    <state x="344" y="38" key="SettingsEditor/47.27.1319.741@47.27.1319.741" timestamp="1581002716000" />
-    <state x="418" y="42" key="SettingsEditor/51.27.1629.1023@51.27.1629.1023" timestamp="1581250582994" />
-    <state x="1484" y="61" width="432" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1581705118656">
-      <screen x="1024" y="0" width="1680" height="1050" />
-    </state>
-    <state x="1484" y="61" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1581705118656" />
-    <state x="1738" y="45" width="606" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580555887003" />
-    <state x="2066" y="84" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579779256911" />
-    <state x="408" y="70" width="432" height="675" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/47.27.1319.741@47.27.1319.741" timestamp="1581010439314" />
-    <state x="497" y="87" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/51.27.1629.1023@51.27.1629.1023" timestamp="1580845368702" />
-    <state x="-477" y="27" width="2222" height="1108" maximized="true" key="dock-window-1" timestamp="1580838087813">
-      <screen x="51" y="27" width="1629" height="1023" />
-    </state>
-    <state x="111" y="27" width="1160" height="570" key="dock-window-1/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580070188318" />
-    <state x="-477" y="27" width="2222" height="1108" maximized="true" key="dock-window-1/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580384676185" />
-    <state x="1426" y="163" width="901" height="763" key="find.popup" timestamp="1582303847629">
-      <screen x="1024" y="0" width="1680" height="1050" />
-    </state>
-    <state x="1426" y="163" width="901" height="763" key="find.popup/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1582303847629" />
-    <state x="1692" y="119" width="707" height="538" key="find.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580067884396" />
-    <state x="1980" y="223" width="1331" height="990" key="find.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1579781482344" />
-    <state x="363" y="142" width="707" height="538" key="find.popup/47.27.1319.741@47.27.1319.741" timestamp="1581009671498" />
-    <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1583413258673">
-      <screen x="1024" y="0" width="1680" height="1050" />
+    <state x="2450" y="263" width="620" height="522" key="find.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592047277274" />
+    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1592051323957">
+      <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state x="1434" y="87" width="858" height="962" key="search.everywhere.popup/1024.0.1680.1050/0.27.1024.741@1024.0.1680.1050" timestamp="1583413258673" />
-    <state x="369" y="89" width="672" height="678" key="search.everywhere.popup/47.27.1319.741/1366.0.1360.768@1366.0.1360.768" timestamp="1580069445980" />
-    <state x="1991" y="120" width="1305" height="1318" key="search.everywhere.popup/47.27.1319.741/1366.0.2560.1440@1366.0.2560.1440" timestamp="1580489715454" />
-    <state x="369" y="89" width="673" height="679" key="search.everywhere.popup/47.27.1319.741@47.27.1319.741" timestamp="1581009927635" />
-    <state x="449" y="112" width="831" height="937" key="search.everywhere.popup/51.27.1629.1023@51.27.1629.1023" timestamp="1581269329396" />
+    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592051323957" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

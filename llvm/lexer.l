@@ -208,7 +208,7 @@ R[`~@#$^_\{\}\;?.]
 
 ({L})({L}|{D}|"_")*     { yylval.s = strdup(yytext); return T_id; }
 {D}+            { yylval.n = atoi(yytext); return T_const; }
-\'({D}|{L})\' { yylval.n = yytext[1]; return T_char; }
+\'({D}|{L}|{S}|{Q}|{R})\' { yylval.n = yytext[1]; return T_char; }
 
 \'("\\"[ntr0"\"\'""""\\"])\'    {
                                     yylval.n = escape_char(yytext[2]);

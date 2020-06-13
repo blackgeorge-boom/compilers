@@ -1,0 +1,6 @@
+def main
+    var b is byte
+    b := '|'
+    writeChar: b
+
+
