@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <string.h>
 
 //int readInteger() {
 //    int n;
@@ -10,8 +11,18 @@
 //    return n;
 //}
 
+//void printmsg(char *string, int length){
+//
+//    asm(    "int $0x80\n\t"
+//    :
+//    :"a"(4), "b"(1), "c"(string), "d"(length)
+//    );
+//
+//}
+
 void writeByte(unsigned char b) {
     printf("%d", b);
+    fflush(stdout);
 }
 
 unsigned char readByte() {
@@ -32,3 +43,5 @@ unsigned char shrink(int i) {
     }
     return res;
 }
+
+

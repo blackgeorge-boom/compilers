@@ -63,6 +63,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/our_libs.a" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/our_libs.c" beforeDir="false" afterPath="$PROJECT_DIR$/our_libs.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented/skip.dna" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -107,7 +109,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/test/fail" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -122,18 +124,18 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/test/fail" />
       <recent name="$PROJECT_DIR$/test/indented" />
       <recent name="$PROJECT_DIR$/llc_test" />
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/cmake-build-debug" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
   </component>
-  <component name="RunManager" selected="CMake Application.dana_compiler_indent">
+  <component name="RunManager" selected="CMake Application.dana_compiler_indent skip">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -144,7 +146,12 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/fail/66pretty.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
+    <configuration name="dana_compiler_indent skip" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented/skip.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/fail/32byte.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -153,6 +160,7 @@
       <item itemvalue="CMake Application.Build All" />
       <item itemvalue="CMake Application.dana_compiler" />
       <item itemvalue="CMake Application.dana_compiler_indent" />
+      <item itemvalue="CMake Application.dana_compiler_indent skip" />
     </list>
   </component>
   <component name="SvnConfiguration">
@@ -284,7 +292,7 @@
       <workItem from="1583407161203" duration="11287000" />
       <workItem from="1592040513969" duration="5000" />
       <workItem from="1592040798123" duration="11298000" />
-      <workItem from="1592239224482" duration="1696000" />
+      <workItem from="1592239224482" duration="5866000" />
     </task>
     <servers />
   </component>
@@ -336,30 +344,30 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592240920137">
+    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592243384387">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592240920137" />
+    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243384387" />
     <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1592044388075">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592044388075" />
-    <state width="645" height="899" key="GridCell.Tab.0.bottom" timestamp="1592239947824">
+    <state width="552" height="899" key="GridCell.Tab.0.bottom" timestamp="1592243398642">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="645" height="899" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592239947824" />
-    <state width="645" height="899" key="GridCell.Tab.0.center" timestamp="1592239947824">
+    <state width="552" height="899" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398642" />
+    <state width="552" height="899" key="GridCell.Tab.0.center" timestamp="1592243398642">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="645" height="899" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592239947824" />
-    <state width="645" height="899" key="GridCell.Tab.0.left" timestamp="1592239947824">
+    <state width="552" height="899" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398642" />
+    <state width="552" height="899" key="GridCell.Tab.0.left" timestamp="1592243398641">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="645" height="899" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592239947824" />
-    <state width="645" height="899" key="GridCell.Tab.0.right" timestamp="1592239947824">
+    <state width="552" height="899" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398641" />
+    <state width="552" height="899" key="GridCell.Tab.0.right" timestamp="1592243398642">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="645" height="899" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592239947824" />
+    <state width="552" height="899" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398642" />
     <state width="1634" height="342" key="GridCell.Tab.1.bottom" timestamp="1592068378799">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
@@ -376,14 +384,18 @@
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state width="1634" height="342" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592068378799" />
+    <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592243737565">
+      <screen x="1920" y="0" width="1680" height="1050" />
+    </state>
+    <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243737565" />
     <state x="2450" y="263" width="620" height="522" key="find.popup" timestamp="1592047277274">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state x="2450" y="263" width="620" height="522" key="find.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592047277274" />
-    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1592239600196">
+    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1592241594747">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592239600196" />
+    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592241594747" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
