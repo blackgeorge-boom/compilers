@@ -1,6 +1,8 @@
 def main
     var b is byte
-    b := '|'
+    b := shrink(extend('1') + 8)
+    writeChar: b
+    b := '\0'
     writeChar: b
 
 
