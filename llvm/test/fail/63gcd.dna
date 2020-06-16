@@ -30,4 +30,4 @@ def gcd
    
    writeInteger: stupid(100, 932)
    writeInteger: clever(288, 118)
-   writeChar: shrink(clever(26910, 3130))
+   writeByte: shrink(clever(26910, 3130))

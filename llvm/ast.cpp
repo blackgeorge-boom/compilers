@@ -222,6 +222,10 @@ static llvm::Type* llvm_int = llvm::IntegerType::get(TheContext, 16);
 static llvm::Type* llvm_void = llvm::Type::getVoidTy(TheContext);
 
 // Useful LLVM helper functions.
+inline llvm::ConstantInt* c1(char c) {
+    return llvm::ConstantInt::get(TheContext, llvm::APInt(1, c, false));
+}
+
 inline llvm::ConstantInt* c8(char c) {
     return llvm::ConstantInt::get(TheContext, llvm::APInt(8, c, false));
 }
@@ -443,6 +447,12 @@ llvm::Value* ast_compile(ast t)
                 if (TheFunction->getReturnType() == llvm_void) {  // In a procedure it is allowed to end without an exit statement.
                     // Finish off the proc.
                     Builder.CreateRetVoid();
+                }
+                else if (TheFunction->getReturnType() == llvm_byte) {
+                    Builder.CreateRet(c8(0));
+                }
+                else {
+                    Builder.CreateRet(c16(0));
                 }
             }
 
@@ -1207,9 +1217,7 @@ llvm::Value* ast_compile(ast t)
                 F = Builder.CreateIntCast(F, llvm_int, true);
 
             // Convert condition to a bool by comparing non-equal to 0.0.
-            F = Builder.CreateICmpEQ(
-                    F,
-                    c16(0), "finttobit");
+            F = Builder.CreateICmpEQ(F, c16(0), "finttobit");
 
             llvm::Function* TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -1258,7 +1266,7 @@ llvm::Value* ast_compile(ast t)
             Builder.SetInsertPoint(MergeBB);
             llvm::PHINode* PN = Builder.CreatePHI(llvm_bit, 2, "andtmp");
 
-            PN->addIncoming(F, ThenBB);
+            PN->addIncoming(c1(0), ThenBB);
             PN->addIncoming(S, ElseBB);
 
             t->type = typeChar;

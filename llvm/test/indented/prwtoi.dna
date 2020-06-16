@@ -19,7 +19,7 @@ def main
                 if i > n / 2: break
                 elif n % i = 0: return: false
                 i := i + 2
-            return: true
+           return: true
     
     var limit number counter is int
 

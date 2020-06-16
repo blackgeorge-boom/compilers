@@ -64,9 +64,8 @@
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser_indent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_indent.y" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser_unindent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_unindent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fail/63gcd.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/fail/63gcd.dna" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/indented/prwtoi.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented/prwtoi.dna" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented/skip.dna" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -137,7 +136,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.dana_compiler_indent">
+  <component name="RunManager" selected="CMake Application.dana_compiler_indent skip">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -148,12 +147,17 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="dana_compiler_indent prwtoi" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented/prwtoi.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="dana_compiler_indent skip" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/indented/skip.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/fail/45over.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
+    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/fail/63gcd.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -163,6 +167,7 @@
       <item itemvalue="CMake Application.dana_compiler" />
       <item itemvalue="CMake Application.dana_compiler_indent" />
       <item itemvalue="CMake Application.dana_compiler_indent skip" />
+      <item itemvalue="CMake Application.dana_compiler_indent prwtoi" />
     </list>
   </component>
   <component name="SvnConfiguration">
@@ -295,7 +300,7 @@
       <workItem from="1592040513969" duration="5000" />
       <workItem from="1592040798123" duration="11298000" />
       <workItem from="1592239224482" duration="11392000" />
-      <workItem from="1592324204016" duration="3406000" />
+      <workItem from="1592324204016" duration="11007000" />
     </task>
     <servers />
   </component>
@@ -347,50 +352,58 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592329886749">
+    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592334562046">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592329886749" />
+    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592334562046" />
     <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1592246554476">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592246554476" />
-    <state width="1634" height="342" key="GridCell.Tab.0.bottom" timestamp="1592250727352">
+    <state x="2543" y="282" width="424" height="484" key="FileChooserDialogImpl" timestamp="1592336956937">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
-    <state width="1634" height="342" key="GridCell.Tab.0.center" timestamp="1592250727352">
+    <state x="2543" y="282" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592336956937" />
+    <state width="805" height="541" key="GridCell.Tab.0.bottom" timestamp="1592337345550">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
-    <state width="1634" height="342" key="GridCell.Tab.0.left" timestamp="1592250727352">
+    <state width="805" height="541" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592337345550" />
+    <state width="805" height="541" key="GridCell.Tab.0.center" timestamp="1592337345550">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
-    <state width="1634" height="342" key="GridCell.Tab.0.right" timestamp="1592250727352">
+    <state width="805" height="541" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592337345550" />
+    <state width="805" height="541" key="GridCell.Tab.0.left" timestamp="1592337345549">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
-    <state width="1634" height="342" key="GridCell.Tab.1.bottom" timestamp="1592250727353">
+    <state width="805" height="541" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592337345549" />
+    <state width="805" height="541" key="GridCell.Tab.0.right" timestamp="1592337345550">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727353" />
-    <state width="1634" height="342" key="GridCell.Tab.1.center" timestamp="1592250727352">
+    <state width="805" height="541" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592337345550" />
+    <state width="1634" height="342" key="GridCell.Tab.1.bottom" timestamp="1592331994820">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
-    <state width="1634" height="342" key="GridCell.Tab.1.left" timestamp="1592250727352">
+    <state width="1634" height="342" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592331994820" />
+    <state width="1634" height="342" key="GridCell.Tab.1.center" timestamp="1592331994820">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
-    <state width="1634" height="342" key="GridCell.Tab.1.right" timestamp="1592250727353">
+    <state width="1634" height="342" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592331994820" />
+    <state width="1634" height="342" key="GridCell.Tab.1.left" timestamp="1592331994820">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727353" />
+    <state width="1634" height="342" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592331994820" />
+    <state width="1634" height="342" key="GridCell.Tab.1.right" timestamp="1592331994820">
+      <screen x="1920" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1634" height="342" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592331994820" />
     <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592246566168">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
     <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592246566168" />
+    <state x="126" y="27" width="828" height="984" maximized="true" key="dock-window-1" timestamp="1592337490508">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="126" y="27" width="828" height="984" maximized="true" key="dock-window-1/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592337490508" />
     <state x="2450" y="263" width="620" height="522" key="find.popup" timestamp="1592250724792">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
@@ -414,7 +427,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/ast.cpp</url>
-          <line>1526</line>
+          <line>1531</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>

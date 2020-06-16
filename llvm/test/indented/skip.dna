@@ -1,11 +1,8 @@
-def over
-
-   def f
-      writeString: "wrong!!!\n"
-
-   def g
-      def f
-         writeString: "42\n"
-      f
-
-   g
+def primes
+    var x y is byte
+    x := false
+    y := true
+    if x and y:
+        writeString: "wrong!!!"
+    else:
+        writeString: "correct!!!"
