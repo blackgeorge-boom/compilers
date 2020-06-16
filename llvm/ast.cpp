@@ -324,7 +324,7 @@ llvm::Value* ast_compile(ast t)
                 return nullptr;
 
             if (!TheFunction->empty())
-                return (llvm::Function*)LogErrorV("Function cannot be redefined.") ;
+                return (llvm::Function*)LogErrorV("Function cannot be redefined.");
 
             if (StackFrames.empty()) // That means this is the definition of main.
                 currentScope->negOffset = 0;
@@ -1521,7 +1521,7 @@ llvm::Value* ast_compile(ast t)
              * t->first is the first expression.
              * t->second is the expression list.
              */
-            SymbolEntry* proc = lookup(t->id);  // Find the procedure in the Symblol table.
+            SymbolEntry* proc = lookup(t->id);  // Find the procedure in the Symbol table.
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
 

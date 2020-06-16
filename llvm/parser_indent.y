@@ -321,7 +321,7 @@ int main(int argc, char **argv) {
   }
 
   if (yyparse()) return 1;
-  printf("Compilation was successful.\n");
+  printf("Parsing was successful.\n");
 
   initSymbolTable(997);
 //  ast_sem(tree);

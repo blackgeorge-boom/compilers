@@ -58,7 +58,10 @@ SymbolEntry* insertVariable(char* s, Type t)
 {
     char* name;
     name = s;
-    return newVariable(name, t);
+    SymbolEntry* v = newVariable(name, t);
+    if (!v)
+        exit(1);
+    return v;
 }
 
 SymbolEntry* insertFunction(char* s, Type t)

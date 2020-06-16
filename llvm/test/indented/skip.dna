@@ -1,19 +1,11 @@
-def main
+def over
 
-   def correct
-      writeString: "\n---\n"
-      writeString: "1010\n"
+   def f
+      writeString: "wrong!!!\n"
 
-   def lala is byte: a as byte, b as ref byte
-      return: a & b
+   def g
+      def f
+         writeString: "42\n"
+      f
 
-   var a b is byte
-
-   a := true
-   b := false
-   writeByte: true
-   writeByte: false
-   writeByte: a
-   writeByte: b
-   writeByte: lala(false, a)
-   correct
+   g

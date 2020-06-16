@@ -63,8 +63,10 @@
   <component name="ChangeListManager">
     <list default="true" id="e6875524-5b35-4937-869c-a0b5094d4292" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/our_libs.a" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/our_libs.c" beforeDir="false" afterPath="$PROJECT_DIR$/our_libs.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ast.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auxiliary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/auxiliary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser_indent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_indent.y" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser_unindent.y" beforeDir="false" afterPath="$PROJECT_DIR$/parser_unindent.y" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/indented/skip.dna" beforeDir="false" afterPath="$PROJECT_DIR$/test/indented/skip.dna" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -135,7 +137,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.dana_compiler_indent skip">
+  <component name="RunManager" selected="CMake Application.dana_compiler_indent">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -151,7 +153,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/fail/32byte.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
+    <configuration name="dana_compiler_indent" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="test/fail/45over.dna" REDIRECT_INPUT="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dana_llvm" TARGET_NAME="dana_compiler_indent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="dana_llvm" RUN_TARGET_NAME="dana_compiler_indent">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -292,7 +294,8 @@
       <workItem from="1583407161203" duration="11287000" />
       <workItem from="1592040513969" duration="5000" />
       <workItem from="1592040798123" duration="11298000" />
-      <workItem from="1592239224482" duration="5866000" />
+      <workItem from="1592239224482" duration="11392000" />
+      <workItem from="1592324204016" duration="3406000" />
     </task>
     <servers />
   </component>
@@ -344,61 +347,77 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592243384387">
+    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592329886749">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243384387" />
-    <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1592044388075">
+    <state x="2164" y="366" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592329886749" />
+    <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1592246554476">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592044388075" />
-    <state width="552" height="899" key="GridCell.Tab.0.bottom" timestamp="1592243398642">
+    <state x="2448" y="326" width="603" height="396" key="#com.intellij.fileTypes.FileTypeChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592246554476" />
+    <state width="1634" height="342" key="GridCell.Tab.0.bottom" timestamp="1592250727352">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="552" height="899" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398642" />
-    <state width="552" height="899" key="GridCell.Tab.0.center" timestamp="1592243398642">
+    <state width="1634" height="342" key="GridCell.Tab.0.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
+    <state width="1634" height="342" key="GridCell.Tab.0.center" timestamp="1592250727352">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="552" height="899" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398642" />
-    <state width="552" height="899" key="GridCell.Tab.0.left" timestamp="1592243398641">
+    <state width="1634" height="342" key="GridCell.Tab.0.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
+    <state width="1634" height="342" key="GridCell.Tab.0.left" timestamp="1592250727352">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="552" height="899" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398641" />
-    <state width="552" height="899" key="GridCell.Tab.0.right" timestamp="1592243398642">
+    <state width="1634" height="342" key="GridCell.Tab.0.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
+    <state width="1634" height="342" key="GridCell.Tab.0.right" timestamp="1592250727352">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="552" height="899" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243398642" />
-    <state width="1634" height="342" key="GridCell.Tab.1.bottom" timestamp="1592068378799">
+    <state width="1634" height="342" key="GridCell.Tab.0.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
+    <state width="1634" height="342" key="GridCell.Tab.1.bottom" timestamp="1592250727353">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592068378799" />
-    <state width="1634" height="342" key="GridCell.Tab.1.center" timestamp="1592068378799">
+    <state width="1634" height="342" key="GridCell.Tab.1.bottom/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727353" />
+    <state width="1634" height="342" key="GridCell.Tab.1.center" timestamp="1592250727352">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592068378799" />
-    <state width="1634" height="342" key="GridCell.Tab.1.left" timestamp="1592068378799">
+    <state width="1634" height="342" key="GridCell.Tab.1.center/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
+    <state width="1634" height="342" key="GridCell.Tab.1.left" timestamp="1592250727352">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592068378799" />
-    <state width="1634" height="342" key="GridCell.Tab.1.right" timestamp="1592068378799">
+    <state width="1634" height="342" key="GridCell.Tab.1.left/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727352" />
+    <state width="1634" height="342" key="GridCell.Tab.1.right" timestamp="1592250727353">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state width="1634" height="342" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592068378799" />
-    <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592243737565">
+    <state width="1634" height="342" key="GridCell.Tab.1.right/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250727353" />
+    <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592246566168">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592243737565" />
-    <state x="2450" y="263" width="620" height="522" key="find.popup" timestamp="1592047277274">
+    <state x="2539" y="142" width="432" height="763" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592246566168" />
+    <state x="2450" y="263" width="620" height="522" key="find.popup" timestamp="1592250724792">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2450" y="263" width="620" height="522" key="find.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592047277274" />
-    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1592241594747">
+    <state x="2450" y="263" width="620" height="522" key="find.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592250724792" />
+    <state x="2424" y="239" key="run.anything.popup" timestamp="1592248715102">
       <screen x="1920" y="0" width="1680" height="1050" />
     </state>
-    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592241594747" />
+    <state x="2424" y="239" key="run.anything.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592248715102" />
+    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup" timestamp="1592246627187">
+      <screen x="1920" y="0" width="1680" height="1050" />
+    </state>
+    <state x="2330" y="87" width="858" height="962" key="search.everywhere.popup/67.27.1853.1053/1920.0.1680.1050@1920.0.1680.1050" timestamp="1592246627187" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/symbol.c</url>
+          <line>219</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/ast.cpp</url>
+          <line>1526</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
