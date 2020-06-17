@@ -1823,11 +1823,14 @@ void llvm_compile_and_dump(ast t)
     if (bad) {
         fprintf(stderr, "The faulty IR is:\n");
         fprintf(stderr, "------------------------------------------------\n\n");
-        TheModule->print(llvm::outs(), nullptr);
+        TheModule->print(llvm::errs(), nullptr);
         return;
     }
 
-    TheModule->print(llvm::errs(), nullptr);
+    fprintf(stdout, "Compilation was successful.\n");
+    fprintf(stdout, "The IR is:\n");
+    fprintf(stdout, "------------------------------------------------\n\n");
+    TheModule->print(llvm::outs(), nullptr);
 }
 
 llvm::Type* to_llvm_type(Type type) {

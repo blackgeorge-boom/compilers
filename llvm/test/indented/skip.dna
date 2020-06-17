@@ -5,4 +5,6 @@ def primes
     if x and y:
         writeString: "wrong!!!"
     else:
+        (*
+         *)
         writeString: "correct!!!"

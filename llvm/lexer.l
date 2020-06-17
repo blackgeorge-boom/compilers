@@ -19,7 +19,6 @@ int temp = 0;
 int indent_level = 0;
 int indent_mode_flag = 0;	
 int command_line_flag = 0;	
-int boom = 0;
 
 struct stack_t {			
 	int top, flag;			
@@ -46,15 +45,16 @@ R[`~@#$^_\{\}\;?.]
 
 %%
 
-"(*"   		     { BEGIN(SC_COMMENT); }
+"(*"   		     { BEGIN(SC_COMMENT); comment_nesting++; }
 <SC_COMMENT>{
-  "(*"           { ++comment_nesting; }
-  "*"+")"        {	if (comment_nesting) --comment_nesting;
-                 	else 
+  "(*"           { comment_nesting++; }
+  "*"+")"        {	comment_nesting--;
+                    if (comment_nesting == 0) {
                  		if (indent_mode_flag == 0)
                  			BEGIN(INITIAL);
                  		else
                  			BEGIN(INDENT);
+                 	}
                  }
   "*"+           ; 
   [^(*\n]+  	 ; 
@@ -74,13 +74,13 @@ R[`~@#$^_\{\}\;?.]
 			}  
 }
 
-<INDENT>"(*"	{ BEGIN(SC_COMMENT); }
+<INDENT>"(*"	{ BEGIN(SC_COMMENT); comment_nesting++; }
 <INDENT>" "		{ current_line_indent++; }
 <INDENT>"\t"	{ current_line_indent = (current_line_indent + 8) & ~7; }
 <INDENT>"#"		{ BEGIN(ONE_LINE_COMMENT); }
 <INDENT>"\n"	{ current_line_indent = 0; line_number++; /*ignoring blank line*/}
 <INDENT>.		{
-					unput(*yytext);						//put the lexeme back to input stream and return its token later
+					unput(*yytext);				//put the lexeme back to input stream and return its token later
 												//we now care only for the indenting tokens (begin-end)
 
 					if (l != NULL) temp = l->top;				//temp = the top of the stack
@@ -99,9 +99,14 @@ R[`~@#$^_\{\}\;?.]
 						indent_mode_flag = 1;
 						return T_begin;					//we produce a begin token
 					}
-					else if (current_line_indent < temp) {			//if we are left of the driver of the most internal
-												//block we need to close the block (if it was non-empty)
-												//and remove it from the stack
+					else if (current_line_indent < temp && l->next != NULL && l->next->top >= current_line_indent) {
+					    /**
+					     * if we are left of the driver of the most internal
+						 * block we need to close the block (if it was non-empty)
+						 * and remove it from the stack
+						 */
+						fprintf(stdout, "current line indent: %d, temp: %d, l->next->top: %d\n",
+						        current_line_indent, temp, l->next->top);
 						t = l;
 						if (t != NULL) {
 							l = l->next;				//next outer block
@@ -113,12 +118,12 @@ R[`~@#$^_\{\}\;?.]
 								indent_mode_flag = 0;
 								BEGIN(INITIAL);
 							}
-							else{
+							else {
 								BEGIN(INDENT);
 							}
 							if (t->flag == 1){			//if this was a non empty block, we need to 
 								indent_level--;			//close it, reducing the depth of indentation
-								free(t);			//remove from stack
+								free(t);			    //remove from stack
 								return T_end;			//and producing a T_end
 							}
 							else{
@@ -132,12 +137,12 @@ R[`~@#$^_\{\}\;?.]
 						if (t != NULL) {
 							indent_mode_flag = 0;	
 							BEGIN(INITIAL);
-							if (t->flag == 1){			//if the block was non empty, we don't remove
-												//the block from the stack, because the driver that just closed it
-												//may begin a new block later, in the same depth of indentation
-								indent_level--;			//so, we only close the block reducing the depth of indentation
-								t->flag = 0;			//reseting the flag
-								return T_end;			//and producing an end-token
+							if (t->flag == 1){		//if the block was non empty, we don't remove
+												    //the block from the stack, because the driver that just closed it
+												    //may begin a new block later, in the same depth of indentation
+								indent_level--;		//so, we only close the block reducing the depth of indentation
+								t->flag = 0;		//resetting the flag
+								return T_end;		//and producing an end-token
 							}
 						}
 					}
@@ -145,7 +150,8 @@ R[`~@#$^_\{\}\;?.]
 
 
 <<EOF>>		 	{
-					
+				    if (comment_nesting != 0)
+				        yyerror("Unfinished multiline comment.\n");
 					if (indent_level != 0){
 						if(l != NULL){
 							t = l;		

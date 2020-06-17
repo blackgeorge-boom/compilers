@@ -16,7 +16,6 @@ void debug (const char *msg);
 
 extern int line_number;
 extern int command_line_flag;
-extern int boom;
 ast tree;
 
 struct stack_t {      
@@ -287,8 +286,7 @@ x_cond:
 
 void yyerror (const char *msg) {
   fprintf(stderr, "Dana error: %s\n", msg);
-  fprintf(stderr, "Aborting, I've had enough with line %d and boom is %d\n",
-          line_number, boom);
+  fprintf(stderr, "Aborting, I've had enough with line %d\n", line_number);
   exit(1);
 }
 
