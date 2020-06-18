@@ -1,10 +1,4 @@
 def primes
-    var x y is byte
-    x := false
-    y := true
-    if x and y:
-        writeString: "wrong!!!"
-    else:
-        (*
-         *)
-        writeString: "correct!!!"
+    var x
+        y is int
+    x := 2

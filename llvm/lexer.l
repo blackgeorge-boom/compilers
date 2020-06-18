@@ -153,7 +153,7 @@ R[`~@#$^_\{\}\;?.]
 				    if (comment_nesting != 0)
 				        yyerror("Unfinished multiline comment.\n");
 					if (indent_level != 0){
-						if(l != NULL){
+						if(l != NULL) {
 							t = l;		
 							indent_level--;	
 							l = l->next;

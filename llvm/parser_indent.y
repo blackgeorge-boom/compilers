@@ -115,13 +115,14 @@ program:
   func_def { tree = $$ = ast_program($1); }
 ;
 
-/* 
+/*
  * Lexer must have put begin/end tokens after function
- * definitions, due to identation. 
+ * definitions, due to identation.
  */
 
 func_def:
   "def" header "begin" local_def_list stmt stmt_list "end" { $$ = ast_func_def($2, $4, ast_seq($5, $6)); }
+|  "def" header "begin" local_def_list "begin" stmt stmt_list "end" "end" { $$ = ast_func_def($2, $4, ast_seq($6, $7)); }
 ;
 
 
@@ -149,6 +150,7 @@ fpar_def:
 id_list:
   /* nothing */ { $$ = NULL; }
 | T_id id_list { $$ = ast_id_list($1, $2); }
+| "begin" T_id id_list "end" { $$ = ast_id_list($2, $3); }
 ;
 
 data_type:
@@ -163,7 +165,7 @@ fpar_type:
   type { $$ = $1; }
 | "ref" data_type { $$ = ast_ref_type($2); }
 | data_type '[' ']' int_const_list { $$ = ast_iarray_type($4, $1); }
-;   
+;
 
 int_const_list:
   /* nothing */ { $$ = NULL; }
@@ -182,6 +184,7 @@ func_decl:
 
 var_def:
   "var" T_id id_list "is" type { $$ = ast_var_def($2, $3, $5); }
+| "var" T_id "begin" id_list "is" type "end" { $$ = ast_var_def($2, $4, $6); }
 ;
 
 stmt:

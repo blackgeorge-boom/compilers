@@ -59,4 +59,5 @@ if [[ ${file} != "" ]]; then
     rm ${name}_asm.s
 
 	./${name}.out
+	rm ${name}.out
 fi
