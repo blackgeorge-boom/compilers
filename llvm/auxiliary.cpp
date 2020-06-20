@@ -54,6 +54,13 @@ SymbolEntry* lookup(char* s)
     return lookupEntry(name, LOOKUP_ALL_SCOPES, true);
 }
 
+SymbolEntry* lookup_weak(char* s)
+{
+    char* name;
+    name = s;
+    return lookupEntry(name, LOOKUP_ALL_SCOPES, false);
+}
+
 SymbolEntry* insertVariable(char* s, Type t)
 {
     char* name;

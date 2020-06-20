@@ -105,8 +105,6 @@ R[`~@#$^_\{\}\;?.]
 						 * block we need to close the block (if it was non-empty)
 						 * and remove it from the stack
 						 */
-						fprintf(stdout, "current line indent: %d, temp: %d, l->next->top: %d\n",
-						        current_line_indent, temp, l->next->top);
 						t = l;
 						if (t != NULL) {
 							l = l->next;				//next outer block

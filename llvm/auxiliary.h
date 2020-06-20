@@ -12,6 +12,7 @@
  *******************************************/
 
 SymbolEntry* lookup(char* s);
+SymbolEntry* lookup_weak(char* s);
 SymbolEntry* insertVariable(char* s, Type t);
 
 /**
@@ -146,5 +147,7 @@ extern char* curr_func_name;
 std::vector<llvm::Type*> var_members(ast t);
 
 std::vector<std::string> fix_arg_names(ast t);
+
+extern std::vector<std::string> lib_names;
 
 #endif //DANA_LLVM_AUXILIARY_H

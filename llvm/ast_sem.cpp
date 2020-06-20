@@ -317,7 +317,17 @@ void ast_sem(ast t) {
         }
         case FUNC_CALL:
         {
-            SymbolEntry* func = lookup(t->id);
+            bool isLibraryFunction =
+                    std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) != std::end(lib_names);
+
+            std::string underscore_t_id = "_" + std::string{t->id};
+
+            SymbolEntry* func = lookup_weak(t->id);  // Find the function in the Symbol table.
+            if (!func && isLibraryFunction)
+                func = lookup((&underscore_t_id[0]));
+            if (!func)
+                fatal("No such function exists.");
+
             if (func->u.eFunction.resultType == typeVoid)
                 fatal("Function must have a return type\n");
             ast_sem(t->first);

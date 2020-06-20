@@ -20,23 +20,24 @@
 //
 //}
 
-void writeByte(unsigned char b) {
-    printf("%d", b);
-    fflush(stdout);
-}
 
-unsigned char readByte() {
+unsigned char _readByte() {
     unsigned int c;
     scanf("%u", &c); // Maybe results in conversion errors but im ok
     return c;
 }
 
-int extend(unsigned char b) {
+void _writeByte(unsigned char b) {
+    printf("%d", b);
+    fflush(stdout);
+}
+
+int _extend(unsigned char b) {
     int res = b;
     return res;
 }
 
-unsigned char shrink(int i) {
+unsigned char _shrink(int i) {
     unsigned char res = i;
     if (i > 255) {
         res = i % 256;

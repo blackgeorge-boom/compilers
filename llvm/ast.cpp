@@ -294,7 +294,17 @@ llvm::Value* ast_compile(ast t)
              */
             func_mode = FUNC_DECLARATION; // Set the flag for header
 
+            curr_func_name = t->first->id;  // Set the current function name
+            std::string prefix {func_names.back()};
+            prefix = prefix + "_" + std::string{curr_func_name};
+            curr_func_name = &prefix[0];
+            func_names.push_back(curr_func_name);  // Put the function name on the function name list
+
             llvm::Function* V = static_cast<llvm::Function*>(ast_compile(t->first)); // Compile the header
+
+            func_names.pop_back();
+            curr_func_name = func_names.back();
+
             closeScope();
 
             return nullptr;
@@ -314,6 +324,12 @@ llvm::Value* ast_compile(ast t)
             func_mode = FUNC_DEFINITION;  // Set the flag for header
 
             curr_func_name = t->first->id;  // Set the current function name
+            std::string prefix;
+            if (!func_names.empty()) {
+                prefix = func_names.back();
+                prefix = prefix + "_" + std::string{curr_func_name};
+                curr_func_name = &prefix[0];
+            }
             func_names.push_back(curr_func_name);  // Put the function name on the function name list
 
             llvm::Function* TheFunction = TheModule->getFunction(curr_func_name);
@@ -561,7 +577,7 @@ llvm::Value* ast_compile(ast t)
 
             llvm::Function* F =
                     llvm::Function::Create(FT, llvm::Function::ExternalLinkage,
-                                           t->id, TheModule.get());
+                                           curr_func_name, TheModule.get());
 
             // Set names for all arguments.
             unsigned Idx = 0;
@@ -982,11 +998,19 @@ llvm::Value* ast_compile(ast t)
             /**
              * EXIT STATEMENT
              */
-            SymbolEntry* curr_func = lookup(curr_func_name);  // Find the procedure in the Symbol entry.
+            char* real_func_name = curr_func_name;
+            std::string temp {curr_func_name};
+            if (func_names.size() > 1) {
+               int prefix_size = strlen(func_names[func_names.size() - 2]);
+               temp.erase(0, prefix_size + 1);
+               real_func_name = &temp[0];
+            }
+            SymbolEntry* curr_func = lookup(real_func_name);  // Find the procedure in the Symbol entry.
+
             // Check if it is a procedure(has no return value).
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = typeVoid;
-            check_result_type(curr_func_type, return_type, curr_func_name);
+            check_result_type(curr_func_type, return_type, real_func_name);
 
             Builder.CreateRetVoid();  // Create a return void.
 
@@ -1000,11 +1024,32 @@ llvm::Value* ast_compile(ast t)
              */
             // Compile the expression.
             llvm::Value* RetV = ast_compile(t->first);
-            SymbolEntry* curr_func = lookup(curr_func_name);  // Find the function in the Symbol entry.
+
+            char* real_func_name = (char *)malloc(strlen(curr_func_name) * sizeof(char));
+            strcpy(real_func_name, curr_func_name);
+            std::string temp {curr_func_name};
+            if (func_names.size() > 1) {
+                int prefix_size = strlen(func_names[func_names.size() - 2]);
+                temp.erase(0, prefix_size + 1);
+                real_func_name = &temp[0];
+            }
+            bool isLibraryFunction =
+                    std::find(std::begin(lib_names), std::end(lib_names), std::string{real_func_name}) != std::end(lib_names);
+
+            std::string underscore_t_id = "_" + std::string{real_func_name};
+
+            SymbolEntry* curr_func = lookup_weak(real_func_name);  // Find the function in the Symbol table.
+            if (!curr_func && isLibraryFunction) {
+                curr_func = lookup((&underscore_t_id[0]));
+                strcpy(real_func_name, &underscore_t_id[0]);
+            }
+            if (!curr_func)
+                fatal("No such function exists.");
+
             // Check if the type of the expression is the same as that of the function.
             Type curr_func_type = curr_func->u.eFunction.resultType;
             Type return_type = t->first->type;
-            check_result_type(curr_func_type, return_type, curr_func_name);
+            check_result_type(curr_func_type, return_type, real_func_name);
 
             // Cast byte to int if necessary
             if (equalType(curr_func_type, typeInteger) && equalType(return_type, typeChar))
@@ -1529,7 +1574,17 @@ llvm::Value* ast_compile(ast t)
              * t->first is the first expression.
              * t->second is the expression list.
              */
-            SymbolEntry* proc = lookup(t->id);  // Find the procedure in the Symbol table.
+            bool isLibraryFunction =
+                    std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) != std::end(lib_names);
+
+            std::string underscore_t_id = "_" + std::string{t->id};
+
+            SymbolEntry* proc = lookup_weak(t->id);  // Find the procedure in the Symbol table.
+            if (!proc && isLibraryFunction)
+                proc = lookup((&underscore_t_id[0]));
+            if (!proc)
+                fatal("No such procedure exists.");
+
             if (proc->u.eFunction.resultType != typeVoid)
                 fatal("Cannot call function as a procedure\n");
 
@@ -1540,18 +1595,27 @@ llvm::Value* ast_compile(ast t)
             check_parameters(proc, t->first, t->second, "proc");
 
             // Look up the name in the global module table.
-            llvm::Function* CalleeF = TheModule->getFunction(t->id);
-            if (!CalleeF)
-                return LogErrorV("Unknown procedure referenced");
+            // Find the inner most defined function with this name based on nesting difference.
+            char* parent_func_name = func_names[func_names.size() - 1 - currentScope->nestingLevel + proc->nestingLevel];
+            std::string temp_func_name = std::string{parent_func_name} + underscore_t_id;
+            char* func_name = &temp_func_name[0];
+
+            llvm::Function* CalleeF = TheModule->getFunction(func_name);
+            if (!CalleeF){
+                if (isLibraryFunction) {
+                    CalleeF = TheModule->getFunction(&underscore_t_id[0]);
+                }
+                else
+                    return LogErrorV("Unknown procedure referenced");
+            }
 
             // ArgsV will hold the frame and the arguments of the callee procedure.
             std::vector<llvm::Value*> ArgsV;
             auto n = StackFrames.size();
 
             // If function is "main" or one of the lib functions,
-            // there is no parent frame
-            if (strcmp(t->id, "main") != 0 &&
-                std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
+            // there is no parent frame so skip this statement
+            if (strcmp(t->id, "main") != 0 && (!isLibraryFunction || isLibraryFunction && TheModule->getFunction(func_name))) {
                 /**
                  * When the caller's nesting level is greater than callee's, it means that they are declared by the same
                  * outer function (e.g. during mutual recursion). Then, the caller should not provide the callee with his
@@ -1567,7 +1631,7 @@ llvm::Value* ast_compile(ast t)
             }
 
             ast param = t->first;        // The first expression.
-            ast param_list = t->second;  // The exrpession list.
+            ast param_list = t->second;  // The expression list.
 
             SymbolEntry* func_param = proc->u.eFunction.firstArgument;
             bool passByReference;
@@ -1614,7 +1678,17 @@ llvm::Value* ast_compile(ast t)
              * t->first is the first expression.
              * t->second is the expression list.
              */
-            SymbolEntry* func = lookup(t->id);  // Find the function in the Symbol table.
+            bool isLibraryFunction =
+                    std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) != std::end(lib_names);
+
+            std::string underscore_t_id = "_" + std::string{t->id};
+
+            SymbolEntry* func = lookup_weak(t->id);  // Find the function in the Symbol table.
+            if (!func && isLibraryFunction)
+                func = lookup((&underscore_t_id[0]));
+            if (!func)
+                fatal("No such function exists.");
+
             if (func->u.eFunction.resultType == typeVoid)
                 fatal("Function must have a return type\n");
 
@@ -1626,25 +1700,33 @@ llvm::Value* ast_compile(ast t)
             t->type = func->u.eFunction.resultType;
 
             // Look up the name in the global module table.
-            llvm::Function* CalleeF = TheModule->getFunction(t->id);
-            if (!CalleeF)
-                return LogErrorV("Unknown function referenced");
+            // Find the inner most defined function with this name based on nesting difference.
+            char* parent_func_name = func_names[func_names.size() - 1 - currentScope->nestingLevel + func->nestingLevel];
+            std::string temp_func_name = std::string{parent_func_name} + underscore_t_id;
+            char* func_name = &temp_func_name[0];
 
-            // Argsv will hold the frame and the arguments of the callee procedure.
+            llvm::Function* CalleeF = TheModule->getFunction(func_name);
+            if (!CalleeF) {
+                if (isLibraryFunction) {
+                    CalleeF = TheModule->getFunction(&underscore_t_id[0]);
+                }
+                else
+                    return LogErrorV("Unknown function referenced");
+            }
+
+            // ArgsV will hold the frame and the arguments of the callee procedure.
             std::vector<llvm::Value*> ArgsV;
             auto n = StackFrames.size();
 
             // If function is "main" or one of the lib functions,
-            // there is no parent frame
-            if (strcmp(t->id, "main") != 0 &&
-                std::find(std::begin(lib_names), std::end(lib_names), std::string{t->id}) == std::end(lib_names)) {
-                SymbolEntry* se = lookup(t->id);  // Find function in Symbol table.
+            // there is no parent frame so skip this statement
+            if (strcmp(t->id, "main") != 0 && (!isLibraryFunction || isLibraryFunction && TheModule->getFunction(func_name))) {
                 /**
                  * When the caller's nesting level is greater than callee's, it means that they are declared by the same
                  * outer function (e.g. during mutual recursion). Then, the caller should not provide the callee with his
                  * own frame, but with his parent frame. So, the caller and the callee will have the same parent frame.
                  */
-                if (currentScope->nestingLevel > se->nestingLevel && n > 1) {
+                if (currentScope->nestingLevel > func->nestingLevel && n > 1) {
                     llvm::Value* CurStackFramePtr = Builder.CreateStructGEP(StackFrameTypes.back(), StackFrames.back(), 0);
                     ArgsV.push_back(Builder.CreateLoad(CurStackFramePtr, ""));
                 }
@@ -1898,7 +1980,7 @@ void declare_dana_libs()
     char* src = &src_str[0];
 
     // declare void @writeInteger(i32)
-    func_name = "writeInteger";
+    func_name = "_writeInteger";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -1912,10 +1994,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{ llvm_int }, false);
     TheWriteInteger =
             llvm::Function::Create(writeInteger_type, llvm::Function::ExternalLinkage,
-                                   "writeInteger", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare void @writeByte(i8)
-    func_name = "writeByte";
+    func_name = "_writeByte";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -1929,11 +2011,11 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{ llvm_byte }, false);
     TheWriteByte =
             llvm::Function::Create(writeByte_type, llvm::Function::ExternalLinkage,
-                                   "writeByte", TheModule.get());
+                                   func_name, TheModule.get());
 
 
     // declare void @writeChar(i8)
-    func_name = "writeChar";
+    func_name = "_writeChar";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -1947,10 +2029,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{ llvm_byte }, false);
     TheWriteChar =
             llvm::Function::Create(writeChar_type, llvm::Function::ExternalLinkage,
-                                   "writeChar", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare void @writeString(i8*)
-    func_name = "writeString";
+    func_name = "_writeString";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -1965,11 +2047,11 @@ void declare_dana_libs()
                                     false);
     TheWriteString =
             llvm::Function::Create(writeString_type, llvm::Function::ExternalLinkage,
-                                   "writeString", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare int @readInteger()
 
-    func_name = "readInteger";
+    func_name = "_readInteger";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -1982,10 +2064,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{}, false);
     TheReadInteger =
             llvm::Function::Create(readInteger_type, llvm::Function::ExternalLinkage,
-                                   "readInteger", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare i8 @readByte()
-    func_name = "readByte";
+    func_name = "_readByte";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -1998,10 +2080,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{}, false);
     TheReadByte =
             llvm::Function::Create(readByte_type, llvm::Function::ExternalLinkage,
-                                   "readByte", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare i8 @readChar()
-    func_name = "readChar";
+    func_name = "_readChar";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2014,10 +2096,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{}, false);
     TheReadChar =
             llvm::Function::Create(readChar_type, llvm::Function::ExternalLinkage,
-                                   "readChar", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare void @readString(i32, i8*)
-    func_name = "readString";
+    func_name = "_readString";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2033,10 +2115,10 @@ void declare_dana_libs()
                                     false);
     TheReadString =
             llvm::Function::Create(readString_type, llvm::Function::ExternalLinkage,
-                                   "readString", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare int @extend(i8)
-    func_name = "extend";
+    func_name = "_extend";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2050,10 +2132,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{ llvm_byte }, false);
     TheExtend =
             llvm::Function::Create(extend_type, llvm::Function::ExternalLinkage,
-                                   "extend", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare byte @shrink(i32)
-    func_name = "shrink";
+    func_name = "_shrink";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2067,10 +2149,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{ llvm_int }, false);
     TheShrink =
             llvm::Function::Create(shrink_type, llvm::Function::ExternalLinkage,
-                                   "shrink", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare int @strlen(i8*)
-    func_name = "strlen";
+    func_name = "_strlen";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2085,10 +2167,10 @@ void declare_dana_libs()
                                     false);
     TheStrlen =
             llvm::Function::Create(strlen_type, llvm::Function::ExternalLinkage,
-                                   "strlen", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare int @strcmp(i8*, i8*)
-    func_name = "strcmp";
+    func_name = "_strcmp";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2105,10 +2187,10 @@ void declare_dana_libs()
                                     false);
     TheStrcmp =
             llvm::Function::Create(strcmp_type, llvm::Function::ExternalLinkage,
-                                   "strcmp", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare void @strcpy(i8*, i8*)
-    func_name = "strcpy";
+    func_name = "_strcpy";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2123,10 +2205,10 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0), llvm::PointerType::get(llvm_byte, 0) }, false);
     TheStrcpy =
             llvm::Function::Create(strcpy_type, llvm::Function::ExternalLinkage,
-                                   "strcpy", TheModule.get());
+                                   func_name, TheModule.get());
 
     // declare void @strcat(i8*, i8*)
-    func_name = "strcat";
+    func_name = "_strcat";
     cstr = &func_name[0];
     f = newFunction(cstr);
     forwardFunction(f);
@@ -2141,7 +2223,5 @@ void declare_dana_libs()
                                     std::vector<llvm::Type*>{ llvm::PointerType::get(llvm_byte, 0), llvm::PointerType::get(llvm_byte, 0) }, false);
     TheStrcat =
             llvm::Function::Create(strcat_type, llvm::Function::ExternalLinkage,
-                                   "strcat", TheModule.get());
-
-
+                                   func_name, TheModule.get());
 }

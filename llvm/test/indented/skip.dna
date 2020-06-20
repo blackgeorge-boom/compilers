@@ -1,4 +1,2 @@
 def primes
-    var x
-        y is int
-    x := 2
+    writeByte: readByte()

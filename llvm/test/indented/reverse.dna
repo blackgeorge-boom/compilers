@@ -1,14 +1,5 @@
 def main
 
-  decl writeInteger: n as int
-  decl writeByte: b as byte
-  decl writeChar: b as byte
-  decl writeString: s as byte[]
-
-  decl readInteger is int
-
-  decl strlen is int: s as byte[]
-
   var r is byte [32]
 
   def reverse: s as byte []
